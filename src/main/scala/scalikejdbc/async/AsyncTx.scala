@@ -17,45 +17,32 @@ package scalikejdbc.async
 
 import scalikejdbc._, SQLInterpolation._
 import scala.concurrent._
-import scala.util._
-
-/**
- * Asynchronous Transactional Query
- */
-class AsyncTxQuery(sqlObjects: Seq[SQL[_, _]]) {
-
-  def future()(
-    implicit session: AsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Seq[AsyncQueryResult]] = {
-
-    session.connection.toNonSharedConnection.map(conn => AsyncTxDBSession(conn)).flatMap { txSession: AsyncTxDBSession =>
-      txSession.begin().flatMap { _ =>
-        sqlObjects.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (f, sql) =>
-          for {
-            results <- f
-            current <- txSession.connection.sendPreparedStatement(sql.statement, sql.parameters: _*)
-          } yield results :+ current
-        }.andThen {
-          case Success(_) => txSession.commit()
-          case Failure(e) => txSession.rollback()
-        }.andThen {
-          case _ => txSession.release()
-        }
-      }
-    }
-  }
-
-}
 
 /**
  * Asynchronous Transaction Provider
  */
 object AsyncTx {
 
+  /**
+   * Provides [[scalikejdbc.async.AsyncTxQuery]] from [[scalikejdbc.SQLInterpolation.SQLBuilder]] objects.
+   *
+   * @param builders sql builders
+   * @param session asynchronous db session
+   * @param cxt execution context
+   * @return async tx query
+   */
   def withBuilders(builders: SQLBuilder[_]*)(
     implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): AsyncTxQuery = withSQLs(builders.map(_.toSQL): _*)
 
+  /**
+   * Provides [[scalikejdbc.async.AsyncTxQuery]] from [[scalikejdbc.SQL]] objects.
+   *
+   * @param sqlObjects sql objects
+   * @param session asynchronous db session
+   * @param cxt execution context
+   * @return async tx query
+   */
   def withSQLs(sqlObjects: SQL[_, _]*)(
     implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): AsyncTxQuery = new AsyncTxQuery(sqlObjects)
