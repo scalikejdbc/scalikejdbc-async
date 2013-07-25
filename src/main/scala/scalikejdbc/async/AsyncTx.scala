@@ -12,22 +12,17 @@ class AsyncTxQuery(sqlObjects: Seq[SQL[_, _]]) {
 
     session.connection.toNonSharedConnection.map(conn => AsyncTxDBSession(conn)).flatMap { txSession: AsyncTxDBSession =>
       txSession.begin().flatMap { _ =>
-        val initial = Future.successful[Seq[AsyncQueryResult]](Nil)
-        val query: Future[Seq[AsyncQueryResult]] = sqlObjects.foldLeft(initial) { (future, sql) =>
-          future.flatMap { results: Seq[AsyncQueryResult] =>
-            txSession.connection.sendPreparedStatement(sql.statement, sql.parameters: _*).map {
-              result => results :+ result
-            }
-          }
+        sqlObjects.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (f, sql) =>
+          for {
+            results <- f
+            current <- txSession.connection.sendPreparedStatement(sql.statement, sql.parameters: _*)
+          } yield results :+ current
+        }.andThen {
+          case Success(_) => txSession.commit()
+          case Failure(e) => txSession.rollback()
+        }.andThen {
+          case _ => txSession.release()
         }
-        val result: Future[Seq[AsyncQueryResult]] = query.flatMap { results: Seq[AsyncQueryResult] =>
-          txSession.commit()
-          Future.successful(results)
-        }.recoverWith {
-          case e: Throwable => txSession.rollback().map { _ => throw e }
-        }
-        result.onComplete(_ => txSession.release())
-        result
       }
     }
   }
