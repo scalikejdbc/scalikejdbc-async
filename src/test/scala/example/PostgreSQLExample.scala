@@ -49,7 +49,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
   }
 
   it should "update in a transaction" in {
-    val f: Future[Unit] = AsyncDB.withPool { implicit s =>
+    val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       val column = Company.column
       AsyncTx.withSQLs(
         insert.into(Company).namedValues(
