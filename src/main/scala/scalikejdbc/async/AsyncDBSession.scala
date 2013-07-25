@@ -23,22 +23,23 @@ import scala.concurrent._
  */
 case class AsyncDBSession(connection: AsyncConnection) {
 
-  def single[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Option[A]] = {
-    connection.sendPreparedStatement(statement, parameters: _*).map { result =>
-      val rows = (result.rows.map(rs => extractor(rs))).toList
-      rows match {
-        case Nil => None
-        case one :: Nil => Option(one)
-        case _ => throw new TooManyRowsException(1, rows.size)
-      }
-    }
-  }
-
   def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
-      result.rows.map(rs => extractor(rs))
+      result.rows.map { ars =>
+        new AsyncResultSetTraversable(ars).map(rs => extractor(rs))
+      }.getOrElse(Nil)
+    }
+  }
+
+  def single[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
+    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Option[A]] = {
+    traversable(statement, parameters: _*)(extractor).map { results =>
+      results match {
+        case Nil => None
+        case one :: Nil => Option(one)
+        case _ => throw new TooManyRowsException(1, results.size)
+      }
     }
   }
 

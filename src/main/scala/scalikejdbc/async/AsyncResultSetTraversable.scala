@@ -20,9 +20,12 @@ import scalikejdbc._
 /**
  * AysncResultSet Traversable
  */
-class AsyncResultSetTraversable(rs: AsyncResultSet) extends Traversable[WrappedResultSet] {
+class AsyncResultSetTraversable(var rs: AsyncResultSet) extends Traversable[WrappedResultSet] {
 
-  def foreach[U](f: (WrappedResultSet) => U): Unit = while (rs.next()) { f.apply(rs.tail()) }
+  def foreach[U](f: (WrappedResultSet) => U): Unit = while (rs.next()) {
+    f.apply(rs)
+    rs = rs.tail()
+  }
 
 }
 

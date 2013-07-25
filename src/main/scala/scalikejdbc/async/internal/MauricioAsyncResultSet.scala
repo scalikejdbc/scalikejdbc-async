@@ -30,7 +30,7 @@ private[scalikejdbc] class MauricioAsyncResultSet(rows: IndexedSeq[RowData])
 
   // AsyncResultSet API
   override def next(): Boolean = rows.headOption.isDefined
-  override def tail(): WrappedResultSet = new MauricioAsyncResultSet(rows.tail)
+  override def tail(): AsyncResultSet = new MauricioAsyncResultSet(rows.tail)
 
   // WrappedResultSet API
   override def any(columnIndex: Int): Any = currentRow.map(_.apply(columnIndex)).orNull[Any]

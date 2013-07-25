@@ -24,11 +24,11 @@ import scala.concurrent.duration.FiniteDuration
 /**
  * WrappedResultSet for AsyncDBSession
  */
-trait AsyncResultSet { self: WrappedResultSet =>
+trait AsyncResultSet extends WrappedResultSet {
 
   def next(): Boolean
 
-  def tail(): WrappedResultSet
+  def tail(): AsyncResultSet
 
   override def ensureCursor(): Unit = {}
 

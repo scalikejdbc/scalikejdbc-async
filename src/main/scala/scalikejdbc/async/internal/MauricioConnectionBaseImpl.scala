@@ -84,7 +84,8 @@ private[scalikejdbc] trait MauricioConnectionBaseImpl { self: AsyncConnection =>
         rowsAffected = Option(queryResult.rowsAffected),
         statusMessage = Option(queryResult.statusMessage),
         rows = queryResult.rows.flatMap { rows =>
-          if (rows.isEmpty) None else Some(new internal.MauricioAsyncResultSet(rows))
+          if (rows.isEmpty) None
+          else Some(new internal.MauricioAsyncResultSet(rows))
         }
       )
     }

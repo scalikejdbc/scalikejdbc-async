@@ -15,12 +15,11 @@
  */
 package scalikejdbc.async
 
-import scalikejdbc._
-
 /**
  * Query Result
  */
-case class AsyncQueryResult(rowsAffected: Option[Long],
+case class AsyncQueryResult(
+  rowsAffected: Option[Long],
   statusMessage: Option[String],
-  rows: Option[WrappedResultSet])
+  rows: Option[AsyncResultSet])
 

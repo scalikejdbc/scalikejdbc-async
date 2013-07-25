@@ -30,22 +30,22 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "retrieve several values as Traversable" in {
     val f: Future[Traversable[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).limit(3) }.map(AsyncLover(al)).traversable.future()
+      withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).traversable.future()
     }
     Await.result(f, 5.seconds)
 
     f.value.get.isSuccess should be(true)
-    f.value.get.get.size should be > 0
+    f.value.get.get.size should equal(2)
   }
 
   it should "retrieve several values" in {
     val f: Future[List[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).limit(3) }.map(AsyncLover(al)).list.future()
+      withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).list.future()
     }
     Await.result(f, 5.seconds)
 
     f.value.get.isSuccess should be(true)
-    f.value.get.get.size should be > 0
+    f.value.get.get.size should equal(2)
   }
 
   it should "update in a transaction" in {
@@ -81,7 +81,6 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     asyncLover.name should equal("Eric")
     asyncLover.rating should equal(2)
     asyncLover.isReactive should be(false)
-    println(createdTime)
     asyncLover.createdAt should equal(createdTime)
   }
 
