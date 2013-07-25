@@ -7,7 +7,7 @@ ScalikeJDBC Async provides non-blocking APIs to talk with RDBMS. This library is
 We never release without passing all the unit tests with the following RDBMS.
 
 - PostgreSQL
-- MySQL
+- MySQL (TODO)
 
 
 ### Usage
@@ -45,7 +45,7 @@ If you want to do more complex operations (e.g. after inserting new record, use 
 ```scala
 val (m, tr) = (Member.column, TemporaryRegistraion.column)
 
-val future: Future[Unit] = AsyncDB.withPool { implicit session =>
+val future: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit session =>
   AsyncTx.withBuidlers(
     insert.into(Member).namedValues(m.id -> 123, m.name -> "Bob"),
     delete.from(TemporaryRegisration).where.eq(tr.id, 123)

@@ -4,40 +4,49 @@ import scalikejdbc._, SQLInterpolation._
 
 object ExampleDBInitializer {
 
-  val pgCreateSequence = "create sequence company_id_seq start with 1"
   val pgCreateTable = """
-create table company (
-  id bigint not null default nextval('company_id_seq') primary key,
-  name varchar(255) not null,
-  url varchar(255),
-  created_at timestamp not null,
-  deleted_at timestamp
+create table async_lover (
+  id bigserial primary key,
+  name varchar(64) not null,
+  rating integer not null,
+  is_reactive boolean default true, 
+  lunchtime time, 
+  birthday date,
+  created_at timestamp not null without time zone,
+  deleted_at timestamp without time zone
 );
 """
 
   val mysqlCreateTable = """
-create table company (
+create table async_lover (
   id bigint not null auto_increment primary key,
-  name varchar(255) not null,
-  url varchar(255),
+  name varchar(64) not null,
+  rating integer not null,
+  is_reactive boolean default true,
+  lunchtime time,
+  birthday date,
   created_at timestamp not null,
   deleted_at timestamp
 );
 """
 
-  val insert = """
-    insert into company (name, url, created_at) values ('Typesafe', 'http://typesafe.com/', current_timestamp);
-  """
+  val insertQueries = Seq(
+    """insert into async_lover (name, rating, is_reactive, lunchtime, birthday, created_at) 
+        values ('Alice', 4, true, '12:30:00', '1980-01-02', '2013-05-06 01:02:03')""",
+    """insert into async_lover (name, rating, is_reactive, lunchtime, birthday, created_at) 
+        values ('Bob', 3, false, '13:20:00', '1973-03-12', '2013-05-06 03:04:02')""",
+    """insert into async_lover (name, rating, is_reactive, lunchtime, birthday, created_at) 
+        values ('Chris', 5, true, '11:45:00', '1984-12-31', '2013-05-06 19:32:54')"""
+  )
 
   def initPostgreSQL(): Unit = {
     DB autoCommit { implicit s =>
       try {
-        sql"select 1 from company limit 1".map(_.long(1)).single.apply()
+        sql"select 1 from async_lover limit 1".map(_.long(1)).single.apply()
       } catch {
         case e: Exception =>
-          SQL(pgCreateSequence).execute.apply()
           SQL(pgCreateTable).execute.apply()
-          SQL(insert).update.apply()
+          insertQueries.foreach(q => SQL(q).update.apply())
       }
     }
   }
@@ -45,11 +54,11 @@ create table company (
   def initMySQL(): Unit = {
     NamedDB('mysql) autoCommit { implicit s =>
       try {
-        sql"select 1 from company limit 1".map(_.long(1)).single.apply()
+        sql"select 1 from async_lover limit 1".map(_.long(1)).single.apply()
       } catch {
         case e: Exception =>
           SQL(mysqlCreateTable).execute.apply()
-          SQL(insert).update.apply()
+          insertQueries.foreach(q => SQL(q).update.apply())
       }
     }
   }

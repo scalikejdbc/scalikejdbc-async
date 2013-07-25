@@ -18,7 +18,8 @@ package scalikejdbc.async
 import scalikejdbc._
 
 import java.util.Calendar
-import org.joda.time.{ LocalDateTime, DateTime }
+import org.joda.time.{ LocalTime, LocalDateTime, DateTime }
+import scala.concurrent.duration.FiniteDuration
 
 /**
  * WrappedResultSet for AsyncDBSession
@@ -31,35 +32,81 @@ trait AsyncResultSet { self: WrappedResultSet =>
 
   override def ensureCursor(): Unit = {}
 
-  override def array(columnIndex: Int): java.sql.Array = any(columnIndex).asInstanceOf[java.sql.Array]
-  override def array(columnLabel: String): java.sql.Array = any(columnLabel).asInstanceOf[java.sql.Array]
+  override def array(columnIndex: Int): java.sql.Array = throw new UnsupportedOperationException
+  override def array(columnLabel: String): java.sql.Array = throw new UnsupportedOperationException
 
-  override def asciiStream(columnIndex: Int): java.io.InputStream = any(columnIndex).asInstanceOf[java.io.InputStream]
-  override def asciiStream(columnLabel: String): java.io.InputStream = any(columnLabel).asInstanceOf[java.io.InputStream]
+  override def asciiStream(columnIndex: Int): java.io.InputStream = throw new UnsupportedOperationException
+  override def asciiStream(columnLabel: String): java.io.InputStream = throw new UnsupportedOperationException
 
-  override def bigDecimal(columnIndex: Int): java.math.BigDecimal = any(columnIndex).asInstanceOf[java.math.BigDecimal]
-  override def bigDecimal(columnLabel: String): java.math.BigDecimal = any(columnLabel).asInstanceOf[java.math.BigDecimal]
+  override def bigDecimal(columnIndex: Int): java.math.BigDecimal = any(columnIndex) match {
+    case null => null
+    case bd: java.math.BigDecimal => bd
+    case bd: scala.BigDecimal => bd.underlying
+    case str: String => new java.math.BigDecimal(str)
+    case any => new java.math.BigDecimal(any.toString)
+  }
 
-  override def binaryStream(columnIndex: Int): java.io.InputStream = any(columnIndex).asInstanceOf[java.io.InputStream]
-  override def binaryStream(columnLabel: String): java.io.InputStream = any(columnLabel).asInstanceOf[java.io.InputStream]
+  override def bigDecimal(columnLabel: String): java.math.BigDecimal = any(columnLabel) match {
+    case null => null
+    case bd: java.math.BigDecimal => bd
+    case bd: scala.BigDecimal => bd.underlying
+    case str: String => new java.math.BigDecimal(str)
+    case any => new java.math.BigDecimal(any.toString)
+  }
 
-  override def blob(columnIndex: Int): java.sql.Blob = any(columnIndex).asInstanceOf[java.sql.Blob]
-  override def blob(columnLabel: String): java.sql.Blob = any(columnLabel).asInstanceOf[java.sql.Blob]
+  override def binaryStream(columnIndex: Int): java.io.InputStream = throw new UnsupportedOperationException
+  override def binaryStream(columnLabel: String): java.io.InputStream = throw new UnsupportedOperationException
 
-  override def bytes(columnIndex: Int): Array[Byte] = any(columnIndex).asInstanceOf[Array[Byte]]
-  override def bytes(columnLabel: String): Array[Byte] = any(columnLabel).asInstanceOf[Array[Byte]]
+  override def blob(columnIndex: Int): java.sql.Blob = throw new UnsupportedOperationException
+  override def blob(columnLabel: String): java.sql.Blob = throw new UnsupportedOperationException
 
-  override def characterStream(columnIndex: Int): java.io.Reader = any(columnIndex).asInstanceOf[java.io.Reader]
-  override def characterStream(columnLabel: String): java.io.Reader = any(columnLabel).asInstanceOf[java.io.Reader]
+  override def bytes(columnIndex: Int): Array[Byte] = any(columnIndex) match {
+    case null => null
+    case any => any.asInstanceOf[Array[Byte]]
+  }
 
-  override def clob(columnIndex: Int): java.sql.Clob = any(columnIndex).asInstanceOf[java.sql.Clob]
-  override def clob(columnLabel: String): java.sql.Clob = any(columnLabel).asInstanceOf[java.sql.Clob]
+  override def bytes(columnLabel: String): Array[Byte] = any(columnLabel) match {
+    case null => null
+    case any => any.asInstanceOf[Array[Byte]]
+  }
+
+  override def characterStream(columnIndex: Int): java.io.Reader = throw new UnsupportedOperationException
+  override def characterStream(columnLabel: String): java.io.Reader = throw new UnsupportedOperationException
+
+  override def clob(columnIndex: Int): java.sql.Clob = throw new UnsupportedOperationException
+  override def clob(columnLabel: String): java.sql.Clob = throw new UnsupportedOperationException
 
   override def concurrency: Int = throw new UnsupportedOperationException
   override def cursorName: String = throw new UnsupportedOperationException
 
-  override def date(columnIndex: Int): java.sql.Date = any(columnIndex).asInstanceOf[java.sql.Date]
-  override def date(columnLabel: String): java.sql.Date = any(columnLabel).asInstanceOf[java.sql.Date]
+  override def date(columnIndex: Int): java.sql.Date = any(columnIndex) match {
+    case null => null
+    case d: java.sql.Date => d
+    case t: java.sql.Time => new java.sql.Date(t.getTime)
+    case t: java.sql.Timestamp => new java.sql.Date(t.getTime)
+    case ldt: LocalDateTime => new java.sql.Date(ldt.toDateTime.getMillis)
+    case dt: DateTime => new java.sql.Date(dt.getMillis)
+    case t: LocalTime => t.toSqlTimestamp.toSqlDate
+    case dt: java.util.Date => new java.sql.Date(dt.getTime)
+    case fd: FiniteDuration => new java.sql.Date(fd.toMillis)
+    case other => throw new UnsupportedOperationException(
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #date(Int)!")
+  }
+
+  override def date(columnLabel: String): java.sql.Date = any(columnLabel) match {
+    case null => null
+    case d: java.sql.Date => d
+    case t: java.sql.Time => new java.sql.Date(t.getTime)
+    case t: java.sql.Timestamp => new java.sql.Date(t.getTime)
+    case ldt: LocalDateTime => new java.sql.Date(ldt.toDateTime.getMillis)
+    case dt: DateTime => new java.sql.Date(dt.getMillis)
+    case t: LocalTime => t.toSqlTimestamp.toSqlDate
+    case dt: java.util.Date => new java.sql.Date(dt.getTime)
+    case fd: FiniteDuration => new java.sql.Date(fd.toMillis)
+    case other => throw new UnsupportedOperationException(
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #date(String)!")
+  }
+
   override def date(columnIndex: Int, cal: Calendar): java.sql.Date = throw new UnsupportedOperationException
   override def date(columnLabel: String, cal: Calendar): java.sql.Date = throw new UnsupportedOperationException
 
@@ -68,61 +115,120 @@ trait AsyncResultSet { self: WrappedResultSet =>
   override def holdability: Int = throw new UnsupportedOperationException
   override def metaData: java.sql.ResultSetMetaData = throw new UnsupportedOperationException
 
-  override def nCharacterStream(columnIndex: Int): java.io.Reader = any(columnIndex).asInstanceOf[java.io.Reader]
-  override def nCharacterStream(columnLabel: String): java.io.Reader = any(columnLabel).asInstanceOf[java.io.Reader]
+  override def nCharacterStream(columnIndex: Int): java.io.Reader = throw new UnsupportedOperationException
+  override def nCharacterStream(columnLabel: String): java.io.Reader = throw new UnsupportedOperationException
 
-  override def nClob(columnIndex: Int): java.sql.NClob = any(columnIndex).asInstanceOf[java.sql.NClob]
-  override def nClob(columnLabel: String): java.sql.NClob = any(columnLabel).asInstanceOf[java.sql.NClob]
+  override def nClob(columnIndex: Int): java.sql.NClob = throw new UnsupportedOperationException
+  override def nClob(columnLabel: String): java.sql.NClob = throw new UnsupportedOperationException
 
-  override def nString(columnIndex: Int): String = any(columnIndex).asInstanceOf[String]
-  override def nString(columnLabel: String): String = any(columnLabel).asInstanceOf[String]
+  override def nString(columnIndex: Int): String = throw new UnsupportedOperationException
+  override def nString(columnLabel: String): String = throw new UnsupportedOperationException
 
-  override def any(columnIndex: Int): Any = throw new IllegalStateException("This method should be implementated")
-  override def any(columnLabel: String): Any = throw new IllegalStateException("This method should be implementated")
+  override def any(columnIndex: Int): Any = throw new IllegalStateException("This method should be implemented.")
+  override def any(columnLabel: String): Any = throw new IllegalStateException("This method should be implemented.")
+
   override def any(columnIndex: Int, map: Map[String, Class[_]]): Any = throw new UnsupportedOperationException
   override def any(columnLabel: String, map: Map[String, Class[_]]): Any = throw new UnsupportedOperationException
 
-  override def ref(columnIndex: Int): java.sql.Ref = any(columnIndex).asInstanceOf[java.sql.Ref]
-  override def ref(columnLabel: String): java.sql.Ref = any(columnLabel).asInstanceOf[java.sql.Ref]
+  override def ref(columnIndex: Int): java.sql.Ref = throw new UnsupportedOperationException
+  override def ref(columnLabel: String): java.sql.Ref = throw new UnsupportedOperationException
 
   override def row: Int = throw new UnsupportedOperationException
   override def rowId(columnIndex: Int): java.sql.RowId = throw new UnsupportedOperationException
   override def rowId(columnLabel: String): java.sql.RowId = throw new UnsupportedOperationException
 
-  override def sqlXml(columnIndex: Int): java.sql.SQLXML = any(columnIndex).asInstanceOf[java.sql.SQLXML]
-  override def sqlXml(columnLabel: String): java.sql.SQLXML = any(columnLabel).asInstanceOf[java.sql.SQLXML]
+  override def sqlXml(columnIndex: Int): java.sql.SQLXML = throw new UnsupportedOperationException
+  override def sqlXml(columnLabel: String): java.sql.SQLXML = throw new UnsupportedOperationException
 
   override def statement: java.sql.Statement = throw new UnsupportedOperationException
 
-  override def string(columnIndex: Int): String = any(columnIndex).asInstanceOf[String]
-  override def string(columnLabel: String): String = any(columnLabel).asInstanceOf[String]
+  override def string(columnIndex: Int): String = any(columnIndex) match {
+    case null => null
+    case str: String => str
+    case any => any.toString
+  }
 
-  override def time(columnIndex: Int): java.sql.Time = any(columnIndex).asInstanceOf[java.sql.Time]
-  override def time(columnLabel: String): java.sql.Time = any(columnLabel).asInstanceOf[java.sql.Time]
+  override def string(columnLabel: String): String = any(columnLabel) match {
+    case null => null
+    case str: String => str
+    case any => any.toString
+  }
+
+  override def time(columnIndex: Int): java.sql.Time = any(columnIndex) match {
+    case null => null
+    case t: java.sql.Time => t
+    case d: java.sql.Date => new java.sql.Time(d.getTime)
+    case t: java.sql.Timestamp => new java.sql.Time(t.getTime)
+    case t: LocalTime => t.toSqlTime
+    case ldt: LocalDateTime => new java.sql.Time(ldt.toDateTime.getMillis)
+    case dt: DateTime => new java.sql.Time(dt.getMillis)
+    case dt: java.util.Date => new java.sql.Time(dt.getTime)
+    case fd: FiniteDuration => new java.sql.Time(fd.toMillis)
+    case other => throw new UnsupportedOperationException(
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #time(Int)!")
+  }
+
+  override def time(columnLabel: String): java.sql.Time = any(columnLabel) match {
+    case null => null
+    case t: java.sql.Time => t
+    case d: java.sql.Date => new java.sql.Time(d.getTime)
+    case t: java.sql.Timestamp => new java.sql.Time(t.getTime)
+    case t: LocalTime => t.toSqlTime
+    case ldt: LocalDateTime => new java.sql.Time(ldt.toDateTime.getMillis)
+    case dt: DateTime => new java.sql.Time(dt.getMillis)
+    case d: java.util.Date => new java.sql.Time(d.getTime)
+    case fd: FiniteDuration => new java.sql.Time(fd.toMillis)
+    case other => throw new UnsupportedOperationException(
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #time(String)!")
+  }
+
   override def time(columnIndex: Int, cal: Calendar): java.sql.Time = throw new UnsupportedOperationException
   override def time(columnLabel: String, cal: Calendar): java.sql.Time = throw new UnsupportedOperationException
 
   override def timestamp(columnIndex: Int): java.sql.Timestamp = any(columnIndex) match {
     case null => null
     case t: java.sql.Timestamp => t
-    case dt: LocalDateTime => new java.sql.Timestamp(dt.toDateTime.getMillis)
+    case t: java.sql.Time => new java.sql.Timestamp(t.getTime)
+    case d: java.sql.Date => new java.sql.Timestamp(d.getTime)
+    case ldt: LocalDateTime => new java.sql.Timestamp(ldt.toDate.getTime)
     case dt: DateTime => new java.sql.Timestamp(dt.getMillis)
-    case other => throw new UnsupportedOperationException
+    case t: LocalTime => t.toSqlTimestamp
+    case d: java.util.Date => new java.sql.Timestamp(d.getTime)
+    case fd: FiniteDuration => new java.sql.Timestamp(fd.toMillis)
+    case other => throw new UnsupportedOperationException(
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #timestamp(Int)!")
   }
 
   override def timestamp(columnLabel: String): java.sql.Timestamp = any(columnLabel) match {
     case null => null
     case t: java.sql.Timestamp => t
-    case dt: LocalDateTime => new java.sql.Timestamp(dt.toDateTime.getMillis)
+    case t: java.sql.Time => new java.sql.Timestamp(t.getTime)
+    case d: java.sql.Date => new java.sql.Timestamp(d.getTime)
+    case ldt: LocalDateTime => new java.sql.Timestamp(ldt.toDate.getTime)
     case dt: DateTime => new java.sql.Timestamp(dt.getMillis)
-    case other => throw new UnsupportedOperationException
+    case t: LocalTime => t.toSqlTimestamp
+    case d: java.util.Date => new java.sql.Timestamp(d.getTime)
+    case fd: FiniteDuration => new java.sql.Timestamp(fd.toMillis)
+    case other => throw new UnsupportedOperationException(
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #timestamp(String)!")
   }
 
   override def timestamp(columnIndex: Int, cal: Calendar): java.sql.Timestamp = throw new UnsupportedOperationException
   override def timestamp(columnLabel: String, cal: Calendar): java.sql.Timestamp = throw new UnsupportedOperationException
 
-  override def url(columnIndex: Int): java.net.URL = any(columnIndex).asInstanceOf[java.net.URL]
-  override def url(columnLabel: String): java.net.URL = any(columnLabel).asInstanceOf[java.net.URL]
+  override def url(columnIndex: Int): java.net.URL = any(columnIndex) match {
+    case null => null
+    case url: java.net.URL => url
+    case str: String => new java.net.URL(str)
+    case any => new java.net.URL(any.toString)
+  }
+
+  override def url(columnLabel: String): java.net.URL = any(columnLabel) match {
+    case null => null
+    case url: java.net.URL => url
+    case str: String => new java.net.URL(str)
+    case any => new java.net.URL(any.toString)
+  }
 
   override def warnings: java.sql.SQLWarning = throw new UnsupportedOperationException
 
