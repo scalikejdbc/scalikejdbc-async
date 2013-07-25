@@ -49,7 +49,43 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
   }
 
   it should "update in a transaction" in {
-    val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
+
+    val f: Future[Unit] = AsyncDB.withPool { implicit s =>
+      val column = Company.column
+      AsyncTx.withBuilders(
+        delete.from(Company).where.eq(column.id, 997),
+        insert.into(Company).namedValues(
+          column.id -> 997,
+          column.name -> "Foo",
+          column.createdAt -> new java.util.Date())
+      ).future()
+    }
+    Await.result(f, 5.seconds)
+
+    f.value.get.isSuccess should be(true)
+
+    val ff: Future[Option[Company]] = AsyncDB.withPool { implicit s =>
+      withSQL { select.from(Company as c).where.eq(c.id, 997) }.map(Company(c)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(true)
+
+    val f0: Future[Unit] = AsyncDB.withPool { implicit s =>
+      val column = Company.column
+      AsyncTx.withBuilders(
+        insert.into(Company).namedValues(
+          column.id -> 998,
+          column.name -> "Foo",
+          column.createdAt -> new java.util.Date()),
+        delete.from(Company).where.eq(column.id, 998)
+      ).future()
+    }
+    Await.result(f0, 5.seconds)
+    f0.value.get.isSuccess should be(true)
+
+    val f1: Future[Unit] = AsyncDB.withPool { implicit s =>
       val column = Company.column
       AsyncTx.withSQLs(
         insert.into(Company).namedValues(
@@ -60,12 +96,12 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
       ).future()
     }
     try {
-      Await.result(f, 5.seconds)
+      Await.result(f1, 5.seconds)
     } catch {
       case e: Exception => e.printStackTrace()
     }
 
-    f.value.get.isSuccess should be(false)
+    f1.value.get.isSuccess should be(false)
 
     val f2: Future[Option[Company]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(Company as c).where.eq(c.id, 9999) }.map(Company(c)).single.future()

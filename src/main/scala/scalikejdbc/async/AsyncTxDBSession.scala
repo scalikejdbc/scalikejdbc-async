@@ -22,7 +22,7 @@ import scala.concurrent._
  */
 case class AsyncTxDBSession(connection: NonSharedAsyncConnection) {
 
-  def begin(): Future[AsyncQueryResult] = connection.sendQuery("BEGIN TRANSACTION")
+  def begin(): Future[AsyncQueryResult] = connection.sendQuery("BEGIN")
 
   def rollback(): Future[AsyncQueryResult] = connection.sendQuery("ROLLBACK")
 
