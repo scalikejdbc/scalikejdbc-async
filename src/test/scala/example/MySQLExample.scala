@@ -48,7 +48,7 @@ class MySQLExample extends FlatSpec with ShouldMatchers {
   }
 
   it should "update in a transaction" in {
-    val f: Future[Unit] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val f: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
       val column = Company.column
       AsyncTx.withSQLs(
         insert.into(Company).namedValues(
