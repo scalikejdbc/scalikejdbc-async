@@ -18,7 +18,7 @@ package scalikejdbc.async
 import scala.concurrent._
 
 /**
- * Async transactional DB session
+ * Asynchronous Transactional DB Session
  */
 case class AsyncTxDBSession(connection: NonSharedAsyncConnection) {
 

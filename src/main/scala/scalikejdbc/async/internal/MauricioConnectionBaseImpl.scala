@@ -28,6 +28,12 @@ private[scalikejdbc] trait MauricioConnectionBaseImpl { self: AsyncConnection =>
   private[scalikejdbc] val underlying: Connection
   private[scalikejdbc] val defaultTimeout = 10.seconds
 
+  /**
+   * Returns a non-shared connection.
+   *
+   * @param cxt execution context
+   * @return  non-shared connection
+   */
   override def toNonSharedConnection()(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
 
