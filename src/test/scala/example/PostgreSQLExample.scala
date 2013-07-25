@@ -50,7 +50,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "update in a transaction" in {
 
-    val f: Future[Unit] = AsyncDB.withPool { implicit s =>
+    val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       val column = Company.column
       AsyncTx.withBuilders(
         delete.from(Company).where.eq(column.id, 997),
@@ -63,6 +63,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     Await.result(f, 5.seconds)
 
     f.value.get.isSuccess should be(true)
+    f.value.get.get.size should be(2)
 
     val ff: Future[Option[Company]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(Company as c).where.eq(c.id, 997) }.map(Company(c)).single.future()
@@ -72,7 +73,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     ff.value.get.isSuccess should be(true)
     ff.value.get.get.isDefined should be(true)
 
-    val f0: Future[Unit] = AsyncDB.withPool { implicit s =>
+    val f0: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       val column = Company.column
       AsyncTx.withBuilders(
         insert.into(Company).namedValues(
@@ -84,8 +85,9 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     }
     Await.result(f0, 5.seconds)
     f0.value.get.isSuccess should be(true)
+    f0.value.get.get.size should be(2)
 
-    val f1: Future[Unit] = AsyncDB.withPool { implicit s =>
+    val f1: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       val column = Company.column
       AsyncTx.withSQLs(
         insert.into(Company).namedValues(
