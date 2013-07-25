@@ -7,7 +7,7 @@ ScalikeJDBC Async provides non-blocking APIs to talk with RDBMS. This library is
 We never release without passing all the unit tests with the following RDBMS.
 
 - PostgreSQL
-- MySQL (TODO)
+- MySQL
 
 
 ### Usage

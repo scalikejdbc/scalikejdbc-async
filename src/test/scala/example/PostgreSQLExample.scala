@@ -7,7 +7,7 @@ import org.scalatest.matchers._
 
 import scala.concurrent._
 import scala.concurrent.duration.DurationInt
-import org.joda.time.{ LocalDateTime, DateTime }
+import org.joda.time._
 
 class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
@@ -30,7 +30,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "retrieve several values as Traversable" in {
     val f: Future[Traversable[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).limit(100) }.map(AsyncLover(al)).traversable.future()
+      withSQL { select.from(AsyncLover as al).limit(3) }.map(AsyncLover(al)).traversable.future()
     }
     Await.result(f, 5.seconds)
 
@@ -40,7 +40,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "retrieve several values" in {
     val f: Future[List[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).limit(100) }.map(AsyncLover(al)).list.future()
+      withSQL { select.from(AsyncLover as al).limit(3) }.map(AsyncLover(al)).list.future()
     }
     Await.result(f, 5.seconds)
 
@@ -73,6 +73,9 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     }
     Await.result(ff, 5.seconds)
 
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(true)
+
     val asyncLover = ff.value.get.get.get
     asyncLover.id should equal(997)
     asyncLover.name should equal("Eric")
@@ -80,11 +83,11 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     asyncLover.isReactive should be(false)
     println(createdTime)
     asyncLover.createdAt should equal(createdTime)
+  }
 
-    ff.value.get.isSuccess should be(true)
-    ff.value.get.get.isDefined should be(true)
+  it should "delete in a transaction" in {
 
-    val f0: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
+    val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       val column = AsyncLover.column
       AsyncTx.withBuilders(
         insert.into(AsyncLover).namedValues(
@@ -96,11 +99,22 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
         delete.from(AsyncLover).where.eq(column.id, 998)
       ).future()
     }
-    Await.result(f0, 5.seconds)
-    f0.value.get.isSuccess should be(true)
-    f0.value.get.get.size should be(2)
+    Await.result(f, 5.seconds)
 
-    val f1: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
+    f.value.get.isSuccess should be(true)
+    f.value.get.get.size should be(2)
+
+    val f2: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 998) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(f2, 5.seconds)
+
+    f2.value.get.isSuccess should be(true)
+    f2.value.get.get.isDefined should be(false)
+  }
+
+  it should "rollback in a transaction" in {
+    val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       val column = AsyncLover.column
       AsyncTx.withSQLs(
         insert.into(AsyncLover).namedValues(
@@ -113,15 +127,15 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
       ).future()
     }
     try {
-      Await.result(f1, 5.seconds)
+      Await.result(f, 5.seconds)
     } catch {
       case e: Exception => e.printStackTrace()
     }
 
-    f1.value.get.isSuccess should be(false)
+    f.value.get.isSuccess should be(false)
 
     val f2: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 9999) }.map(AsyncLover(al)).single.future()
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 999) }.map(AsyncLover(al)).single.future()
     }
     Await.result(f2, 5.seconds)
 
