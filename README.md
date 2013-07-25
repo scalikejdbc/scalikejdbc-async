@@ -60,7 +60,10 @@ val future: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit session 
 - ConnectionPoolFactory -> Heroku
 - Transaction control and returned values -> Done
 - implicit ExecutionContext -> Done
-- Logging 
+- oneToX API
+- updateAndReturnGeneratedKey API
+- AsyncTx Chain
+- Logging
 - Examples
 
 ### License

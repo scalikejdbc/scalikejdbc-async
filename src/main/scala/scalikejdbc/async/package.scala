@@ -2,6 +2,14 @@ package scalikejdbc
 
 package object async {
 
+  implicit def makeSQLExecutionAsync(sql: SQLExecution): AsyncSQLExecution = {
+    new AsyncSQLExecution(sql)
+  }
+
+  implicit def makeSQLUpdateAsync(sql: SQLUpdate): AsyncSQLUpdate = {
+    new AsyncSQLUpdate(sql)
+  }
+
   implicit def makeSQLToOptionAsync[A, E <: WithExtractor](sql: SQLToOption[A, E]): AsyncSQLToOption[A, E] = {
     new AsyncSQLToOption[A, E](sql)
   }

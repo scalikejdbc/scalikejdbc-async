@@ -17,6 +17,25 @@ package scalikejdbc.async
 
 import scalikejdbc._
 import scala.concurrent._
+import java.sql.PreparedStatement
+
+class AsyncSQLExecution(underlying: SQLExecution)
+    extends SQLExecution(underlying.statement)(underlying.parameters: _*)((ps: PreparedStatement) => {})((ps: PreparedStatement) => {}) {
+
+  def future()(implicit session: AsyncDBSession,
+    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
+    session.execute(underlying.statement, underlying.parameters: _*)
+  }
+}
+
+class AsyncSQLUpdate(underlying: SQLUpdate)
+    extends SQLUpdate(underlying.statement)(underlying.parameters: _*)((ps: PreparedStatement) => {})((ps: PreparedStatement) => {}) {
+
+  def future()(implicit session: AsyncDBSession,
+    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
+    session.update(underlying.statement, underlying.parameters: _*)
+  }
+}
 
 class AsyncSQLToOption[A, E <: WithExtractor](underlying: SQLToOption[A, E])
     extends SQLToOption[A, E](underlying.statement)(underlying.parameters: _*)(underlying.extractor)(SQL.Output.single) {

@@ -23,6 +23,20 @@ import scala.concurrent._
  */
 case class AsyncDBSession(connection: AsyncConnection) {
 
+  def execute(statement: String, parameters: Any*)(
+    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
+    connection.sendPreparedStatement(statement, parameters: _*).map { result =>
+      result.rowsAffected.map { count => count > 0 }.getOrElse(false)
+    }
+  }
+
+  def update(statement: String, parameters: Any*)(
+    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
+    connection.sendPreparedStatement(statement, parameters: _*).map { result =>
+      result.rowsAffected.map(_.toInt).getOrElse(0)
+    }
+  }
+
   def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>

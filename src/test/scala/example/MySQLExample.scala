@@ -49,6 +49,42 @@ class MySQLExample extends FlatSpec with ShouldMatchers {
     f.value.get.get.size should equal(2)
   }
 
+  it should "update" in {
+    val f: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+      val column = AsyncLover.column
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 997) }.update.future()
+    }
+    Await.result(f, 5.seconds)
+
+    f.value.get.isSuccess should be(true)
+
+    val ff: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 997) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(false)
+  }
+
+  it should "execute" in {
+    val f: Future[Boolean] = NamedAsyncDB('mysql).withPool { implicit s =>
+      val column = AsyncLover.column
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 997) }.execute.future()
+    }
+    Await.result(f, 5.seconds)
+
+    f.value.get.isSuccess should be(true)
+
+    val ff: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 997) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(false)
+  }
+
   it should "update in a transaction" in {
 
     val createdTime = DateTime.now.withMillisOfSecond(0)
