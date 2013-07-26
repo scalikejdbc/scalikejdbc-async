@@ -127,7 +127,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
     val createdTime = DateTime.now.withMillisOfSecond(0)
     val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
-      AsyncTx.withBuilders(
+      AsyncTx.withSQLBuilders(
         delete.from(AsyncLover).where.eq(column.id, 997),
         insert.into(AsyncLover).namedValues(
           column.id -> 997,
@@ -232,7 +232,7 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "delete in a transaction" in {
     val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
-      AsyncTx.withBuilders(
+      AsyncTx.withSQLBuilders(
         insert.into(AsyncLover).namedValues(
           column.id -> 998,
           column.name -> "Fred",

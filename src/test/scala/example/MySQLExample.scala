@@ -200,7 +200,7 @@ class MySQLExample extends FlatSpec with ShouldMatchers {
 
     val createdTime = DateTime.now.withMillisOfSecond(0)
     val f: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
-      AsyncTx.withBuilders(
+      AsyncTx.withSQLBuilders(
         delete.from(AsyncLover).where.eq(column.id, 997),
         insert.into(AsyncLover).namedValues(
           column.id -> 997,
@@ -235,7 +235,7 @@ class MySQLExample extends FlatSpec with ShouldMatchers {
 
     val f: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
       val column = AsyncLover.column
-      AsyncTx.withBuilders(
+      AsyncTx.withSQLBuilders(
         insert.into(AsyncLover).namedValues(
           column.id -> 998,
           column.name -> "Fred",

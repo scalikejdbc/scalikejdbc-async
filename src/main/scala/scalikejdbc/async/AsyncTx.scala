@@ -31,7 +31,7 @@ object AsyncTx {
    * @param cxt execution context
    * @return async tx query
    */
-  def withBuilders(builders: SQLBuilder[_]*)(
+  def withSQLBuilders(builders: SQLBuilder[_]*)(
     implicit session: AsyncSharedDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): AsyncTxQuery = withSQLs(builders.map(_.toSQL): _*)
 
