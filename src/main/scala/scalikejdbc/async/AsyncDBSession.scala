@@ -23,9 +23,14 @@ import scala.concurrent._
  */
 case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
 
+  import GlobalSettings.loggingSQLAndTime
+
   def execute(statement: String, parameters: Any*)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
-    log.debug(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+
+    if (loggingSQLAndTime.enabled) {
+      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+    }
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
       result.rowsAffected.map { count => count > 0 }.getOrElse(false)
     }
@@ -33,7 +38,10 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
 
   def update(statement: String, parameters: Any*)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
-    log.debug(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+
+    if (loggingSQLAndTime.enabled) {
+      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+    }
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
       result.rowsAffected.map(_.toInt).getOrElse(0)
     }
@@ -41,7 +49,10 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
 
   def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
-    log.debug(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+
+    if (loggingSQLAndTime.enabled) {
+      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+    }
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
       result.rows.map { ars =>
         new AsyncResultSetTraversable(ars).map(rs => extractor(rs))

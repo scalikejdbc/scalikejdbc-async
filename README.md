@@ -63,7 +63,7 @@ val future: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit session 
 - oneToX API
 - updateAndReturnGeneratedKey API
 - AsyncTx Chain
-- Logging
+- Logging -> Done
 - Examples
 
 ### License
