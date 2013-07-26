@@ -15,9 +15,7 @@
  */
 package scalikejdbc.async
 
-import scalikejdbc._
-
 /**
  * Async Shared DB session
  */
-case class AsyncSharedDBSession(connection: AsyncConnection) extends AsyncDBSession with LogSupport
+case class AsyncSharedDBSession(connection: AsyncConnection) extends AsyncDBSession

@@ -19,6 +19,9 @@ import scala.concurrent._
 import scalikejdbc._
 import scalikejdbc.GlobalSettings._
 
+/**
+ * Asynchronous DB Session
+ */
 trait AsyncDBSession extends LogSupport {
 
   val connection: AsyncConnection
