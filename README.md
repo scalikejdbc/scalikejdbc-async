@@ -40,17 +40,15 @@ val company: Future[Option[Company]] = AsyncDB.withPool { implicit session =>
 
 Transactional operations are also supported. 
 
-If you want to do more complex operations (e.g. after inserting new record, use the generated key), use blocking API.
-
 ```scala
 val (m, tr) = (Member.column, TemporaryRegistraion.column)
 
-val future: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit session =>
-  AsyncTx.withBuidlers(
-    insert.into(Member).namedValues(m.id -> 123, m.name -> "Bob"),
-    delete.from(TemporaryRegisration).where.eq(tr.id, 123)
-  ).future()
-  // or AsyncTx.withSQLs(..).future()
+val id: Future[Long] = AsyncDB.localTx { implicit tx =>
+  import FutureImplicits._
+  for {
+    id <- withSQL{ insert.into(Member).namedValues(m.name -> "Bob").returningId }.updateAndReturnGeneratedkey
+    _ <- delete.from(TemporaryRegistration).where.eq(tr.memberId, id)
+  } yield id
 }
 ```
 

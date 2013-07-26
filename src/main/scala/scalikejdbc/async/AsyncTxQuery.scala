@@ -22,24 +22,24 @@ import scala.util._
 /**
  * Asynchronous Transactional Query
  */
-class AsyncTxQuery(sqlObjects: Seq[SQL[_, _]]) {
+class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
 
   def future()(
     implicit session: AsyncSharedDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Seq[AsyncQueryResult]] = {
 
-    session.connection.toNonSharedConnection.map(conn => AsyncTxDBSession(conn)).flatMap { txSession: AsyncTxDBSession =>
-      txSession.begin().flatMap { _ =>
-        sqlObjects.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (f, sql) =>
+    session.connection.toNonSharedConnection.map(conn => AsyncTxDBSession(conn)).flatMap { tx =>
+      tx.begin().flatMap { _ =>
+        sqls.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (resultsFuture, sql) =>
           for {
-            results <- f
-            current <- txSession.connection.sendPreparedStatement(sql.statement, sql.parameters: _*)
+            results <- resultsFuture
+            current <- tx.connection.sendPreparedStatement(sql.statement, sql.parameters: _*)
           } yield results :+ current
         }.andThen {
-          case Success(_) => txSession.commit()
-          case Failure(e) => txSession.rollback()
+          case Success(_) => tx.commit()
+          case Failure(e) => tx.rollback()
         }.andThen {
-          case _ => txSession.release()
+          case _ => tx.release()
         }
       }
     }

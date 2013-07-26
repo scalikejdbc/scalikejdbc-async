@@ -1,5 +1,8 @@
 package scalikejdbc
 
+import scalikejdbc._, SQLInterpolation._
+import scala.concurrent.{ ExecutionContext, Future }
+
 package object async {
 
   implicit def makeSQLExecutionAsync(sql: SQLExecution): AsyncSQLExecution = {
@@ -24,6 +27,41 @@ package object async {
 
   implicit def makeSQLToList[A, E <: WithExtractor](sql: SQLToList[A, E]): AsyncSQLToList[A, E] = {
     new AsyncSQLToList[A, E](sql)
+  }
+
+  object singleFuture {
+    def apply[A](sql: => SQLBuilder[A])(extractor: (WrappedResultSet) => A)(
+      implicit session: AsyncDBSession, cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Option[A]] = {
+      withSQL(sql).map(extractor).single.future()
+    }
+  }
+
+  object traversableFuture {
+    def apply[A](sql: => SQLBuilder[A])(extractor: (WrappedResultSet) => A)(
+      implicit session: AsyncDBSession, cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
+      withSQL(sql).map(extractor).traversable().future()
+    }
+  }
+
+  object listFuture {
+    def apply[A](sql: => SQLBuilder[A])(extractor: (WrappedResultSet) => A)(
+      implicit session: AsyncDBSession, cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[List[A]] = {
+      withSQL(sql).map(extractor).list.future()
+    }
+  }
+
+  object updateFuture {
+    def apply(sql: => SQLBuilder[_])(
+      implicit session: AsyncDBSession, cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
+      withSQL(sql).update.future()
+    }
+  }
+
+  object executeFuture {
+    def apply(sql: => SQLBuilder[_])(
+      implicit session: AsyncDBSession, cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
+      withSQL(sql).execute.future()
+    }
   }
 
 }
