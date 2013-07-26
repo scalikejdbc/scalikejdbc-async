@@ -7,8 +7,11 @@ import org.joda.time.DateTime
 
 import org.scalatest._
 import org.scalatest.matchers._
+import org.slf4j.LoggerFactory
 
 class MySQLExample extends FlatSpec with ShouldMatchers {
+
+  val log = LoggerFactory.getLogger(classOf[MySQLExample])
 
   // TODO mysql-async 0.2.4 doesn't work as expected.
 
@@ -164,8 +167,9 @@ class MySQLExample extends FlatSpec with ShouldMatchers {
     }
     try {
       Await.result(f, 5.seconds)
+      fail("Exception expected")
     } catch {
-      case e: Exception => e.printStackTrace()
+      case e: Exception => log.debug("expected", e)
     }
 
     f.value.get.isSuccess should be(false)

@@ -12,7 +12,7 @@ create table async_lover (
   is_reactive boolean default true, 
   lunchtime time, 
   birthday date,
-  created_at timestamp not null without time zone,
+  created_at timestamp without time zone not null,
   deleted_at timestamp without time zone
 );
 """
