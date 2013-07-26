@@ -16,8 +16,9 @@
 package scalikejdbc.async.internal
 
 import com.github.mauricio.async.db.pool.ConnectionPool
-import scalikejdbc.async.AsyncConnection
+import scalikejdbc.async.{ NonSharedAsyncConnection, AsyncConnection }
 import com.github.mauricio.async.db.Connection
+import scala.concurrent._
 
 /**
  * AsyncConnection implementation which is based on Mauricio's Connection
@@ -28,6 +29,11 @@ import com.github.mauricio.async.db.Connection
 private[scalikejdbc] case class MauricioPoolableAsyncConnection[T <: com.github.mauricio.async.db.Connection](pool: ConnectionPool[T])
     extends MauricioConnectionBaseImpl
     with AsyncConnection {
+
+  override def toNonSharedConnection()(
+    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
+    Future.failed(new UnsupportedOperationException)
+  }
 
   private[scalikejdbc] val underlying: Connection = pool
 

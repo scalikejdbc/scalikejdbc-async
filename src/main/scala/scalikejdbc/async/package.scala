@@ -10,6 +10,10 @@ package object async {
     new AsyncSQLUpdate(sql)
   }
 
+  implicit def makeSQLUpdateAndReturnGeneratedKeyAsync(sql: SQLUpdateWithGeneratedKey): AsyncSQLUpdateAndReturnGeneratedKey = {
+    new AsyncSQLUpdateAndReturnGeneratedKey(sql)
+  }
+
   implicit def makeSQLToOptionAsync[A, E <: WithExtractor](sql: SQLToOption[A, E]): AsyncSQLToOption[A, E] = {
     new AsyncSQLToOption[A, E](sql)
   }

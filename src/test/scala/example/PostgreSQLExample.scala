@@ -51,6 +51,41 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     f.value.get.get.size should equal(2)
   }
 
+  it should "return generated key" in {
+
+    val createdTime = DateTime.now.withMillisOfSecond(0)
+    val f: Future[Long] = AsyncDB.withPool { implicit s =>
+      val column = AsyncLover.column
+      withSQL {
+        insert.into(AsyncLover).namedValues(
+          column.name -> "Eric",
+          column.rating -> 2,
+          column.isReactive -> false,
+          column.createdAt -> createdTime).append(sqls"returning id")
+      }.updateAndReturnGeneratedKey().future()
+    }
+    Await.result(f, 5.seconds)
+
+    f.value.get.isSuccess should be(true)
+    val generatedId: Long = f.value.get.get
+    log.info(s"PostgreSQL generated key: ${generatedId}")
+
+    val ff: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(true)
+
+    val asyncLover = ff.value.get.get.get
+    asyncLover.id should equal(generatedId)
+    asyncLover.name should equal("Eric")
+    asyncLover.rating should equal(2)
+    asyncLover.isReactive should be(false)
+    asyncLover.createdAt should equal(createdTime)
+  }
+
   it should "update" in {
     val f: Future[Int] = AsyncDB.withPool { implicit s =>
       val column = AsyncLover.column

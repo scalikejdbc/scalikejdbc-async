@@ -41,6 +41,18 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
     }
   }
 
+  def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(
+    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Long] = {
+    queryLogging(statement, parameters)
+    connection.toNonSharedConnection().flatMap { conn =>
+      conn.sendPreparedStatement(statement, parameters: _*).map { result =>
+        result.generatedKey.getOrElse {
+          throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
+        }
+      }
+    }
+  }
+
   def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
     queryLogging(statement, parameters)

@@ -37,6 +37,15 @@ class AsyncSQLUpdate(underlying: SQLUpdate)
   }
 }
 
+class AsyncSQLUpdateAndReturnGeneratedKey(underlying: SQLUpdateWithGeneratedKey)
+    extends SQLUpdateWithGeneratedKey(underlying.statement)(underlying.parameters: _*)(1) {
+
+  def future()(implicit session: AsyncDBSession,
+    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Long] = {
+    session.updateAndReturnGeneratedKey(underlying.statement, underlying.parameters: _*)
+  }
+}
+
 class AsyncSQLToOption[A, E <: WithExtractor](underlying: SQLToOption[A, E])
     extends SQLToOption[A, E](underlying.statement)(underlying.parameters: _*)(underlying.extractor)(SQL.Output.single) {
   import GeneralizedTypeConstraintsForWithExtractor._

@@ -32,6 +32,7 @@ object ScalikeJDBCAsyncProject extends Build {
       scalacOptions ++= _scalacOptions,
       publishMavenStyle := true,
       publishArtifact in Test := false,
+      parallelExecution in Test := false,
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     )

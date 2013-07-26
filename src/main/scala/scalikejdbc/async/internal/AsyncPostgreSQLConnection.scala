@@ -15,19 +15,23 @@
  */
 package scalikejdbc.async.internal
 
-import com.github.mauricio.async.db._
-import scalikejdbc.async.AsyncConnection
+import com.github.mauricio.async.db.Connection
+import scala.concurrent._
+import scalikejdbc.async.{ AsyncConnection, NonSharedAsyncConnection }
 
-/**
- * postgresql-async's DB connection
- *
- * @see https://github.com/mauricio/postgresql-async
- */
-private[scalikejdbc] case class AsyncPostgreSQLConnection(url: String, user: String, password: String)
-    extends MauricioConnectionBaseImpl
-    with AsyncConnection
-    with MauricioConnectionConfiguration {
+trait AsyncPostgreSQLConnection extends AsyncConnection {
 
-  private[scalikejdbc] val underlying: Connection = new postgresql.PostgreSQLConnection(configuration)
+  private[scalikejdbc] val underlying: Connection
+
+  override def toNonSharedConnection()(
+    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
+
+    if (this.isInstanceOf[MauricioPoolableAsyncConnection[_]]) {
+      val pool = this.asInstanceOf[MauricioPoolableAsyncConnection[Connection]].pool
+      pool.take.map(conn => new MauricioNonSharedAsyncConnection(conn, Some(pool)) with AsyncPostgreSQLConnection)
+    } else {
+      future(new MauricioSharedAsyncConnection(this.underlying) with AsyncPostgreSQLConnection)
+    }
+  }
 
 }

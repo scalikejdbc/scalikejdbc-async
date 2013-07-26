@@ -40,7 +40,7 @@ private[scalikejdbc] class AsyncPostgreSQLConnectionPool(
   private[this] val factory = new postgresql.pool.PostgreSQLConnectionFactory(config)
   private[this] val pool = new ConnectionPool[PostgreSQLConnection](factory, PoolConfiguration.Default)
 
-  override def borrow(): AsyncConnection = MauricioPoolableAsyncConnection(pool)
+  override def borrow(): AsyncConnection = new MauricioPoolableAsyncConnection(pool) with AsyncPostgreSQLConnection
 
   override def close(): Unit = pool.disconnect
 

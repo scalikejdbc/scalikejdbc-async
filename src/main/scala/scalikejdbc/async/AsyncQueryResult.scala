@@ -15,11 +15,17 @@
  */
 package scalikejdbc.async
 
+import scala.concurrent.Future
+
 /**
  * Query Result
  */
-case class AsyncQueryResult(
-  rowsAffected: Option[Long],
-  statusMessage: Option[String],
-  rows: Option[AsyncResultSet])
+abstract class AsyncQueryResult(
+    val rowsAffected: Option[Long],
+    val statusMessage: Option[String],
+    val rows: Option[AsyncResultSet]) {
+
+  val generatedKey: Option[Long]
+
+}
 

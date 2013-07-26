@@ -64,3 +64,5 @@ logs
 sandbox/db
 
 data
+
+project/idea.sbt

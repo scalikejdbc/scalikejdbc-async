@@ -40,7 +40,7 @@ private[scalikejdbc] class AsyncMySQLConnectionPool(
   private[this] val factory = new mysql.pool.MySQLConnectionFactory(config)
   private[this] val pool = new ConnectionPool[MySQLConnection](factory, PoolConfiguration.Default)
 
-  override def borrow(): AsyncConnection = MauricioPoolableAsyncConnection(pool)
+  override def borrow(): AsyncConnection = new MauricioPoolableAsyncConnection(pool) with AsyncMySQLConnection
 
   override def close(): Unit = pool.disconnect
 

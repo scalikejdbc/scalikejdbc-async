@@ -15,19 +15,21 @@
  */
 package scalikejdbc.async.internal
 
-import scalikejdbc.async._
-import com.github.mauricio.async.db.Connection
-import scala.concurrent._
+import com.github.mauricio.async.db._
+import scalikejdbc.async.AsyncConnection
 
-case class MauricioSharedAsyncConnection(underlying: Connection)
-    extends NonSharedAsyncConnection
-    with MauricioConnectionBaseImpl {
+/**
+ * mysql-async's DB connection
+ *
+ * @see https://github.com/mauricio/postgresql-async
+ */
+private[scalikejdbc] case class SimpleAsyncMySQLConnection(url: String, user: String, password: String)
+    extends MauricioConnectionBaseImpl
+    with AsyncConnection
+    with AsyncMySQLConnection
+    with MauricioConnectionConfiguration {
 
-  override def toNonSharedConnection()(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
-    future(this)
-  }
-
-  override def release(): Unit = {}
+  private[scalikejdbc] val underlying: Connection = new mysql.MySQLConnection(configuration)
 
 }
+
