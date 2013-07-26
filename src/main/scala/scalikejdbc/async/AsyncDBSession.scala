@@ -27,10 +27,7 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
 
   def execute(statement: String, parameters: Any*)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
-
-    if (loggingSQLAndTime.enabled) {
-      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
-    }
+    queryLogging(statement, parameters)
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
       result.rowsAffected.map { count => count > 0 }.getOrElse(false)
     }
@@ -38,10 +35,7 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
 
   def update(statement: String, parameters: Any*)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
-
-    if (loggingSQLAndTime.enabled) {
-      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
-    }
+    queryLogging(statement, parameters)
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
       result.rowsAffected.map(_.toInt).getOrElse(0)
     }
@@ -49,10 +43,7 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
 
   def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
-
-    if (loggingSQLAndTime.enabled) {
-      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
-    }
+    queryLogging(statement, parameters)
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
       result.rows.map { ars =>
         new AsyncResultSetTraversable(ars).map(rs => extractor(rs))
@@ -74,6 +65,12 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
   def list[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[List[A]] = {
     (traversable[A](statement, parameters: _*)(extractor)).map(_.toList)
+  }
+
+  private[this] def queryLogging(statement: String, parameters: Seq[Any]): Unit = {
+    if (loggingSQLAndTime.enabled) {
+      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+    }
   }
 
 }
