@@ -25,7 +25,7 @@ import scala.util._
 class AsyncTxQuery(sqlObjects: Seq[SQL[_, _]]) {
 
   def future()(
-    implicit session: AsyncDBSession,
+    implicit session: AsyncSharedDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Seq[AsyncQueryResult]] = {
 
     session.connection.toNonSharedConnection.map(conn => AsyncTxDBSession(conn)).flatMap { txSession: AsyncTxDBSession =>

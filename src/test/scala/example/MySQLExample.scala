@@ -3,6 +3,7 @@ package example
 import scalikejdbc._, SQLInterpolation._, async._
 import scala.concurrent._
 import scala.concurrent.duration.DurationInt
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time.DateTime
 
 import org.scalatest._
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory
 class MySQLExample extends FlatSpec with ShouldMatchers {
 
   val log = LoggerFactory.getLogger(classOf[MySQLExample])
+  val column = AsyncLover.column
 
   // TODO mysql-async 0.2.4 doesn't work as expected.
 
@@ -56,7 +58,6 @@ class MySQLExample extends FlatSpec with ShouldMatchers {
 
     val createdTime = DateTime.now.withMillisOfSecond(0)
     val f: Future[Long] = NamedAsyncDB('mysql).withPool { implicit s =>
-      val column = AsyncLover.column
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Eric",
@@ -123,11 +124,82 @@ class MySQLExample extends FlatSpec with ShouldMatchers {
     ff.value.get.get.isDefined should be(false)
   }
 
+  it should "update in a local transaction" in {
+    val createdTime = DateTime.now.withMillisOfSecond(0)
+
+    val f: Future[Unit] = NamedAsyncDB('mysql).localTx { implicit s =>
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 1002) }.update.future().flatMap { _ =>
+        withSQL {
+          insert.into(AsyncLover).namedValues(
+            column.id -> 1002,
+            column.name -> "Patric",
+            column.rating -> 2,
+            column.isReactive -> false,
+            column.createdAt -> createdTime)
+        }.update.future().map { _ => }
+      }
+    }
+    Await.result(f, 5.seconds)
+
+    f.value.get.isSuccess should be(true)
+
+    val ff: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1002) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(true)
+
+    val asyncLover = ff.value.get.get.get
+    asyncLover.id should equal(1002)
+    asyncLover.name should equal("Patric")
+    asyncLover.rating should equal(2)
+    asyncLover.isReactive should be(false)
+    asyncLover.createdAt should equal(createdTime)
+  }
+
+  it should "rollback in a local transaction" in {
+    val createdTime = DateTime.now.withMillisOfSecond(0)
+
+    NamedDB('mysql).autoCommit { implicit s =>
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update.apply()
+    }
+
+    val f: Future[Unit] = NamedAsyncDB('mysql).localTx { implicit s =>
+      withSQL {
+        insert.into(AsyncLover).namedValues(
+          column.id -> 1003,
+          column.name -> "Patric",
+          column.rating -> 2,
+          column.isReactive -> false,
+          column.createdAt -> createdTime)
+      }.update.future().flatMap { _ =>
+        sql"invalid_query".execute().future()
+      }.map { _ => }
+    }
+    try {
+      Await.result(f, 5.seconds)
+      fail("Exception expected")
+    } catch {
+      case e: Exception => log.debug("expected", e)
+    }
+
+    f.value.get.isSuccess should be(false)
+
+    val ff: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(false)
+  }
+
   it should "update in a transaction" in {
 
     val createdTime = DateTime.now.withMillisOfSecond(0)
     val f: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
-      val column = AsyncLover.column
       AsyncTx.withBuilders(
         delete.from(AsyncLover).where.eq(column.id, 997),
         insert.into(AsyncLover).namedValues(

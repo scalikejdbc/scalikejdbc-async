@@ -15,15 +15,13 @@
  */
 package scalikejdbc.async
 
-import scalikejdbc._
 import scala.concurrent._
+import scalikejdbc._
+import scalikejdbc.GlobalSettings._
 
-/**
- * Async DB session
- */
-case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
+trait AsyncDBSession extends LogSupport {
 
-  import GlobalSettings.loggingSQLAndTime
+  val connection: AsyncConnection
 
   def execute(statement: String, parameters: Any*)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
@@ -79,11 +77,10 @@ case class AsyncDBSession(connection: AsyncConnection) extends LogSupport {
     (traversable[A](statement, parameters: _*)(extractor)).map(_.toList)
   }
 
-  private[this] def queryLogging(statement: String, parameters: Seq[Any]): Unit = {
+  protected def queryLogging(statement: String, parameters: Seq[Any]): Unit = {
     if (loggingSQLAndTime.enabled) {
       log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
     }
   }
 
 }
-

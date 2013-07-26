@@ -15,20 +15,9 @@
  */
 package scalikejdbc.async
 
-import scala.concurrent._
+import scalikejdbc._
 
 /**
- * Asynchronous Transactional DB Session
+ * Async Shared DB session
  */
-case class AsyncTxDBSession(connection: NonSharedAsyncConnection) extends AsyncDBSession {
-
-  def begin(): Future[AsyncQueryResult] = connection.sendQuery("BEGIN")
-
-  def rollback(): Future[AsyncQueryResult] = connection.sendQuery("ROLLBACK")
-
-  def commit(): Future[AsyncQueryResult] = connection.sendQuery("COMMIT")
-
-  def release(): Unit = connection.release()
-
-}
-
+case class AsyncSharedDBSession(connection: AsyncConnection) extends AsyncDBSession with LogSupport

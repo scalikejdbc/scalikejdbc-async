@@ -7,12 +7,14 @@ import org.scalatest.matchers._
 
 import scala.concurrent._
 import scala.concurrent.duration.DurationInt
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time._
 import org.slf4j.LoggerFactory
 
 class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   val log = LoggerFactory.getLogger(classOf[PostgreSQLExample])
+  val column = AsyncLover.column
 
   ConnectionPool.singleton("jdbc:postgresql://localhost:5432/scalikejdbc", "sa", "sa")
   ExampleDBInitializer.initPostgreSQL()
@@ -54,8 +56,8 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
   it should "return generated key" in {
 
     val createdTime = DateTime.now.withMillisOfSecond(0)
+
     val f: Future[Long] = AsyncDB.withPool { implicit s =>
-      val column = AsyncLover.column
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Eric",
@@ -88,7 +90,6 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "update" in {
     val f: Future[Int] = AsyncDB.withPool { implicit s =>
-      val column = AsyncLover.column
       withSQL { delete.from(AsyncLover).where.eq(column.id, 997) }.update.future()
     }
     Await.result(f, 5.seconds)
@@ -124,9 +125,8 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "update in a transaction" in {
 
-    val createdTime = DateTime.now
+    val createdTime = DateTime.now.withMillisOfSecond(0)
     val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
-      val column = AsyncLover.column
       AsyncTx.withBuilders(
         delete.from(AsyncLover).where.eq(column.id, 997),
         insert.into(AsyncLover).namedValues(
@@ -158,10 +158,80 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
     asyncLover.createdAt should equal(createdTime)
   }
 
-  it should "delete in a transaction" in {
+  it should "update in a local transaction" in {
+    val createdTime = DateTime.now.withMillisOfSecond(0)
 
+    val f: Future[Unit] = AsyncDB.localTx { implicit s =>
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 1002) }.update.future().flatMap { _ =>
+        withSQL {
+          insert.into(AsyncLover).namedValues(
+            column.id -> 1002,
+            column.name -> "Patric",
+            column.rating -> 2,
+            column.isReactive -> false,
+            column.createdAt -> createdTime)
+        }.update.future().map { _ => }
+      }
+    }
+    Await.result(f, 5.seconds)
+
+    f.value.get.isSuccess should be(true)
+
+    val ff: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1002) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(true)
+
+    val asyncLover = ff.value.get.get.get
+    asyncLover.id should equal(1002)
+    asyncLover.name should equal("Patric")
+    asyncLover.rating should equal(2)
+    asyncLover.isReactive should be(false)
+    asyncLover.createdAt should equal(createdTime)
+  }
+
+  it should "rollback in a local transaction" in {
+    val createdTime = DateTime.now.withMillisOfSecond(0)
+
+    DB.autoCommit { implicit s =>
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update.apply()
+    }
+
+    val f: Future[Unit] = AsyncDB.localTx { implicit s =>
+      withSQL {
+        insert.into(AsyncLover).namedValues(
+          column.id -> 1003,
+          column.name -> "Patric",
+          column.rating -> 2,
+          column.isReactive -> false,
+          column.createdAt -> createdTime)
+      }.update.future().flatMap { _ =>
+        sql"invalid_query".execute().future()
+      }.map { _ => }
+    }
+    try {
+      Await.result(f, 5.seconds)
+      fail("Exception expected")
+    } catch {
+      case e: Exception => log.debug("expected", e)
+    }
+
+    f.value.get.isSuccess should be(false)
+
+    val ff: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.future()
+    }
+    Await.result(ff, 5.seconds)
+
+    ff.value.get.isSuccess should be(true)
+    ff.value.get.get.isDefined should be(false)
+  }
+
+  it should "delete in a transaction" in {
     val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
-      val column = AsyncLover.column
       AsyncTx.withBuilders(
         insert.into(AsyncLover).namedValues(
           column.id -> 998,
@@ -188,7 +258,6 @@ class PostgreSQLExample extends FlatSpec with ShouldMatchers {
 
   it should "rollback in a transaction" in {
     val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
-      val column = AsyncLover.column
       AsyncTx.withSQLs(
         insert.into(AsyncLover).namedValues(
           column.id -> 999,
