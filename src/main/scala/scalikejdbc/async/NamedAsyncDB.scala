@@ -21,7 +21,7 @@ import scala.util.{ Failure, Success }
 /**
  * Basic Database Accessor with the name
  */
-case class NamedAsyncDB(name: Any = 'default) {
+case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
 
   /**
    * Provides a code block which have a connection from ConnectionPool and passes it to the operation.

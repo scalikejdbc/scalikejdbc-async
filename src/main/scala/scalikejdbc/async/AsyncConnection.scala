@@ -16,6 +16,7 @@
 package scalikejdbc.async
 
 import scala.concurrent._
+import scalikejdbc.async.ShortenedNames._
 
 /**
  * Asynchronous DB connection
@@ -28,8 +29,7 @@ trait AsyncConnection {
    * @param cxt execution context
    * @return connection
    */
-  def toNonSharedConnection()(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection]
+  def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection]
 
   /**
    * Send a query.
@@ -38,8 +38,7 @@ trait AsyncConnection {
    * @param cxt execution context
    * @return future
    */
-  def sendQuery(statement: String)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[AsyncQueryResult]
+  def sendQuery(statement: String)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult]
 
   /**
    * Send a prepared statement.
@@ -49,8 +48,7 @@ trait AsyncConnection {
    * @param cxt execution context
    * @return future
    */
-  def sendPreparedStatement(statement: String, parameters: Any*)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[AsyncQueryResult]
+  def sendPreparedStatement(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult]
 
   /**
    * Close or release this connection.

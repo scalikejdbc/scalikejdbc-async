@@ -75,7 +75,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     }.one(Programmer(p, c))
       .toMany(Skill.opt(s))
       .map { (programmer, skills) => programmer.copy(skills = skills) }
-      .single.future[Programmer]
+      .single.future
   }
 
   // programmer with company(optional) with skills(many)
@@ -91,7 +91,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     }.one(Programmer(p, c))
       .toMany(Skill.opt(s))
       .map { (programmer, skills) => programmer.copy(skills = skills) }
-      .list.future[Programmer]
+      .list.future
   }
 
   def findNoSkillProgrammers()(implicit session: Session, cxt: EC = ECGlobal): Future[List[Programmer]] = {
@@ -102,7 +102,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
         .where.notIn(p.id, select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps))
         .and.append(isNotDeleted)
         .orderBy(p.id)
-    }.map(Programmer(p, c)).list.future[Programmer]
+    }.map(Programmer(p, c)).list.future
   }
 
   def countAll()(implicit session: Session, cxt: EC = ECGlobal): Future[Long] = withSQL {
@@ -121,7 +121,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     }.one { rs => if (withCompany) Programmer(p, c)(rs) else Programmer(p)(rs) }
       .toMany(Skill.opt(s))
       .map { (pg, skills) => pg.copy(skills = skills) }
-      .list.future[Programmer]
+      .list.future
   }
 
   def countBy(where: SQLSyntax)(

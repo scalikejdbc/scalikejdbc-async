@@ -18,15 +18,14 @@ package scalikejdbc.async
 import scalikejdbc._
 import scala.concurrent._
 import scala.util._
+import scalikejdbc.async.ShortenedNames._
 
 /**
  * Asynchronous Transactional Query
  */
 class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
 
-  def future()(
-    implicit session: SharedAsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Seq[AsyncQueryResult]] = {
+  def future()(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): Future[Seq[AsyncQueryResult]] = {
 
     session.connection.toNonSharedConnection.map(conn => TxAsyncDBSession(conn)).flatMap { tx =>
       tx.begin().flatMap { _ =>

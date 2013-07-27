@@ -17,46 +17,42 @@ package scalikejdbc.async
 
 import scalikejdbc._
 import scala.concurrent._
+import ShortenedNames._
 
 class AsyncSQLExecution(sql: SQLExecution) {
-  def future()(implicit session: AsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
+  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Boolean] = {
     session.execute(sql.statement, sql.parameters: _*)
   }
 }
 
 class AsyncSQLUpdate(sql: SQLUpdate) {
-  def future()(implicit session: AsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
+  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Int] = {
     session.update(sql.statement, sql.parameters: _*)
   }
 }
 
 class AsyncSQLUpdateAndReturnGeneratedKey(sql: SQLUpdateWithGeneratedKey) {
   def future()(implicit session: AsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Long] = {
+    cxt: EC = ECGlobal): Future[Long] = {
     session.updateAndReturnGeneratedKey(sql.statement, sql.parameters: _*)
   }
 }
 
 class AsyncSQLToOption[A](sql: SQLToOption[A, HasExtractor]) {
-  def future[A]()(implicit session: AsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Option[A]] = {
-    session.single(sql.statement, sql.parameters: _*)(sql.extractor).asInstanceOf[Future[Option[A]]]
+  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[A]] = {
+    session.single(sql.statement, sql.parameters: _*)(sql.extractor)
   }
 }
 
 class AsyncSQLToTraversable[A](sql: SQLToTraversable[A, HasExtractor]) {
-  def future[A]()(implicit session: AsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
-    session.traversable(sql.statement, sql.parameters: _*)(sql.extractor).asInstanceOf[Future[List[A]]]
+  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Traversable[A]] = {
+    session.traversable(sql.statement, sql.parameters: _*)(sql.extractor)
   }
 }
 
 class AsyncSQLToList[A](sql: SQLToList[A, HasExtractor]) {
-  def future[A]()(implicit session: AsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[List[A]] = {
-    session.list(sql.statement, sql.parameters: _*)(sql.extractor).asInstanceOf[Future[List[A]]]
+  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[A]] = {
+    session.list(sql.statement, sql.parameters: _*)(sql.extractor)
   }
 }
 

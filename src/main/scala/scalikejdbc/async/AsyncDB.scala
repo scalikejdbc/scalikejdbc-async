@@ -17,6 +17,7 @@ package scalikejdbc.async
 
 import scala.concurrent._
 import scala.util.{ Failure, Success }
+import scalikejdbc.async.ShortenedNames._
 
 /**
  * Basic Database Accessor
@@ -30,7 +31,9 @@ object AsyncDB {
    * @tparam A return type
    * @return a future value
    */
-  def withPool[A](op: (SharedAsyncDBSession) => Future[A]): Future[A] = op.apply(SharedAsyncDBSession(AsyncConnectionPool().borrow()))
+  def withPool[A](op: (SharedAsyncDBSession) => Future[A]): Future[A] = {
+    op.apply(SharedAsyncDBSession(AsyncConnectionPool().borrow()))
+  }
 
   /**
    * Provides a future world within a transaction.
@@ -40,8 +43,7 @@ object AsyncDB {
    * @tparam A return type
    * @return a future value
    */
-  def localTx[A](op: (TxAsyncDBSession) => Future[A])(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[A] = {
+  def localTx[A](op: (TxAsyncDBSession) => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
     AsyncConnectionPool().borrow().toNonSharedConnection().map { txConn =>
       TxAsyncDBSession(txConn)
     }.flatMap { tx =>

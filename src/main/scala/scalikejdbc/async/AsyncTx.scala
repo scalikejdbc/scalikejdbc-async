@@ -17,6 +17,7 @@ package scalikejdbc.async
 
 import scalikejdbc._, SQLInterpolation._
 import scala.concurrent._
+import scalikejdbc.async.ShortenedNames._
 
 /**
  * Asynchronous Transaction Provider
@@ -31,9 +32,9 @@ object AsyncTx {
    * @param cxt execution context
    * @return async tx query
    */
-  def withSQLBuilders(builders: SQLBuilder[_]*)(
-    implicit session: SharedAsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): AsyncTxQuery = withSQLs(builders.map(_.toSQL): _*)
+  def withSQLBuilders(builders: SQLBuilder[_]*)(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): AsyncTxQuery = {
+    withSQLs(builders.map(_.toSQL): _*)
+  }
 
   /**
    * Provides [[scalikejdbc.async.AsyncTxQuery]] from [[scalikejdbc.SQL]] objects.
@@ -43,9 +44,9 @@ object AsyncTx {
    * @param cxt execution context
    * @return async tx query
    */
-  def withSQLs(sqlObjects: SQL[_, _]*)(
-    implicit session: SharedAsyncDBSession,
-    cxt: ExecutionContext = ExecutionContext.Implicits.global): AsyncTxQuery = new AsyncTxQuery(sqlObjects)
+  def withSQLs(sqlObjects: SQL[_, _]*)(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): AsyncTxQuery = {
+    new AsyncTxQuery(sqlObjects)
+  }
 
 }
 
