@@ -28,16 +28,40 @@ package object async {
     new AsyncSQLUpdateAndReturnGeneratedKey(sql)
   }
 
-  implicit def makeSQLToOptionAsync[A, E <: WithExtractor](sql: SQLToOption[A, E]): AsyncSQLToOption[A, E] = {
-    new AsyncSQLToOption[A, E](sql)
+  implicit def makeSQLToOptionAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToOption[A, HasExtractor]): AsyncSQLToOption[_] = {
+    sql match {
+      case s: OneToOneSQLToOption[A, B1, HasExtractor, Z] => new AsyncOneToOneSQLToOption[A, B1, Z](s)
+      case s: OneToManySQLToOption[A, B1, HasExtractor, Z] => new AsyncOneToManySQLToOption[A, B1, Z](s)
+      case s: OneToManies2SQLToOption[A, B1, B2, HasExtractor, Z] => new AsyncOneToManies2SQLToOption[A, B1, B2, Z](s)
+      case s: OneToManies3SQLToOption[A, B1, B2, B3, HasExtractor, Z] => new AsyncOneToManies3SQLToOption[A, B1, B2, B3, Z](s)
+      case s: OneToManies4SQLToOption[A, B1, B2, B3, B4, HasExtractor, Z] => new AsyncOneToManies4SQLToOption[A, B1, B2, B3, B4, Z](s)
+      case s: OneToManies5SQLToOption[A, B1, B2, B3, B4, B5, HasExtractor, Z] => new AsyncOneToManies5SQLToOption[A, B1, B2, B3, B4, B5, Z](s)
+      case _ => new AsyncSQLToOption[A](sql)
+    }
   }
 
-  implicit def makeSQLToTraversableAsync[A, E <: WithExtractor](sql: SQLToTraversable[A, E]): AsyncSQLToTraversable[A, E] = {
-    new AsyncSQLToTraversable[A, E](sql)
+  implicit def makeSQLToTraversableAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToTraversable[A, HasExtractor]): AsyncSQLToTraversable[_] = {
+    sql match {
+      case s: OneToOneSQLToTraversable[A, B1, HasExtractor, Z] => new AsyncOneToOneSQLToTraversable[A, B1, Z](s)
+      case s: OneToManySQLToTraversable[A, B1, HasExtractor, Z] => new AsyncOneToManySQLToTraversable[A, B1, Z](s)
+      case s: OneToManies2SQLToTraversable[A, B1, B2, HasExtractor, Z] => new AsyncOneToManies2SQLToTraversable[A, B1, B2, Z](s)
+      case s: OneToManies3SQLToTraversable[A, B1, B2, B3, HasExtractor, Z] => new AsyncOneToManies3SQLToTraversable[A, B1, B2, B3, Z](s)
+      case s: OneToManies4SQLToTraversable[A, B1, B2, B3, B4, HasExtractor, Z] => new AsyncOneToManies4SQLToTraversable[A, B1, B2, B3, B4, Z](s)
+      case s: OneToManies5SQLToTraversable[A, B1, B2, B3, B4, B5, HasExtractor, Z] => new AsyncOneToManies5SQLToTraversable[A, B1, B2, B3, B4, B5, Z](s)
+      case _ => new AsyncSQLToTraversable[A](sql)
+    }
   }
 
-  implicit def makeSQLToList[A, E <: WithExtractor](sql: SQLToList[A, E]): AsyncSQLToList[A, E] = {
-    new AsyncSQLToList[A, E](sql)
+  implicit def makeSQLToListAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToList[A, HasExtractor]): AsyncSQLToList[_] = {
+    sql match {
+      case s: OneToOneSQLToList[A, B1, HasExtractor, Z] => new AsyncOneToOneSQLToList[A, B1, Z](s)
+      case s: OneToManySQLToList[A, B1, HasExtractor, Z] => new AsyncOneToManySQLToList[A, B1, Z](s)
+      case s: OneToManies2SQLToList[A, B1, B2, HasExtractor, Z] => new AsyncOneToManies2SQLToList[A, B1, B2, Z](s)
+      case s: OneToManies3SQLToList[A, B1, B2, B3, HasExtractor, Z] => new AsyncOneToManies3SQLToList[A, B1, B2, B3, Z](s)
+      case s: OneToManies4SQLToList[A, B1, B2, B3, B4, HasExtractor, Z] => new AsyncOneToManies4SQLToList[A, B1, B2, B3, B4, Z](s)
+      case s: OneToManies5SQLToList[A, B1, B2, B3, B4, B5, HasExtractor, Z] => new AsyncOneToManies5SQLToList[A, B1, B2, B3, B4, B5, Z](s)
+      case _ => new AsyncSQLToList[A](sql)
+    }
   }
 
   // ---------------------

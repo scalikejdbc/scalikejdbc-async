@@ -17,65 +17,46 @@ package scalikejdbc.async
 
 import scalikejdbc._
 import scala.concurrent._
-import java.sql.PreparedStatement
 
-class AsyncSQLExecution(underlying: SQLExecution)
-    extends SQLExecution(underlying.statement)(underlying.parameters: _*)((ps: PreparedStatement) => {})((ps: PreparedStatement) => {}) {
-
+class AsyncSQLExecution(sql: SQLExecution) {
   def future()(implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
-    session.execute(underlying.statement, underlying.parameters: _*)
+    session.execute(sql.statement, sql.parameters: _*)
   }
 }
 
-class AsyncSQLUpdate(underlying: SQLUpdate)
-    extends SQLUpdate(underlying.statement)(underlying.parameters: _*)((ps: PreparedStatement) => {})((ps: PreparedStatement) => {}) {
-
+class AsyncSQLUpdate(sql: SQLUpdate) {
   def future()(implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
-    session.update(underlying.statement, underlying.parameters: _*)
+    session.update(sql.statement, sql.parameters: _*)
   }
 }
 
-class AsyncSQLUpdateAndReturnGeneratedKey(underlying: SQLUpdateWithGeneratedKey)
-    extends SQLUpdateWithGeneratedKey(underlying.statement)(underlying.parameters: _*)(1) {
-
+class AsyncSQLUpdateAndReturnGeneratedKey(sql: SQLUpdateWithGeneratedKey) {
   def future()(implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Long] = {
-    session.updateAndReturnGeneratedKey(underlying.statement, underlying.parameters: _*)
+    session.updateAndReturnGeneratedKey(sql.statement, sql.parameters: _*)
   }
 }
 
-class AsyncSQLToOption[A, E <: WithExtractor](underlying: SQLToOption[A, E])
-    extends SQLToOption[A, E](underlying.statement)(underlying.parameters: _*)(underlying.extractor)(SQL.Output.single) {
-  import GeneralizedTypeConstraintsForWithExtractor._
-
-  def future()(implicit session: AsyncDBSession,
-    hasExtractor: ThisSQL =:= SQLWithExtractor,
+class AsyncSQLToOption[A](sql: SQLToOption[A, HasExtractor]) {
+  def future[A]()(implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Option[A]] = {
-    session.single(underlying.statement, underlying.parameters: _*)(underlying.extractor)
+    session.single(sql.statement, sql.parameters: _*)(sql.extractor).asInstanceOf[Future[Option[A]]]
   }
 }
 
-class AsyncSQLToTraversable[A, E <: WithExtractor](underlying: SQLToTraversable[A, E])
-    extends SQLToTraversable[A, E](underlying.statement)(underlying.parameters: _*)(underlying.extractor)(SQL.Output.traversable) {
-  import GeneralizedTypeConstraintsForWithExtractor._
-
-  def future()(implicit session: AsyncDBSession,
-    hasExtractor: ThisSQL =:= SQLWithExtractor,
+class AsyncSQLToTraversable[A](sql: SQLToTraversable[A, HasExtractor]) {
+  def future[A]()(implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
-    session.traversable(underlying.statement, underlying.parameters: _*)(underlying.extractor)
+    session.traversable(sql.statement, sql.parameters: _*)(sql.extractor).asInstanceOf[Future[List[A]]]
   }
 }
 
-class AsyncSQLToList[A, E <: WithExtractor](underlying: SQLToList[A, E])
-    extends SQLToTraversable[A, E](underlying.statement)(underlying.parameters: _*)(underlying.extractor)(SQL.Output.list) {
-  import GeneralizedTypeConstraintsForWithExtractor._
-
-  def future()(implicit session: AsyncDBSession,
-    hasExtractor: ThisSQL =:= SQLWithExtractor,
+class AsyncSQLToList[A](sql: SQLToList[A, HasExtractor]) {
+  def future[A]()(implicit session: AsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[List[A]] = {
-    session.list(underlying.statement, underlying.parameters: _*)(underlying.extractor)
+    session.list(sql.statement, sql.parameters: _*)(sql.extractor).asInstanceOf[Future[List[A]]]
   }
 }
 

@@ -60,6 +60,7 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
     for {
       id <- withSQL {
         insert.into(Skill).namedValues(column.name -> name, column.createdAt -> createdAt)
+          .returningId // if you run this example for MySQL, please remove this line
       }.updateAndReturnGeneratedKey
     } yield Skill(id = id, name = name, createdAt = createdAt)
   }

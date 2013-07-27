@@ -5,10 +5,10 @@ import org.scalatest._, matchers._
 import org.slf4j.LoggerFactory
 import scala.concurrent._, duration.DurationInt, ExecutionContext.Implicits.global
 import scalikejdbc._, SQLInterpolation._, async._
+import unit._
 
-class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with unit.DBSettings {
+class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logging {
 
-  val log = LoggerFactory.getLogger(classOf[PostgreSQLSampleSpec])
   val column = AsyncLover.column
   val createdTime = DateTime.now.withMillisOfSecond(0)
   val al = AsyncLover.syntax("al")
@@ -94,27 +94,25 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with unit.DBSett
 
   it should "execute" in {
     // execution should be successful
-    DB.autoCommit { implicit s =>
-      withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update.apply()
+    val id = DB.autoCommit { implicit s =>
       withSQL {
         insert.into(AsyncLover).namedValues(
-          column.id -> 1003,
           column.name -> "Chris",
           column.rating -> 5,
           column.isReactive -> true,
           column.createdAt -> createdTime
         )
-      }.update.apply()
+      }.updateAndReturnGeneratedKey.apply()
     }
     val deletion: Future[Boolean] = AsyncDB.withPool { implicit s =>
-      withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.execute.future()
+      withSQL { delete.from(AsyncLover).where.eq(column.id, id) }.execute.future()
     }
     Await.result(deletion, 5.seconds)
     deletion.value.get.isSuccess should be(true)
 
     // should be committed
     val deleted = DB.readOnly { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.apply()
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
     }
     deleted.isDefined should be(false)
   }

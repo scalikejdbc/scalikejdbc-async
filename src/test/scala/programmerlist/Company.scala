@@ -63,6 +63,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
           column.name -> name,
           column.url -> url,
           column.createdAt -> createdAt)
+          .returningId // if you run this example for MySQL, please remove this line
       }.updateAndReturnGeneratedKey()
     } yield Company(id = id, name = name, url = url, createdAt = createdAt)
   }
