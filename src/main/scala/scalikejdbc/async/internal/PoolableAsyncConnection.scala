@@ -26,8 +26,8 @@ import scala.concurrent._
  * @param pool connection pool
  * @tparam T Connection sub type
  */
-private[scalikejdbc] case class MauricioPoolableAsyncConnection[T <: com.github.mauricio.async.db.Connection](pool: ConnectionPool[T])
-    extends AsyncConnectionBaseImpl
+private[scalikejdbc] abstract class PoolableAsyncConnection[T <: com.github.mauricio.async.db.Connection](val pool: ConnectionPool[T])
+    extends AsyncConnectionCommonImpl
     with AsyncConnection {
 
   override def toNonSharedConnection()(

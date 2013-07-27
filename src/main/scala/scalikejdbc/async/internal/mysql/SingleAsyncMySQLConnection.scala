@@ -13,23 +13,24 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package scalikejdbc.async.internal
+package scalikejdbc.async.internal.mysql
 
-import com.github.mauricio.async.db._
-import scalikejdbc.async.AsyncConnection
+import scalikejdbc.async._, internal._
 
 /**
  * mysql-async's DB connection
  *
  * @see https://github.com/mauricio/postgresql-async
  */
-private[scalikejdbc] case class SimpleAsyncPostgreSQLConnection(url: String, user: String, password: String)
-    extends AsyncConnectionBaseImpl
+private[scalikejdbc] case class SingleAsyncMySQLConnection(url: String, user: String, password: String)
+    extends AsyncConnectionCommonImpl
     with AsyncConnection
-    with AsyncPostgreSQLConnection
-    with AsyncConnectionConfiguration {
+    with MySQLConnectionImpl
+    with MauricioConfiguration {
 
-  private[scalikejdbc] val underlying: Connection = new postgresql.PostgreSQLConnection(configuration)
+  private[scalikejdbc] val underlying: com.github.mauricio.async.db.Connection = {
+    new com.github.mauricio.async.db.mysql.MySQLConnection(configuration)
+  }
 
 }
 

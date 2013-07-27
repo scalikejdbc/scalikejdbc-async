@@ -16,27 +16,17 @@
 package scalikejdbc.async.internal
 
 import scalikejdbc.async._
-import scala.concurrent._
-import scala.concurrent.duration.DurationInt
-import com.github.mauricio.async.db.{ QueryResult, Connection }
-import com.github.mauricio.async.db.mysql.MySQLConnection
-import com.github.mauricio.async.db.pool.ConnectionPool
+import scala.concurrent._, duration.DurationInt
+import com.github.mauricio.async.db._
 
 /**
  * Connection impl
  */
-private[scalikejdbc] trait AsyncConnectionBaseImpl extends AsyncConnection {
+private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
 
   private[scalikejdbc] val underlying: Connection
   private[scalikejdbc] val defaultTimeout = 10.seconds
 
-  /**
-   * Send a query.
-   *
-   * @param statement statement
-   * @param cxt execution context
-   * @return future
-   */
   override def sendQuery(statement: String)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[AsyncQueryResult] = {
 
@@ -44,21 +34,13 @@ private[scalikejdbc] trait AsyncConnectionBaseImpl extends AsyncConnection {
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.rowsAffected),
         statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.MauricioAsyncResultSet(rows))) {
+        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
     }
   }
 
-  /**
-   * Send a prepared statement.
-   *
-   * @param statement statement
-   * @param parameters parameters
-   * @param cxt execution context
-   * @return future
-   */
   override def sendPreparedStatement(statement: String, parameters: Any*)(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[AsyncQueryResult] = {
 
@@ -70,38 +52,23 @@ private[scalikejdbc] trait AsyncConnectionBaseImpl extends AsyncConnection {
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.rowsAffected),
         statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.MauricioAsyncResultSet(rows))) {
+        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
     }
   }
 
-  protected def extractGeneratedKey(queryResult: QueryResult)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Option[Long] = {
-    if (!this.isInstanceOf[NonSharedAsyncConnection]) {
-      throw new IllegalStateException("This async connection must be a non-shared connenction.")
-    }
-    this match {
-      case conn: AsyncMySQLConnection =>
-        Await.result(underlying.sendQuery("SELECT LAST_INSERT_ID()").map { result =>
-          result.rows.headOption.flatMap { rows =>
-            rows.headOption.map { row => row(0).asInstanceOf[Long] }
-          }
-        }, 10.seconds)
-      case _ =>
-        queryResult.rows.headOption.flatMap { rows =>
-          rows.headOption.flatMap(row => Option(row(0)).flatMap { value =>
-            try Some(value.toString.toLong)
-            catch { case e: Exception => None }
-          })
-        }
-    }
-  }
+  override def close(): Unit = underlying.disconnect
 
   /**
-   * Close or release this connection.
+   * Extracts generated key.
+   *
+   * @param queryResult query result
+   * @param cxt  execution context
+   * @return optional generated key
    */
-  override def close(): Unit = underlying.disconnect
+  protected def extractGeneratedKey(queryResult: QueryResult)(
+    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Option[Long]
 
 }

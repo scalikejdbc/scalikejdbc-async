@@ -13,23 +13,24 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package scalikejdbc.async.internal
+package scalikejdbc.async.internal.mysql
 
-import scalikejdbc.{ LogSupport, ConnectionPoolSettings }
-import scalikejdbc.async._
-import com.github.mauricio.async.db._
-import com.github.mauricio.async.db.pool._
-import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
+import scalikejdbc._, async._, internal._
+
+import com.github.mauricio.async.db.pool.ConnectionPool
+import com.github.mauricio.async.db.pool.PoolConfiguration
+import com.github.mauricio.async.db.mysql.MySQLConnection
+import com.github.mauricio.async.db.mysql.pool.MySQLConnectionFactory
 
 /**
- * PostgreSQL ConnectionPool
+ * MySQL ConnectionPool
  *
  * @param url jdbc url
  * @param user username
  * @param password password
  * @param settings extra settings
  */
-private[scalikejdbc] class AsyncPostgreSQLConnectionPool(
+private[scalikejdbc] class MySQLConnectionPoolImpl(
   override val url: String,
   override val user: String,
   password: String,
@@ -37,15 +38,15 @@ private[scalikejdbc] class AsyncPostgreSQLConnectionPool(
     extends AsyncConnectionPool(url, user, password, settings)
     with LogSupport {
 
-  private[this] val factory = new postgresql.pool.PostgreSQLConnectionFactory(config)
-  private[this] val pool = new ConnectionPool[PostgreSQLConnection](factory, PoolConfiguration.Default)
+  private[this] val factory = new MySQLConnectionFactory(config)
+  private[this] val pool = new ConnectionPool[MySQLConnection](factory, PoolConfiguration.Default)
 
-  override def borrow(): AsyncConnection = new MauricioPoolableAsyncConnection(pool) with AsyncPostgreSQLConnection
+  override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool) with MySQLConnectionImpl
 
   override def close(): Unit = pool.disconnect
 
   override def giveBack(conn: NonSharedAsyncConnection): Unit = conn match {
-    case conn: MauricioNonSharedAsyncConnection => pool.giveBack(conn.underlying.asInstanceOf[PostgreSQLConnection])
+    case conn: NonSharedAsyncConnectionImpl => pool.giveBack(conn.underlying.asInstanceOf[MySQLConnection])
     case _ => log.debug("You don't need to give back this connection to the pool.")
   }
 

@@ -16,6 +16,8 @@
 package scalikejdbc.async
 
 import scalikejdbc._
+import scalikejdbc.async.internal.mysql.MySQLConnectionPoolImpl
+import scalikejdbc.async.internal.postgresql.PostgreSQLConnectionPoolImpl
 
 /**
  * Asynchronous Connection Pool Factory
@@ -34,9 +36,9 @@ object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
   override def apply(url: String, user: String, password: String, settings: ConnectionPoolSettings = ConnectionPoolSettings()): AsyncConnectionPool = {
     // TODO heroku
     if (url.startsWith("jdbc:postgresql://")) {
-      new internal.AsyncPostgreSQLConnectionPool(url, user, password, settings)
+      new PostgreSQLConnectionPoolImpl(url, user, password, settings)
     } else if (url.startsWith("jdbc:mysql://")) {
-      new internal.AsyncMySQLConnectionPool(url, user, password, settings)
+      new MySQLConnectionPoolImpl(url, user, password, settings)
     } else throw new UnsupportedOperationException("This RDBMS is not supported yet.")
   }
 

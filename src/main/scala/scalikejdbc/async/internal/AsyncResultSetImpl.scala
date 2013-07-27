@@ -25,7 +25,7 @@ import scala.concurrent.duration.FiniteDuration
 /**
  * ResultSet implementation
  */
-private[scalikejdbc] class MauricioAsyncResultSet(rows: IndexedSeq[RowData])
+private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     extends WrappedResultSet(null, null, 0)
     with AsyncResultSet {
 
@@ -34,7 +34,7 @@ private[scalikejdbc] class MauricioAsyncResultSet(rows: IndexedSeq[RowData])
   // AsyncResultSet API
 
   override def next(): Boolean = rows.headOption.isDefined
-  override def tail(): AsyncResultSet = new MauricioAsyncResultSet(rows.tail)
+  override def tail(): AsyncResultSet = new AsyncResultSetImpl(rows.tail)
 
   // WrappedResultSet API
 

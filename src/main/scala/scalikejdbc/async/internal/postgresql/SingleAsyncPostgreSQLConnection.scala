@@ -13,21 +13,24 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package scalikejdbc.async.internal
+package scalikejdbc.async.internal.postgresql
 
-import scalikejdbc.async._
-import com.github.mauricio.async.db.Connection
-import scala.concurrent._
+import scalikejdbc.async._, internal._
 
-case class MauricioSharedAsyncConnection(underlying: Connection)
-    extends NonSharedAsyncConnection
-    with AsyncConnectionBaseImpl {
+/**
+ * mysql-async's DB connection
+ *
+ * @see https://github.com/mauricio/postgresql-async
+ */
+private[scalikejdbc] case class SingleAsyncPostgreSQLConnection(url: String, user: String, password: String)
+    extends AsyncConnectionCommonImpl
+    with AsyncConnection
+    with PostgreSQLConnectionImpl
+    with MauricioConfiguration {
 
-  override def toNonSharedConnection()(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
-    future(this)
+  private[scalikejdbc] val underlying: com.github.mauricio.async.db.Connection = {
+    new com.github.mauricio.async.db.postgresql.PostgreSQLConnection(configuration)
   }
 
-  override def release(): Unit = {}
-
 }
+

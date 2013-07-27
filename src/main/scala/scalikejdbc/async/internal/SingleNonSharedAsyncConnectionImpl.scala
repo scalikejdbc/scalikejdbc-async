@@ -15,23 +15,24 @@
  */
 package scalikejdbc.async.internal
 
+import scalikejdbc.async._
 import com.github.mauricio.async.db.Connection
 import scala.concurrent._
-import scalikejdbc.async.{ AsyncConnection, NonSharedAsyncConnection }
 
-trait AsyncMySQLConnection extends AsyncConnection {
-
-  private[scalikejdbc] val underlying: Connection
+/**
+ * Simple Asynchronous Connection
+ *
+ * @param underlying connection
+ */
+abstract class SingleNonSharedAsyncConnectionImpl(val underlying: Connection)
+    extends NonSharedAsyncConnection
+    with AsyncConnectionCommonImpl {
 
   override def toNonSharedConnection()(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
-
-    if (this.isInstanceOf[MauricioPoolableAsyncConnection[_]]) {
-      val pool = this.asInstanceOf[MauricioPoolableAsyncConnection[Connection]].pool
-      pool.take.map(conn => new MauricioNonSharedAsyncConnection(conn, Some(pool)) with AsyncMySQLConnection)
-    } else {
-      future(new MauricioSharedAsyncConnection(this.underlying) with AsyncMySQLConnection)
-    }
+    future(this)
   }
+
+  override def release(): Unit = {}
 
 }
