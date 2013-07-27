@@ -23,7 +23,7 @@ import org.joda.time.{ LocalTime, DateTime, LocalDateTime }
 import scala.concurrent.duration.FiniteDuration
 
 /**
- * ResultSet implementation
+ * ResultSet Implementation
  */
 private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     extends WrappedResultSet(null, null, 0)

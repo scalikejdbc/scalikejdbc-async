@@ -20,7 +20,7 @@ import scala.concurrent._, duration.DurationInt
 import com.github.mauricio.async.db._
 
 /**
- * Connection impl
+ * Basic Implementation of Asynchronous Connection
  */
 private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
 

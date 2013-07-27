@@ -18,6 +18,9 @@ package scalikejdbc.async.internal
 import scalikejdbc.JDBCUrl
 import scalikejdbc.async._
 
+/**
+ * Configuration attribute
+ */
 private[scalikejdbc] trait MauricioConfiguration { self: AsyncConnection =>
 
   val url: String

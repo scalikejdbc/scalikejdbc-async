@@ -23,7 +23,7 @@ import com.github.mauricio.async.db.mysql.MySQLConnection
 import com.github.mauricio.async.db.mysql.pool.MySQLConnectionFactory
 
 /**
- * MySQL ConnectionPool
+ * MySQL Connection Pool
  *
  * @param url jdbc url
  * @param user username

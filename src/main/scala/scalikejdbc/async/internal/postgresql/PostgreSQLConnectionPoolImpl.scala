@@ -22,7 +22,7 @@ import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 
 /**
- * PostgreSQL ConnectionPool
+ * PostgreSQL Connection Pool
  *
  * @param url jdbc url
  * @param user username

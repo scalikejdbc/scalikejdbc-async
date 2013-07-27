@@ -18,9 +18,7 @@ package scalikejdbc.async.internal.postgresql
 import scalikejdbc.async._, internal._
 
 /**
- * mysql-async's DB connection
- *
- * @see https://github.com/mauricio/postgresql-async
+ * PostgreSQL Single Connection
  */
 private[scalikejdbc] case class SingleAsyncPostgreSQLConnection(url: String, user: String, password: String)
     extends AsyncConnectionCommonImpl
