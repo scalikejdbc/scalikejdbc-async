@@ -6,6 +6,13 @@ ScalikeJDBC-Async provides non-blocking APIs to talk with PostgreSQL and MySQL i
 
 This library is built with postgrsql-async and mysql-async, incredible works by @mauricio.
 
+ScalikeJDBC:
+
+https://github.com/seratch/scalikejdbc
+
+ScalikeJDBC is a tidy SQL-based DB access library for Scala developers. This library naturally wraps JDBC APIs and provides you easy-to-use APIs.
+
+
 ### Supported RDBMS
 
 - PostgreSQL
