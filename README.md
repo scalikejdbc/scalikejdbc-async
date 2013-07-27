@@ -1,16 +1,17 @@
-## scalikejdbc-async
+## ScalikeJDBC-Async
 
-ScalikeJDBC Async provides non-blocking APIs to talk with RDBMS. This library is built with postgrsql-async and mysql-async by @mauricio.
+### ScalikeJDBC Extension: Non-blocking APIs in the JDBC way
+
+ScalikeJDBC-Async provides non-blocking APIs to talk with PostgreSQL and MySQL in the JDBC way. 
+
+This library is built with postgrsql-async and mysql-async, incredible works by @mauricio.
 
 ### Supported RDBMS
-
-We never release without passing all the unit tests with the following RDBMS.
 
 - PostgreSQL
 - MySQL
 
-
-### Usage
+### Dependencies
 
 Add `scalikejdbc-async` to your dependencies.
 
@@ -23,46 +24,61 @@ libraryDependencies ++= Seq(
 )
 ```
 
-Usage is pretty simple, just call `#future()` instead of `#apply()`.
+### Example
+
+[programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
 
 ```scala
-import scalikejdbc._, async._
-AsyncConnectionPool.singleton(jdbcUrl, user, password)
-
-val company: Future[Option[Company]] = AsyncDB.withPool { implicit s =>
-  withSQL { 
-    select.from(Company as c).where.eq(c.id, 123) 
-  }.map(Company(c)).single.future()
-}
-```
-
-Transactional operations are also supported. 
-
-```scala
-import scalikejdbc._, async._, FutureImplicits._
-val wc = Worker.column
-
-val companyId: Future[Long] = AsyncDB.localTx { implicit tx =>
+// create a new record within a transaction
+val created: Future[Company] = AsyncDB.localTx { implicit tx =>
   for {
-    companyId <- withSQL {
-        insert.into(Company).values("Typesafe", DateTime.now)
-      }.updateAndReturnGeneratedKey
-     _ <- update(Worker).set(wc.companyId -> companyId).where.eq(wc.id, 123)
-  } yield companyId
+    company <- Company.create("ScalikeJDBC, Inc.", Some("http://scalikejdbc.org/"))
+    seratch <- Programmer.create("seratch", Some(company.id))
+    gakuzzzz <- Programmer.create("gakuzzzz", Some(company.id))
+    tototoshi <- Programmer.create("tototoshi", Some(company.id))
+    cb372 <- Programmer.create("cb372", Some(company.id))
+  } yield company
+}
+
+Await.result(created, 5.seconds)
+
+created.foreach { newCompany: Company =>
+
+  // delete a record and rollback
+  val withinTx: Future[Unit] = AsyncDB.localTx { implicit tx =>
+    for {
+      restructuring <- Programmer.findAllBy(sqls.eq(p.companyId, newCompany.id)).map { 
+        programmers => programmers.foreach(_.destroy()) 
+      }
+      dissolution <- newCompany.destroy()
+      failure <- sql"Just joking!".update.future
+    } yield ()
+  }
+
+  try Await.result(withinTx, 5.seconds)
+  catch { case e: Exception => log.debug(e.getMessage, e) }
+
+  // rollback expected
+  val company = AsyncDB.withPool { implicit s =>
+    Company.find(newCompany.id)
+  }
+  Await.result(company, 5.seconds)
+  company.foreach { c => c.isDefined should be(true) }
 }
 ```
 
-### TODO
+### FAQ
 
-- ConnectionPool -> Done
-- ConnectionPoolFactory -> Heroku
-- Transaction control and returned values -> Done
-- implicit ExecutionContext -> Done
-- updateAndReturnGeneratedKey API -> Done
-- AsyncTx chain -> Done
-- Logging -> Done
-- oneToX API
-- More examples
+#### Is it possible to combine scalikejdbc-async with normal scalikejdbc?
+
+Yes, it's possible. See this example spec:
+
+[sample/PostgreSQLSampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/sample/PostgreSQLSampleSpec.scala)
+
+#### Why isn't it a part of scalikejdbc project now?
+
+This library is still in alpha stage. If this library becomes stable enough, it will be merged into the ScalikeJDBC project.
+
 
 ### License
 
