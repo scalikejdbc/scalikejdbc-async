@@ -54,14 +54,14 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers {
           column.rating -> 2,
           column.isReactive -> false,
           column.createdAt -> createdTime).returningId
-      }.updateAndReturnGeneratedKey().future()
+      }.updateAndReturnGeneratedKey.future()
     }
     // the generated key should be found
     Await.result(f, 5.seconds)
     f.value.get.isSuccess should be(true)
     val generatedId: Long = f.value.get.get
     // record should be found by the generated key
-    val created: AsyncLover = DB.readOnly { implicit s =>
+    val created = DB.readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get
     created.id should equal(generatedId)
@@ -92,17 +92,15 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers {
     deletion.value.get.isSuccess should be(true)
 
     // should be committed
-    val shouldBeNotFound: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1004) }.map(AsyncLover(al)).single.future()
+    val deleted = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1004) }.map(AsyncLover(al)).single.apply()
     }
-    Await.result(shouldBeNotFound, 5.seconds)
-    shouldBeNotFound.value.get.isSuccess should be(true)
-    shouldBeNotFound.value.get.get.isDefined should be(false)
+    deleted.isDefined should be(false)
   }
 
   it should "execute" in {
     // execution should be successful
-    DB autoCommit { implicit s =>
+    DB.autoCommit { implicit s =>
       withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update.apply()
       withSQL {
         insert.into(AsyncLover).namedValues(
@@ -121,45 +119,33 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers {
     deletion.value.get.isSuccess should be(true)
 
     // should be committed
-    val shouldBeNotFound: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.future()
+    val deleted = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.apply()
     }
-    Await.result(shouldBeNotFound, 5.seconds)
-    shouldBeNotFound.value.get.isSuccess should be(true)
-    shouldBeNotFound.value.get.get.isDefined should be(false)
+    deleted.isDefined should be(false)
   }
 
   it should "update in a local transaction" in {
     val generatedKey: Future[Long] = AsyncDB.localTx { implicit s =>
-      import FutureImplicits._
-      for {
-        id <- withSQL(insert.into(AsyncLover).namedValues(
-          column.name -> "Patric",
-          column.rating -> 2,
-          column.isReactive -> false,
-          column.createdAt -> createdTime
-        ).returningId).updateAndReturnGeneratedKey
-      } yield id
+      withSQL(insert.into(AsyncLover).namedValues(
+        column.name -> "Patric",
+        column.rating -> 2,
+        column.isReactive -> false,
+        column.createdAt -> createdTime
+      ).returningId).updateAndReturnGeneratedKey.future
     }
     Await.result(generatedKey, 5.seconds)
-
     generatedKey.value.get.isSuccess should be(true)
     val id = generatedKey.value.get.get
 
-    val shouldBeNotFound: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.future()
-    }
-    Await.result(shouldBeNotFound, 5.seconds)
-
-    shouldBeNotFound.value.get.isSuccess should be(true)
-    shouldBeNotFound.value.get.get.isDefined should be(true)
-
-    val asyncLover = shouldBeNotFound.value.get.get.get
-    asyncLover.id should equal(id)
-    asyncLover.name should equal("Patric")
-    asyncLover.rating should equal(2)
-    asyncLover.isReactive should be(false)
-    asyncLover.createdAt should equal(createdTime)
+    val created = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
+    }.get
+    created.id should equal(id)
+    created.name should equal("Patric")
+    created.rating should equal(2)
+    created.isReactive should be(false)
+    created.createdAt should equal(createdTime)
   }
 
   it should "rollback in a local transaction" in {
@@ -187,13 +173,11 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers {
     }
     f.value.get.isFailure should be(true)
 
-    // should not be found
-    val shouldBeNotFound: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.future()
+    // should be rolled back
+    val notCreated = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.apply()
     }
-    Await.result(shouldBeNotFound, 5.seconds)
-    shouldBeNotFound.value.get.isSuccess should be(true)
-    shouldBeNotFound.value.get.get.isDefined should be(false)
+    notCreated.isDefined should be(false)
   }
 
   it should "provide transaction by AsyncTx.withSQLBuilders" in {
@@ -213,14 +197,9 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers {
     deletionAndCreation.value.get.get.size should be(2)
 
     // should be found
-    val shouldBeCreated: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 997) }.map(AsyncLover(al)).single.future()
-    }
-    Await.result(shouldBeCreated, 5.seconds)
-    shouldBeCreated.value.get.isSuccess should be(true)
-    shouldBeCreated.value.get.get.isDefined should be(true)
-
-    val created: AsyncLover = shouldBeCreated.value.get.get.get
+    val created = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 997) }.map(AsyncLover(al)).single.apply()
+    }.get
     created.id should equal(997)
     created.name should equal("Eric")
     created.rating should equal(2)
@@ -244,16 +223,15 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers {
     creationAndDeletion.value.get.isSuccess should be(true)
     creationAndDeletion.value.get.get.size should be(2)
 
-    val shouldNotBeFound: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 998) }.map(AsyncLover(al)).single.future()
+    // should be committed
+    val deleted = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 998) }.map(AsyncLover(al)).single.apply()
     }
-    Await.result(shouldNotBeFound, 5.seconds)
-    shouldNotBeFound.value.get.isSuccess should be(true)
-    shouldNotBeFound.value.get.get.isDefined should be(false)
+    deleted.isDefined should be(false)
   }
 
   it should "rollback in a transaction when using AsyncTx.withSQLs" in {
-    val f: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
+    val failure: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       AsyncTx.withSQLs(
         insert.into(AsyncLover).namedValues(
           column.id -> 999,
@@ -265,21 +243,17 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers {
       ).future()
     }
     try {
-      Await.result(f, 5.seconds)
+      Await.result(failure, 5.seconds)
       fail("Exception expected")
     } catch {
       case e: Exception => log.debug("expected", e)
     }
+    failure.value.get.isSuccess should be(false)
 
-    f.value.get.isSuccess should be(false)
-
-    val f2: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 999) }.map(AsyncLover(al)).single.future()
+    val notFound = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 999) }.map(AsyncLover(al)).single.apply()
     }
-    Await.result(f2, 5.seconds)
-
-    f2.value.get.isSuccess should be(true)
-    f2.value.get.get.isDefined should be(false)
+    notFound.isDefined should be(false)
   }
 
 }
