@@ -4,7 +4,9 @@
 
 ScalikeJDBC-Async provides non-blocking APIs to talk with PostgreSQL and MySQL in the JDBC way. 
 
-This library is built with postgrsql-async and mysql-async, incredible works by @mauricio.
+This library is built with [postgrsql-async and mysql-async,incredible works by @mauricio](https://github.com/mauricio/postgresql-async).
+
+![ScalikeJDBC Logo](http://scalikejdbc.org/img/logo.png)
 
 ScalikeJDBC:
 
