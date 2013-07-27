@@ -3,7 +3,7 @@ import Keys._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  val scalikejdbcVersion = "1.6.6-SNAPSHOT"
+  val scalikejdbcVersion = "1.6.6"
   val mauricioVersion = "0.2.4"
 
   lazy val scalikejdbcAsync = Project(
@@ -12,7 +12,7 @@ object ScalikeJDBCAsyncProject extends Build {
     settings = Defaults.defaultSettings ++ Seq(
       organization := "com.github.seratch",
       name := "scalikejdbc-async",
-      version := "0.1-SNAPSHOT",
+      version := "0.2.0",
       scalaVersion := "2.10.2",
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
