@@ -13,9 +13,27 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package scalikejdbc.async
+package scalikejdbc.async.internal
 
-/**
- * Async Shared DB session
- */
-case class AsyncSharedDBSession(connection: AsyncConnection) extends AsyncDBSession
+import scalikejdbc.JDBCUrl
+import scalikejdbc.async._
+import com.github.mauricio.async.db.Configuration
+
+private[scalikejdbc] trait AsyncConnectionConfiguration { self: AsyncConnection =>
+
+  val url: String
+  val user: String
+  val password: String
+
+  private[scalikejdbc] val configuration = {
+    val jdbcUrl = JDBCUrl(url)
+    Configuration(
+      host = jdbcUrl.host,
+      port = jdbcUrl.port,
+      database = Option(jdbcUrl.database),
+      username = user,
+      password = Option(password)
+    )
+  }
+
+}

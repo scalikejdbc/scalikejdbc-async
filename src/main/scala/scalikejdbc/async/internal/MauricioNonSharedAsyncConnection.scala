@@ -11,7 +11,7 @@ import scala.concurrent._
  * @param pool mauricio connection
  */
 case class MauricioNonSharedAsyncConnection(underlying: MauricioConnection, pool: Option[MauricioConnectionPool[MauricioConnection]] = None)
-    extends MauricioConnectionBaseImpl
+    extends AsyncConnectionBaseImpl
     with NonSharedAsyncConnection {
 
   override def toNonSharedConnection()(

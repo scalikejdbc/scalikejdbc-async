@@ -1,4 +1,4 @@
-package example
+package sample
 
 import org.joda.time._
 import org.scalatest._, matchers._
@@ -6,18 +6,12 @@ import org.slf4j.LoggerFactory
 import scala.concurrent._, duration.DurationInt, ExecutionContext.Implicits.global
 import scalikejdbc._, SQLInterpolation._, async._
 
-class MySQLSampleSpec extends FlatSpec with ShouldMatchers {
+class MySQLSampleSpec extends FlatSpec with ShouldMatchers with unit.DBSettings {
 
   val log = LoggerFactory.getLogger(classOf[MySQLSampleSpec])
   val column = AsyncLover.column
   val createdTime = DateTime.now.withMillisOfSecond(0)
   val al = AsyncLover.syntax("al")
-
-  // Basic API
-  ConnectionPool.add('mysql, "jdbc:mysql://localhost/scalikejdbc", "sa", "sa")
-  ExampleDBInitializer.initMySQL()
-  // Asnyc API
-  AsyncConnectionPool.add('mysql, "jdbc:mysql://localhost/scalikejdbc", "sa", "sa")
 
   it should "select a single value" in {
     val f: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
@@ -126,7 +120,7 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers {
   }
 
   it should "update in a local transaction" in {
-    val generatedKey: Future[Long] = NamedAsyncDB('mysql).localTx { implicit s =>
+    val generatedKey: Future[Long] = NamedAsyncDB('mysql).localTx { implicit tx =>
       withSQL(insert.into(AsyncLover).namedValues(
         column.name -> "Patric",
         column.rating -> 2,
@@ -152,7 +146,7 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers {
     NamedDB('mysql).autoCommit { implicit s =>
       withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update.apply()
     }
-    val f: Future[Unit] = NamedAsyncDB('mysql).localTx { implicit s =>
+    val f: Future[Unit] = NamedAsyncDB('mysql).localTx { implicit tx =>
       import FutureImplicits._
       for {
         _ <- insert.into(AsyncLover).namedValues(

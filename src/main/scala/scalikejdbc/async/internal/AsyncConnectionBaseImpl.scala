@@ -25,7 +25,7 @@ import com.github.mauricio.async.db.pool.ConnectionPool
 /**
  * Connection impl
  */
-private[scalikejdbc] trait MauricioConnectionBaseImpl extends AsyncConnection {
+private[scalikejdbc] trait AsyncConnectionBaseImpl extends AsyncConnection {
 
   private[scalikejdbc] val underlying: Connection
   private[scalikejdbc] val defaultTimeout = 10.seconds

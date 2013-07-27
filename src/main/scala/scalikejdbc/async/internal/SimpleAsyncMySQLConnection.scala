@@ -24,10 +24,10 @@ import scalikejdbc.async.AsyncConnection
  * @see https://github.com/mauricio/postgresql-async
  */
 private[scalikejdbc] case class SimpleAsyncMySQLConnection(url: String, user: String, password: String)
-    extends MauricioConnectionBaseImpl
+    extends AsyncConnectionBaseImpl
     with AsyncConnection
     with AsyncMySQLConnection
-    with MauricioConnectionConfiguration {
+    with AsyncConnectionConfiguration {
 
   private[scalikejdbc] val underlying: Connection = new mysql.MySQLConnection(configuration)
 

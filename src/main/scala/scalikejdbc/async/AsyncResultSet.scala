@@ -22,7 +22,7 @@ import org.joda.time.{ LocalTime, LocalDateTime, DateTime }
 import scala.concurrent.duration.FiniteDuration
 
 /**
- * WrappedResultSet for AsyncDBSession
+ * WrappedResultSet for Asynchronous DB Session
  */
 trait AsyncResultSet extends WrappedResultSet {
 

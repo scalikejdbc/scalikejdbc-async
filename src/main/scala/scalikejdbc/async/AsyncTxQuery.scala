@@ -25,10 +25,10 @@ import scala.util._
 class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
 
   def future()(
-    implicit session: AsyncSharedDBSession,
+    implicit session: SharedAsyncDBSession,
     cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Seq[AsyncQueryResult]] = {
 
-    session.connection.toNonSharedConnection.map(conn => AsyncTxDBSession(conn)).flatMap { tx =>
+    session.connection.toNonSharedConnection.map(conn => TxAsyncDBSession(conn)).flatMap { tx =>
       tx.begin().flatMap { _ =>
         sqls.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (resultsFuture, sql) =>
           for {

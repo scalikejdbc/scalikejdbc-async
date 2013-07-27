@@ -1,0 +1,169 @@
+package programmerlist
+
+import scalikejdbc._, async._, SQLInterpolation._
+import org.joda.time.DateTime
+import scala.concurrent._
+
+case class Programmer(
+    id: Long,
+    name: String,
+    companyId: Option[Long] = None,
+    company: Option[Company] = None,
+    skills: Seq[Skill] = Nil,
+    createdAt: DateTime,
+    deletedAt: Option[DateTime] = None) {
+
+  type EC = ExecutionContext
+  val EC = ExecutionContext
+
+  def save()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Programmer] = Programmer.save(this)(session, cxt)
+  def destroy()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = Programmer.destroy(id)(session, cxt)
+
+  private val (ps, p, s) = (ProgrammerSkill.ps, Programmer.p, Skill.s)
+  private val column = ProgrammerSkill.column
+
+  import FutureImplicits._
+
+  def addSkill(skill: Skill)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = {
+    insert.into(ProgrammerSkill).namedValues(
+      column.programmerId -> id, column.skillId -> skill.id)
+  }
+
+  def deleteSkill(skill: Skill)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = {
+    delete.from(ProgrammerSkill).where.eq(column.programmerId, id).and.eq(column.skillId, skill.id)
+  }
+
+}
+
+object Programmer extends SQLSyntaxSupport[Programmer] {
+
+  type EC = ExecutionContext
+  val EC = ExecutionContext
+
+  override val nameConverters = Map("At$" -> "_timestamp")
+
+  // simple extractor
+  def apply(p: SyntaxProvider[Programmer])(rs: WrappedResultSet): Programmer = apply(p.resultName)(rs)
+  def apply(p: ResultName[Programmer])(rs: WrappedResultSet): Programmer = new Programmer(
+    id = rs.long(p.id),
+    name = rs.string(p.name),
+    companyId = rs.longOpt(p.companyId),
+    createdAt = rs.timestamp(p.createdAt).toDateTime,
+    deletedAt = rs.timestampOpt(p.deletedAt).map(_.toDateTime)
+  )
+
+  // join query with company table
+  def apply(p: SyntaxProvider[Programmer], c: SyntaxProvider[Company])(rs: WrappedResultSet): Programmer = {
+    apply(p.resultName)(rs).copy(company = rs.longOpt(c.resultName.id).flatMap { _ =>
+      if (rs.timestampOpt(c.resultName.deletedAt).isEmpty) Some(Company(c)(rs)) else None
+    })
+  }
+
+  // SyntaxProvider objects
+  val p = Programmer.syntax("p")
+
+  private val (c, s, ps) = (Company.c, Skill.s, ProgrammerSkill.ps)
+
+  // reusable part of SQL
+  private val isNotDeleted = sqls.isNull(p.deletedAt)
+
+  // find by primary key
+  def find(id: Long)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Option[Programmer]] = {
+    withSQL {
+      select
+        .from(Programmer as p)
+        .leftJoin(Company as c).on(p.companyId, c.id)
+        .leftJoin(ProgrammerSkill as ps).on(ps.programmerId, p.id)
+        .leftJoin(Skill as s).on(sqls.eq(ps.skillId, s.id).and.isNull(s.deletedAt))
+        .where.eq(p.id, id).and.append(isNotDeleted)
+    }.one(Programmer(p, c))
+      .toMany(Skill.opt(s))
+      .map { (programmer, skills) => programmer.copy(skills = skills) }
+      .single.future
+  }
+
+  // programmer with company(optional) with skills(many)
+  def findAll()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Programmer]] = {
+    withSQL {
+      select
+        .from[Programmer](Programmer as p)
+        .leftJoin(Company as c).on(p.companyId, c.id)
+        .leftJoin(ProgrammerSkill as ps).on(ps.programmerId, p.id)
+        .leftJoin(Skill as s).on(sqls.eq(ps.skillId, s.id).and.isNull(s.deletedAt))
+        .where.append(isNotDeleted)
+        .orderBy(p.id)
+    }.one(Programmer(p, c))
+      .toMany(Skill.opt(s))
+      .map { (programmer, skills) => programmer.copy(skills = skills) }
+      .list.future
+  }
+
+  def findNoSkillProgrammers()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Programmer]] = {
+    withSQL {
+      select
+        .from(Programmer as p)
+        .leftJoin(Company as c).on(p.companyId, c.id)
+        .where.notIn(p.id, select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps))
+        .and.append(isNotDeleted)
+        .orderBy(p.id)
+    }.map(Programmer(p, c)).list.future
+  }
+
+  def countAll()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Long] = withSQL {
+    select(sqls.count).from(Programmer as p).where.append(isNotDeleted)
+  }.map(rs => rs.long(1)).single.future.map(_.get)
+
+  def findAllBy(where: SQLSyntax, withCompany: Boolean = true)(
+    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Programmer]] = {
+    withSQL {
+      select
+        .from[Programmer](Programmer as p)
+        .map(sql => if (withCompany) sql.leftJoin(Company as c).on(p.companyId, c.id) else sql) // dynamic
+        .leftJoin(ProgrammerSkill as ps).on(ps.programmerId, p.id)
+        .leftJoin(Skill as s).on(sqls.eq(ps.skillId, s.id).and.isNull(s.deletedAt))
+        .where.append(isNotDeleted).and.append(sqls"${where}")
+    }.one { rs => if (withCompany) Programmer(p, c)(rs) else Programmer(p)(rs) }
+      .toMany(Skill.opt(s))
+      .map { (pg, skills) => pg.copy(skills = skills) }
+      .list.future
+  }
+
+  def countBy(where: SQLSyntax)(
+    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Long] = withSQL {
+    select(sqls.count).from(Programmer as p).where.append(isNotDeleted).and.append(sqls"${where}")
+  }.map(_.long(1)).single.future.map(_.get)
+
+  def create(name: String, companyId: Option[Long] = None, createdAt: DateTime = DateTime.now)(
+    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Programmer] = {
+    Company.find(companyId.get).flatMap { company =>
+      for {
+        id <- withSQL {
+          insert.into(Programmer).namedValues(
+            column.name -> name,
+            column.companyId -> companyId,
+            column.createdAt -> createdAt)
+        }.updateAndReturnGeneratedKey.future
+      } yield Programmer(
+        id = id,
+        name = name,
+        companyId = companyId,
+        company = company,
+        createdAt = createdAt
+      )
+    }
+  }
+
+  def save(m: Programmer)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Programmer] = {
+    withSQL {
+      update(Programmer).set(
+        column.name -> m.name,
+        column.companyId -> m.companyId
+      ).where.eq(column.id, m.id).and.isNull(column.deletedAt)
+    }.update.future.map(_ => m)
+  }
+
+  def destroy(id: Long)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = withSQL {
+    update(Programmer).set(column.deletedAt -> DateTime.now).where.eq(column.id, id)
+  }.update.future
+
+}

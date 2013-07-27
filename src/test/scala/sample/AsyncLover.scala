@@ -1,4 +1,4 @@
-package example
+package sample
 
 import scalikejdbc._, SQLInterpolation._
 import org.joda.time.DateTime

@@ -27,7 +27,7 @@ import scala.concurrent._
  * @tparam T Connection sub type
  */
 private[scalikejdbc] case class MauricioPoolableAsyncConnection[T <: com.github.mauricio.async.db.Connection](pool: ConnectionPool[T])
-    extends MauricioConnectionBaseImpl
+    extends AsyncConnectionBaseImpl
     with AsyncConnection {
 
   override def toNonSharedConnection()(
@@ -36,5 +36,12 @@ private[scalikejdbc] case class MauricioPoolableAsyncConnection[T <: com.github.
   }
 
   private[scalikejdbc] val underlying: Connection = pool
+
+  /**
+   * Close or release this connection.
+   */
+  override def close(): Unit = {
+    pool.asInstanceOf[ConnectionPool[Connection]].giveBack(underlying)
+  }
 
 }

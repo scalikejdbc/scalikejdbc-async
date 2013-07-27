@@ -16,10 +16,10 @@ Add `scalikejdbc-async` to your dependencies.
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.github.seratch" %% "scalikejdbc-async" % "0.2.0-SNAPSHOT",
-  "com.github.mauricio" %% "postgresql-async" % "0.2.4",
-  //"com.github.mauricio" %% "mysql-async" % "0.2.4",
-  "org.slf4j" % "slf4j-simple" % "[1.7,)" // slf4j implementation
+  "com.github.seratch"  %% "scalikejdbc-async" % "0.2.0",
+  "com.github.mauricio" %% "postgresql-async"  % "0.2.4",
+  "com.github.mauricio" %% "mysql-async"       % "0.2.4",
+  "org.slf4j"           %  "slf4j-simple"      % "[1.7,)" // slf4j implementation
 )
 ```
 
@@ -27,11 +27,9 @@ Usage is pretty simple, just call `#future()` instead of `#apply()`.
 
 ```scala
 import scalikejdbc._, async._
-
-val (jdbcUrl, user, password) = ("jdbc:postgresql://localhost:5432/scalikejdbc", "sa", "sa")
 AsyncConnectionPool.singleton(jdbcUrl, user, password)
 
-val company: Future[Option[Company]] = AsyncDB.withPool { implicit session =>
+val company: Future[Option[Company]] = AsyncDB.withPool { implicit s =>
   withSQL { 
     select.from(Company as c).where.eq(c.id, 123) 
   }.map(Company(c)).single.future()
@@ -41,14 +39,16 @@ val company: Future[Option[Company]] = AsyncDB.withPool { implicit session =>
 Transactional operations are also supported. 
 
 ```scala
-val (m, tr) = (Member.column, TemporaryRegistraion.column)
+import scalikejdbc._, async._, FutureImplicits._
+val wc = Worker.column
 
-val id: Future[Long] = AsyncDB.localTx { implicit tx =>
-  import FutureImplicits._
+val companyId: Future[Long] = AsyncDB.localTx { implicit tx =>
   for {
-    id <- withSQL{ insert.into(Member).namedValues(m.name -> "Bob").returningId }.updateAndReturnGeneratedkey
-    _ <- delete.from(TemporaryRegistration).where.eq(tr.memberId, id)
-  } yield id
+    companyId <- withSQL {
+        insert.into(Company).values("Typesafe", DateTime.now)
+      }.updateAndReturnGeneratedKey
+     _ <- update(Worker).set(wc.companyId -> companyId).where.eq(wc.id, 123)
+  } yield companyId
 }
 ```
 
@@ -59,9 +59,9 @@ val id: Future[Long] = AsyncDB.localTx { implicit tx =>
 - Transaction control and returned values -> Done
 - implicit ExecutionContext -> Done
 - updateAndReturnGeneratedKey API -> Done
+- AsyncTx chain -> Done
 - Logging -> Done
 - oneToX API
-- AsyncTx chain
 - More examples
 
 ### License

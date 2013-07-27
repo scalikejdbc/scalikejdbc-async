@@ -21,7 +21,7 @@ import scala.concurrent._
 
 case class MauricioSharedAsyncConnection(underlying: Connection)
     extends NonSharedAsyncConnection
-    with MauricioConnectionBaseImpl {
+    with AsyncConnectionBaseImpl {
 
   override def toNonSharedConnection()(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {

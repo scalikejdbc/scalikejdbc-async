@@ -1,8 +1,8 @@
-package example
+package unit
 
 import scalikejdbc._, SQLInterpolation._
 
-object ExampleDBInitializer {
+object SampleDBInitializer {
 
   val pgCreateTable = """
 create table async_lover (
@@ -19,7 +19,7 @@ create table async_lover (
 
   val mysqlCreateTable = """
 create table async_lover (
-  id bigint not null auto_increment primary key,
+  id bigint auto_increment primary key,
   name varchar(64) not null,
   rating integer not null,
   is_reactive boolean default true,

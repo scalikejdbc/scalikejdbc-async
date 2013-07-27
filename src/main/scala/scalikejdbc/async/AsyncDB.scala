@@ -30,7 +30,7 @@ object AsyncDB {
    * @tparam A return type
    * @return a future value
    */
-  def withPool[A](op: (AsyncSharedDBSession) => Future[A]): Future[A] = op.apply(AsyncSharedDBSession(AsyncConnectionPool().borrow()))
+  def withPool[A](op: (SharedAsyncDBSession) => Future[A]): Future[A] = op.apply(SharedAsyncDBSession(AsyncConnectionPool().borrow()))
 
   /**
    * Provides a future world within a transaction.
@@ -40,10 +40,10 @@ object AsyncDB {
    * @tparam A return type
    * @return a future value
    */
-  def localTx[A](op: (AsyncTxDBSession) => Future[A])(
+  def localTx[A](op: (TxAsyncDBSession) => Future[A])(
     implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[A] = {
     AsyncConnectionPool().borrow().toNonSharedConnection().map { txConn =>
-      AsyncTxDBSession(txConn)
+      TxAsyncDBSession(txConn)
     }.flatMap { tx =>
       tx.begin().flatMap { _ =>
         op.apply(tx).andThen {

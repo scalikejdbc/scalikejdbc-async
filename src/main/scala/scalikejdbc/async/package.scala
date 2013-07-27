@@ -3,7 +3,18 @@ package scalikejdbc
 import scalikejdbc._, SQLInterpolation._
 import scala.concurrent.{ ExecutionContext, Future }
 
+/**
+ * Default package to import
+ *
+ * {{{
+ *   import scalikejdbc._, async._, SQLInterpolation._
+ * }}}
+ */
 package object async {
+
+  // ---------------------
+  // implicit conversions
+  // ---------------------
 
   implicit def makeSQLExecutionAsync(sql: SQLExecution): AsyncSQLExecution = {
     new AsyncSQLExecution(sql)
@@ -28,6 +39,10 @@ package object async {
   implicit def makeSQLToList[A, E <: WithExtractor](sql: SQLToList[A, E]): AsyncSQLToList[A, E] = {
     new AsyncSQLToList[A, E](sql)
   }
+
+  // ---------------------
+  // utilities
+  // ---------------------
 
   object singleFuture {
     def apply[A](sql: => SQLBuilder[A])(extractor: (WrappedResultSet) => A)(

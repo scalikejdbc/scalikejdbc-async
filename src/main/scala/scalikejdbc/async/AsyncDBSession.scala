@@ -18,6 +18,7 @@ package scalikejdbc.async
 import scala.concurrent._
 import scalikejdbc._
 import scalikejdbc.GlobalSettings._
+import scala.collection.mutable
 
 /**
  * Asynchronous DB Session
@@ -85,5 +86,25 @@ trait AsyncDBSession extends LogSupport {
       log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
     }
   }
+
+}
+
+/**
+ * Shared Asynchronous DB session
+ */
+case class SharedAsyncDBSession(connection: AsyncConnection) extends AsyncDBSession
+
+/**
+ * Asynchronous Transactional DB Session
+ */
+case class TxAsyncDBSession(connection: NonSharedAsyncConnection) extends AsyncDBSession {
+
+  def begin(): Future[AsyncQueryResult] = connection.sendQuery("BEGIN")
+
+  def rollback(): Future[AsyncQueryResult] = connection.sendQuery("ROLLBACK")
+
+  def commit(): Future[AsyncQueryResult] = connection.sendQuery("COMMIT")
+
+  def release(): Unit = connection.release()
 
 }
