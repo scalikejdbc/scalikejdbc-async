@@ -11,34 +11,30 @@ case class Programmer(
     company: Option[Company] = None,
     skills: Seq[Skill] = Nil,
     createdAt: DateTime,
-    deletedAt: Option[DateTime] = None) {
+    deletedAt: Option[DateTime] = None) extends ShortenedNames {
 
-  type EC = ExecutionContext
-  val EC = ExecutionContext
-
-  def save()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Programmer] = Programmer.save(this)(session, cxt)
-  def destroy()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = Programmer.destroy(id)(session, cxt)
+  def save()(implicit session: Session, cxt: EC = ECGlobal): Future[Programmer] = Programmer.save(this)(session, cxt)
+  def destroy()(implicit session: Session, cxt: EC = ECGlobal): Future[Int] = Programmer.destroy(id)(session, cxt)
 
   private val (ps, p, s) = (ProgrammerSkill.ps, Programmer.p, Skill.s)
   private val column = ProgrammerSkill.column
 
   import FutureImplicits._
 
-  def addSkill(skill: Skill)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = {
+  def addSkill(skill: Skill)(implicit session: Session, cxt: EC = ECGlobal): Future[Int] = {
     insert.into(ProgrammerSkill).namedValues(
-      column.programmerId -> id, column.skillId -> skill.id)
+      column.programmerId -> id,
+      column.skillId -> skill.id
+    )
   }
 
-  def deleteSkill(skill: Skill)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = {
+  def deleteSkill(skill: Skill)(implicit session: Session, cxt: EC = ECGlobal): Future[Int] = {
     delete.from(ProgrammerSkill).where.eq(column.programmerId, id).and.eq(column.skillId, skill.id)
   }
 
 }
 
-object Programmer extends SQLSyntaxSupport[Programmer] {
-
-  type EC = ExecutionContext
-  val EC = ExecutionContext
+object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
 
   override val nameConverters = Map("At$" -> "_timestamp")
 
@@ -68,7 +64,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] {
   private val isNotDeleted = sqls.isNull(p.deletedAt)
 
   // find by primary key
-  def find(id: Long)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Option[Programmer]] = {
+  def find(id: Long)(implicit session: Session, cxt: EC = ECGlobal): Future[Option[Programmer]] = {
     withSQL {
       select
         .from(Programmer as p)
@@ -83,7 +79,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] {
   }
 
   // programmer with company(optional) with skills(many)
-  def findAll()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Programmer]] = {
+  def findAll()(implicit session: Session, cxt: EC = ECGlobal): Future[List[Programmer]] = {
     withSQL {
       select
         .from[Programmer](Programmer as p)
@@ -98,7 +94,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] {
       .list.future
   }
 
-  def findNoSkillProgrammers()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Programmer]] = {
+  def findNoSkillProgrammers()(implicit session: Session, cxt: EC = ECGlobal): Future[List[Programmer]] = {
     withSQL {
       select
         .from(Programmer as p)
@@ -109,12 +105,12 @@ object Programmer extends SQLSyntaxSupport[Programmer] {
     }.map(Programmer(p, c)).list.future
   }
 
-  def countAll()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Long] = withSQL {
+  def countAll()(implicit session: Session, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Programmer as p).where.append(isNotDeleted)
   }.map(rs => rs.long(1)).single.future.map(_.get)
 
   def findAllBy(where: SQLSyntax, withCompany: Boolean = true)(
-    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Programmer]] = {
+    implicit session: Session, cxt: EC = ECGlobal): Future[List[Programmer]] = {
     withSQL {
       select
         .from[Programmer](Programmer as p)
@@ -129,12 +125,12 @@ object Programmer extends SQLSyntaxSupport[Programmer] {
   }
 
   def countBy(where: SQLSyntax)(
-    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Long] = withSQL {
+    implicit session: Session, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Programmer as p).where.append(isNotDeleted).and.append(sqls"${where}")
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, companyId: Option[Long] = None, createdAt: DateTime = DateTime.now)(
-    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Programmer] = {
+    implicit session: Session, cxt: EC = ECGlobal): Future[Programmer] = {
     Company.find(companyId.get).flatMap { company =>
       for {
         id <- withSQL {
@@ -153,7 +149,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] {
     }
   }
 
-  def save(m: Programmer)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Programmer] = {
+  def save(m: Programmer)(implicit session: Session, cxt: EC = ECGlobal): Future[Programmer] = {
     withSQL {
       update(Programmer).set(
         column.name -> m.name,
@@ -162,7 +158,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] {
     }.update.future.map(_ => m)
   }
 
-  def destroy(id: Long)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = withSQL {
+  def destroy(id: Long)(implicit session: Session, cxt: EC = ECGlobal): Future[Int] = withSQL {
     update(Programmer).set(column.deletedAt -> DateTime.now).where.eq(column.id, id)
   }.update.future
 

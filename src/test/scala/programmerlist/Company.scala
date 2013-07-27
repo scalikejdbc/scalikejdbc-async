@@ -9,16 +9,13 @@ case class Company(
     name: String,
     url: Option[String] = None,
     createdAt: DateTime,
-    deletedAt: Option[DateTime] = None) {
+    deletedAt: Option[DateTime] = None) extends ShortenedNames {
 
-  def save()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Company] = Company.save(this)(session, cxt)
-  def destroy()(
-    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = Company.destroy(id)(session, cxt)
+  def save()(implicit session: Session, cxt: EC = ECGlobal): Future[Company] = Company.save(this)(session, cxt)
+  def destroy()(implicit session: Session, cxt: EC = ECGlobal): Future[Int] = Company.destroy(id)(session, cxt)
 }
 
-object Company extends SQLSyntaxSupport[Company] {
-
-  type EC = ExecutionContext
+object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
 
   def apply(c: SyntaxProvider[Company])(rs: WrappedResultSet): Company = apply(c.resultName)(rs)
   def apply(c: ResultName[Company])(rs: WrappedResultSet): Company = new Company(
@@ -32,34 +29,34 @@ object Company extends SQLSyntaxSupport[Company] {
   val c = Company.syntax("c")
   private val isNotDeleted = sqls.isNull(c.deletedAt)
 
-  def find(id: Long)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Option[Company]] = withSQL {
+  def find(id: Long)(implicit session: Session, cxt: EC = ECGlobal): Future[Option[Company]] = withSQL {
     select.from(Company as c).where.eq(c.id, id).and.append(isNotDeleted)
   }.map(Company(c))
 
-  def findAll()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Company]] = withSQL {
+  def findAll()(implicit session: Session, cxt: EC = ECGlobal): Future[List[Company]] = withSQL {
     select.from(Company as c)
       .where.append(isNotDeleted)
       .orderBy(c.id)
   }.map(Company(c))
 
-  def countAll()(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Long] = withSQL {
+  def countAll()(implicit session: Session, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Company as c).where.append(isNotDeleted)
   }.map(rs => rs.long(1)).single.future.map(_.get)
 
   def findAllBy(where: SQLSyntax)(
-    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[Company]] = withSQL {
+    implicit session: Session, cxt: EC = ECGlobal): Future[List[Company]] = withSQL {
     select.from(Company as c)
       .where.append(isNotDeleted).and.append(sqls"${where}")
       .orderBy(c.id)
   }.map(Company(c))
 
   def countBy(where: SQLSyntax)(
-    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Long] = withSQL {
+    implicit session: Session, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Company as c).where.append(isNotDeleted).and.append(sqls"${where}")
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, url: Option[String] = None, createdAt: DateTime = DateTime.now)(
-    implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Company] = {
+    implicit session: Session, cxt: EC = ECGlobal): Future[Company] = {
     for {
       id <- withSQL {
         insert.into(Company).namedValues(
@@ -70,7 +67,7 @@ object Company extends SQLSyntaxSupport[Company] {
     } yield Company(id = id, name = name, url = url, createdAt = createdAt)
   }
 
-  def save(m: Company)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Company] = {
+  def save(m: Company)(implicit session: Session, cxt: EC = ECGlobal): Future[Company] = {
     withSQL {
       update(Company).set(
         column.name -> m.name,
@@ -79,7 +76,7 @@ object Company extends SQLSyntaxSupport[Company] {
     }.update.future.map(_ => m)
   }
 
-  def destroy(id: Long)(implicit session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Int] = {
+  def destroy(id: Long)(implicit session: Session, cxt: EC = ECGlobal): Future[Int] = {
     update(Company).set(column.deletedAt -> DateTime.now).where.eq(column.id, id)
   }
 
