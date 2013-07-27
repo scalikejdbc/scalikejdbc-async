@@ -5,6 +5,9 @@ import scalikejdbc._, SQLInterpolation._
 case class ProgrammerSkill(programmerId: Long, skillId: Long)
 
 object ProgrammerSkill extends SQLSyntaxSupport[ProgrammerSkill] {
-  val ps = ProgrammerSkill.syntax("ps")
+
+  override val columnNames = Seq("programmer_id", "skill_id")
+
+  lazy val ps = ProgrammerSkill.syntax("ps")
 }
 

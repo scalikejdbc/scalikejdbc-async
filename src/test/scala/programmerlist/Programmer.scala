@@ -16,7 +16,6 @@ case class Programmer(
   def save()(implicit session: Session, cxt: EC = ECGlobal): Future[Programmer] = Programmer.save(this)(session, cxt)
   def destroy()(implicit session: Session, cxt: EC = ECGlobal): Future[Int] = Programmer.destroy(id)(session, cxt)
 
-  private val (ps, p, s) = (ProgrammerSkill.ps, Programmer.p, Skill.s)
   private val column = ProgrammerSkill.column
 
   import FutureImplicits._
@@ -36,6 +35,7 @@ case class Programmer(
 
 object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
 
+  override val columnNames = Seq("id", "name", "company_id", "created_timestamp", "deleted_timestamp")
   override val nameConverters = Map("At$" -> "_timestamp")
 
   // simple extractor
@@ -56,7 +56,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
   }
 
   // SyntaxProvider objects
-  val p = Programmer.syntax("p")
+  lazy val p = Programmer.syntax("p")
 
   private val (c, s, ps) = (Company.c, Skill.s, ProgrammerSkill.ps)
 

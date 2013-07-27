@@ -16,6 +16,7 @@
 package scalikejdbc.async
 
 import scalikejdbc._
+import scalikejdbc.JDBCUrl._
 import scalikejdbc.async.internal.mysql.MySQLConnectionPoolImpl
 import scalikejdbc.async.internal.postgresql.PostgreSQLConnectionPoolImpl
 
@@ -34,12 +35,28 @@ trait AsyncConnectionPoolFactory {
 object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
 
   override def apply(url: String, user: String, password: String, settings: ConnectionPoolSettings = ConnectionPoolSettings()): AsyncConnectionPool = {
-    // TODO heroku
-    if (url.startsWith("jdbc:postgresql://")) {
-      new PostgreSQLConnectionPoolImpl(url, user, password, settings)
-    } else if (url.startsWith("jdbc:mysql://")) {
-      new MySQLConnectionPoolImpl(url, user, password, settings)
-    } else throw new UnsupportedOperationException("This RDBMS is not supported yet.")
+    url match {
+      case _ if url.startsWith("jdbc:postgresql://") =>
+        new PostgreSQLConnectionPoolImpl(url, user, password, settings)
+
+      case _ if url.startsWith("jdbc:mysql://") =>
+        new MySQLConnectionPoolImpl(url, user, password, settings)
+
+      case HerokuPostgresRegexp(_user, _password, _host, _dbname) =>
+        // Heroku PostgreSQL
+        val _url = "jdbc:postgresql://%s/%s".format(_host, _dbname)
+        new PostgreSQLConnectionPoolImpl(_url, _user, _password, settings)
+
+      case url @ HerokuMySQLRegexp(_user, _password, _host, _dbname) =>
+        // Heroku MySQL
+        val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
+        val addDefaultPropertiesIfNeeded = MysqlCustomProperties.findFirstMatchIn(url).map(_ => "").getOrElse(defaultProperties)
+        val _url = "jdbc:mysql://%s/%s".format(_host, _dbname + addDefaultPropertiesIfNeeded)
+        new MySQLConnectionPoolImpl(_url, _user, _password, settings)
+
+      case _ =>
+        throw new UnsupportedOperationException("This RDBMS is not supported yet.")
+    }
   }
 
 }

@@ -16,6 +16,8 @@ case class Skill(
 
 object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
+  override val columnNames = Seq("id", "name", "created_at", "deleted_at")
+
   def apply(s: SyntaxProvider[Skill])(rs: WrappedResultSet): Skill = apply(s.resultName)(rs)
   def apply(s: ResultName[Skill])(rs: WrappedResultSet): Skill = new Skill(
     id = rs.long(s.id),
@@ -26,7 +28,7 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
   def opt(s: SyntaxProvider[Skill])(rs: WrappedResultSet): Option[Skill] = rs.longOpt(s.resultName.id).map(_ => apply(s.resultName)(rs))
 
-  val s = Skill.syntax("s")
+  lazy val s = Skill.syntax("s")
 
   private val isNotDeleted = sqls.isNull(s.deletedAt)
 

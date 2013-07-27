@@ -17,6 +17,8 @@ case class Company(
 
 object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
 
+  override val columnNames = Seq("id", "name", "url", "created_at", "deleted_at")
+
   def apply(c: SyntaxProvider[Company])(rs: WrappedResultSet): Company = apply(c.resultName)(rs)
   def apply(c: ResultName[Company])(rs: WrappedResultSet): Company = new Company(
     id = rs.long(c.id),
@@ -26,7 +28,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
     deletedAt = rs.timestampOpt(c.deletedAt).map(_.toDateTime)
   )
 
-  val c = Company.syntax("c")
+  lazy val c = Company.syntax("c")
   private val isNotDeleted = sqls.isNull(c.deletedAt)
 
   def find(id: Long)(implicit session: Session, cxt: EC = ECGlobal): Future[Option[Company]] = withSQL {
