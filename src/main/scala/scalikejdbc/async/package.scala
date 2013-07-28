@@ -17,15 +17,15 @@ package object async {
   // ---------------------
 
   implicit def makeSQLExecutionAsync(sql: SQLExecution): AsyncSQLExecution = {
-    new AsyncSQLExecution(sql)
+    new AsyncSQLExecutionImpl(sql)
   }
 
   implicit def makeSQLUpdateAsync(sql: SQLUpdate): AsyncSQLUpdate = {
-    new AsyncSQLUpdate(sql)
+    new AsyncSQLUpdateImpl(sql)
   }
 
   implicit def makeSQLUpdateAndReturnGeneratedKeyAsync(sql: SQLUpdateWithGeneratedKey): AsyncSQLUpdateAndReturnGeneratedKey = {
-    new AsyncSQLUpdateAndReturnGeneratedKey(sql)
+    new AsyncSQLUpdateAndReturnGeneratedKeyImpl(sql)
   }
 
   // --------------
@@ -33,10 +33,10 @@ package object async {
   // --------------
 
   implicit def makeSQLToOptionAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToOption[A, HasExtractor]): AsyncSQLToOption[A] = {
-    new AsyncSQLToOption[A](sql)
+    new AsyncSQLToOptionImpl[A](sql)
   }
   implicit def makeSQLToOptionAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToOptionImpl[A, HasExtractor]): AsyncSQLToOption[A] = {
-    new AsyncSQLToOption[A](sql)
+    new AsyncSQLToOptionImpl[A](sql)
   }
   implicit def makeOneToOneSQLToOptionAsync[A, B, Z](sql: OneToOneSQLToOption[A, B, HasExtractor, Z]): AsyncOneToOneSQLToOption[A, B, Z] = {
     new AsyncOneToOneSQLToOption[A, B, Z](sql)
@@ -62,10 +62,10 @@ package object async {
   // --------------
 
   implicit def makeSQLToTraversableAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToTraversable[A, HasExtractor]): AsyncSQLToTraversable[A] = {
-    new AsyncSQLToTraversable[A](sql)
+    new AsyncSQLToTraversableImpl[A](sql)
   }
   implicit def makeSQLToTraversableAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToTraversableImpl[A, HasExtractor]): AsyncSQLToTraversable[A] = {
-    new AsyncSQLToTraversable[A](sql)
+    new AsyncSQLToTraversableImpl[A](sql)
   }
   implicit def makeOneToOneSQLToTraversableAsync[A, B, Z](sql: OneToOneSQLToTraversable[A, B, HasExtractor, Z]): AsyncOneToOneSQLToTraversable[A, B, Z] = {
     new AsyncOneToOneSQLToTraversable[A, B, Z](sql)
@@ -91,10 +91,10 @@ package object async {
   // --------------
 
   implicit def makeSQLToListAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToList[A, HasExtractor]): AsyncSQLToList[A] = {
-    new AsyncSQLToList[A](sql)
+    new AsyncSQLToListImpl[A](sql)
   }
   implicit def makeSQLToListAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToListImpl[A, HasExtractor]): AsyncSQLToList[A] = {
-    new AsyncSQLToList[A](sql)
+    new AsyncSQLToListImpl[A](sql)
   }
   implicit def makeOneToOneSQLToListAsync[A, B, Z](sql: OneToOneSQLToList[A, B, HasExtractor, Z]): AsyncOneToOneSQLToList[A, B, Z] = {
     new AsyncOneToOneSQLToList[A, B, Z](sql)

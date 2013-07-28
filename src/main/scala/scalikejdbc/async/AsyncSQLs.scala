@@ -19,40 +19,52 @@ import scalikejdbc._
 import scala.concurrent._
 import ShortenedNames._
 
-class AsyncSQLExecution(sql: SQLExecution) {
+trait AsyncSQLExecution extends Any {
+  val underlying: SQLExecution
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Boolean] = {
-    session.execute(sql.statement, sql.parameters: _*)
+    session.execute(underlying.statement, underlying.parameters: _*)
   }
 }
+class AsyncSQLExecutionImpl(val underlying: SQLExecution) extends AsyncSQLExecution
 
-class AsyncSQLUpdate(sql: SQLUpdate) {
+trait AsyncSQLUpdate extends Any {
+  val underlying: SQLUpdate
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Int] = {
-    session.update(sql.statement, sql.parameters: _*)
+    session.update(underlying.statement, underlying.parameters: _*)
   }
 }
+class AsyncSQLUpdateImpl(val underlying: SQLUpdate) extends AsyncSQLUpdate
 
-class AsyncSQLUpdateAndReturnGeneratedKey(sql: SQLUpdateWithGeneratedKey) {
+trait AsyncSQLUpdateAndReturnGeneratedKey extends Any {
+  val underlying: SQLUpdateWithGeneratedKey
   def future()(implicit session: AsyncDBSession,
     cxt: EC = ECGlobal): Future[Long] = {
-    session.updateAndReturnGeneratedKey(sql.statement, sql.parameters: _*)
+    session.updateAndReturnGeneratedKey(underlying.statement, underlying.parameters: _*)
   }
 }
+class AsyncSQLUpdateAndReturnGeneratedKeyImpl(val underlying: SQLUpdateWithGeneratedKey) extends AsyncSQLUpdateAndReturnGeneratedKey
 
-class AsyncSQLToOption[A](sql: SQLToOption[A, HasExtractor]) {
+trait AsyncSQLToOption[A] extends Any {
+  val underlying: SQLToOption[A, HasExtractor]
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[A]] = {
-    session.single(sql.statement, sql.parameters: _*)(sql.extractor)
+    session.single(underlying.statement, underlying.parameters: _*)(underlying.extractor)
   }
 }
+class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor]) extends AsyncSQLToOption[A]
 
-class AsyncSQLToTraversable[A](sql: SQLToTraversable[A, HasExtractor]) {
+trait AsyncSQLToTraversable[A] extends Any {
+  val underlying: SQLToTraversable[A, HasExtractor]
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Traversable[A]] = {
-    session.traversable(sql.statement, sql.parameters: _*)(sql.extractor)
+    session.traversable(underlying.statement, underlying.parameters: _*)(underlying.extractor)
   }
 }
+class AsyncSQLToTraversableImpl[A](val underlying: SQLToTraversable[A, HasExtractor]) extends AsyncSQLToTraversable[A]
 
-class AsyncSQLToList[A](sql: SQLToList[A, HasExtractor]) {
+trait AsyncSQLToList[A] extends Any {
+  val underlying: SQLToList[A, HasExtractor]
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[A]] = {
-    session.list(sql.statement, sql.parameters: _*)(sql.extractor)
+    session.list(underlying.statement, underlying.parameters: _*)(underlying.extractor)
   }
 }
+class AsyncSQLToListImpl[A](val underlying: SQLToList[A, HasExtractor]) extends AsyncSQLToList[A]
 

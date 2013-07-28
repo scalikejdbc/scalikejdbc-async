@@ -60,7 +60,8 @@ class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logg
         Company.find(newCompany.id)
       }
       Await.result(company, 5.seconds)
-      company.foreach { c => c.isDefined should be(true) }
+      val found = company.value.get.get
+      found.isDefined should be(true)
     }
   }
 
