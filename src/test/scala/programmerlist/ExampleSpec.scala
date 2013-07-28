@@ -31,8 +31,7 @@ class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logg
         company <- Company.create("ScalikeJDBC, Inc.", Some("http://scalikejdbc.org/"))
         seratch <- Programmer.create("seratch", Some(company.id))
         gakuzzzz <- Programmer.create("gakuzzzz", Some(company.id))
-        tototoshi <- Programmer.create("tototoshi", Some(company.id))
-        cb372 <- Programmer.create("cb372", Some(company.id))
+        xuwei_k <- Programmer.create("xuwei-k", Some(company.id))
       } yield company
     }
 
