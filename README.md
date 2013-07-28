@@ -35,9 +35,9 @@ libraryDependencies ++= Seq(
 
 ### Example
 
-[programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
-[programmerlist/Company.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Company.scala)
-[programmerlist/Programmer.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Programmer.scala)
+- [programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
+- [programmerlist/Company.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Company.scala)
+- [programmerlist/Programmer.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Programmer.scala)
 
 ```scala
 import scalikejdbc._, SQLInterpolation._, async._
