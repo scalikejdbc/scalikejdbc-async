@@ -15,8 +15,6 @@
  */
 package scalikejdbc.async
 
-import scala.concurrent.Future
-
 /**
  * Query Result
  */

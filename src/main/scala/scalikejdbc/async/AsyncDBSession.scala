@@ -19,6 +19,7 @@ import scala.concurrent._
 import scalikejdbc._
 import scalikejdbc.GlobalSettings._
 import scala.collection.mutable.LinkedHashMap
+import scalikejdbc.async.ShortenedNames._
 
 /**
  * Asynchronous DB Session
@@ -27,24 +28,35 @@ trait AsyncDBSession extends LogSupport {
 
   val connection: AsyncConnection
 
-  def execute(statement: String, parameters: Any*)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
+  def execute(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Boolean] = {
     queryLogging(statement, parameters)
-    connection.sendPreparedStatement(statement, parameters: _*).map { result =>
-      result.rowsAffected.map { count => count > 0 }.getOrElse(false)
+    if (connection.isShared) {
+      // create local transaction becauase postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
+      connection.toNonSharedConnection().map(c => TxAsyncDBSession(c)).flatMap { tx: TxAsyncDBSession =>
+        tx.execute(statement, parameters: _*)
+      }
+    } else {
+      connection.sendPreparedStatement(statement, parameters: _*).map { result =>
+        result.rowsAffected.map(_ > 0).getOrElse(false)
+      }
     }
   }
 
-  def update(statement: String, parameters: Any*)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
+  def update(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Int] = {
     queryLogging(statement, parameters)
-    connection.sendPreparedStatement(statement, parameters: _*).map { result =>
-      result.rowsAffected.map(_.toInt).getOrElse(0)
+    if (connection.isShared) {
+      // create local transaction becauase postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
+      connection.toNonSharedConnection().map(c => TxAsyncDBSession(c)).flatMap { tx: TxAsyncDBSession =>
+        tx.update(statement, parameters: _*)
+      }
+    } else {
+      connection.sendPreparedStatement(statement, parameters: _*).map { result =>
+        result.rowsAffected.map(_.toInt).getOrElse(0)
+      }
     }
   }
 
-  def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Long] = {
+  def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Long] = {
     queryLogging(statement, parameters)
     connection.toNonSharedConnection().flatMap { conn =>
       conn.sendPreparedStatement(statement, parameters: _*).map { result =>
@@ -56,7 +68,7 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[A]] = {
+    implicit cxt: EC = ECGlobal): Future[Traversable[A]] = {
     queryLogging(statement, parameters)
     connection.sendPreparedStatement(statement, parameters: _*).map { result =>
       result.rows.map { ars =>
@@ -66,7 +78,7 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def single[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Option[A]] = {
+    implicit cxt: EC = ECGlobal): Future[Option[A]] = {
     traversable(statement, parameters: _*)(extractor).map { results =>
       results match {
         case Nil => None
@@ -76,13 +88,13 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
-  def list[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[List[A]] = {
+  def list[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[List[A]] = {
     (traversable[A](statement, parameters: _*)(extractor)).map(_.toList)
   }
 
   def oneToOneTraversable[A, B, Z](statement: String, parameters: Any*)(extractOne: (WrappedResultSet) => A)(extractTo: (WrappedResultSet) => Option[B])(transform: (A, B) => Z)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[Z]] = {
+    implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+
     queryLogging(statement, parameters)
 
     def processResultSet(oneToOne: (LinkedHashMap[A, Option[B]]), rs: WrappedResultSet): LinkedHashMap[A, Option[B]] = {
@@ -104,7 +116,8 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManyTraversable[A, B, Z](statement: String, parameters: Any*)(extractOne: (WrappedResultSet) => A)(extractTo: (WrappedResultSet) => Option[B])(transform: (A, Seq[B]) => Z)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[Z]] = {
+    implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+
     queryLogging(statement, parameters)
 
     def processResultSet(oneToMany: (LinkedHashMap[A, Seq[B]]), rs: WrappedResultSet): LinkedHashMap[A, Seq[B]] = {
@@ -127,8 +140,8 @@ trait AsyncDBSession extends LogSupport {
   def oneToManies2Traversable[A, B1, B2, Z](statement: String, parameters: Any*)(
     extractOne: (WrappedResultSet) => A)(
       extractTo1: (WrappedResultSet) => Option[B1],
-      extractTo2: (WrappedResultSet) => Option[B2])(transform: (A, Seq[B1], Seq[B2]) => Z)(
-        implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[Z]] = {
+      extractTo2: (WrappedResultSet) => Option[B2])(transform: (A, Seq[B1], Seq[B2]) => Z)(implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+
     queryLogging(statement, parameters)
 
     def processResultSet(result: (LinkedHashMap[A, (Seq[B1], Seq[B2])]), rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2])] = {
@@ -159,8 +172,8 @@ trait AsyncDBSession extends LogSupport {
     extractOne: (WrappedResultSet) => A)(
       extractTo1: (WrappedResultSet) => Option[B1],
       extractTo2: (WrappedResultSet) => Option[B2],
-      extractTo3: (WrappedResultSet) => Option[B3])(transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z)(
-        implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[Z]] = {
+      extractTo3: (WrappedResultSet) => Option[B3])(transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z)(implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+
     queryLogging(statement, parameters)
 
     def processResultSet(result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])]), rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])] = {
@@ -199,8 +212,8 @@ trait AsyncDBSession extends LogSupport {
       extractTo1: (WrappedResultSet) => Option[B1],
       extractTo2: (WrappedResultSet) => Option[B2],
       extractTo3: (WrappedResultSet) => Option[B3],
-      extractTo4: (WrappedResultSet) => Option[B4])(transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z)(
-        implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[Z]] = {
+      extractTo4: (WrappedResultSet) => Option[B4])(transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z)(implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+
     queryLogging(statement, parameters)
 
     def processResultSet(result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])]), rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])] = {
@@ -242,8 +255,8 @@ trait AsyncDBSession extends LogSupport {
       extractTo2: (WrappedResultSet) => Option[B2],
       extractTo3: (WrappedResultSet) => Option[B3],
       extractTo4: (WrappedResultSet) => Option[B4],
-      extractTo5: (WrappedResultSet) => Option[B5])(transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z)(
-        implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Traversable[Z]] = {
+      extractTo5: (WrappedResultSet) => Option[B5])(transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z)(implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+
     queryLogging(statement, parameters)
 
     def processResultSet(result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]), rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])] = {

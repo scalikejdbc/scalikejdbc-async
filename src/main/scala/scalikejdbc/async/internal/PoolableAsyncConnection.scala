@@ -19,6 +19,7 @@ import com.github.mauricio.async.db.pool.ConnectionPool
 import scalikejdbc.async.{ NonSharedAsyncConnection, AsyncConnection }
 import com.github.mauricio.async.db.Connection
 import scala.concurrent._
+import scalikejdbc.async.ShortenedNames._
 
 /**
  * AsyncConnection implementation which is based on Mauricio's Connection
@@ -30,8 +31,7 @@ private[scalikejdbc] abstract class PoolableAsyncConnection[T <: com.github.maur
     extends AsyncConnectionCommonImpl
     with AsyncConnection {
 
-  override def toNonSharedConnection()(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
+  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
     Future.failed(new UnsupportedOperationException)
   }
 

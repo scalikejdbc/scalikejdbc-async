@@ -1,10 +1,7 @@
 package programmerlist
 
-import scalikejdbc._, async._, SQLInterpolation._
-
-import scala.concurrent._
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
+import scalikejdbc._, SQLInterpolation._, async._
+import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 
 import org.scalatest._, matchers._
 import unit._
@@ -34,8 +31,7 @@ class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logg
         company <- Company.create("ScalikeJDBC, Inc.", Some("http://scalikejdbc.org/"))
         seratch <- Programmer.create("seratch", Some(company.id))
         gakuzzzz <- Programmer.create("gakuzzzz", Some(company.id))
-        tototoshi <- Programmer.create("tototoshi", Some(company.id))
-        cb372 <- Programmer.create("cb372", Some(company.id))
+        xuwei_k <- Programmer.create("xuwei-k", Some(company.id))
       } yield company
     }
 
@@ -60,7 +56,8 @@ class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logg
         Company.find(newCompany.id)
       }
       Await.result(company, 5.seconds)
-      company.foreach { c => c.isDefined should be(true) }
+      val found: Option[Company] = company.value.get.get
+      found.isDefined should be(true)
     }
   }
 

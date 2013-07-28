@@ -35,17 +35,21 @@ libraryDependencies ++= Seq(
 
 ### Example
 
-[programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
+- [programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
+- [programmerlist/Company.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Company.scala)
+- [programmerlist/Programmer.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Programmer.scala)
 
 ```scala
+import scalikejdbc._, SQLInterpolation._, async._
+import scala.concurrent._, duration._, ExecutionContext.Implicits.global
+
 // create a new record within a transaction
 val created: Future[Company] = AsyncDB.localTx { implicit tx =>
   for {
     company <- Company.create("ScalikeJDBC, Inc.", Some("http://scalikejdbc.org/"))
     seratch <- Programmer.create("seratch", Some(company.id))
     gakuzzzz <- Programmer.create("gakuzzzz", Some(company.id))
-    tototoshi <- Programmer.create("tototoshi", Some(company.id))
-    cb372 <- Programmer.create("cb372", Some(company.id))
+    xuwei_k <- Programmer.create("xuwei-k", Some(company.id))
   } yield company
 }
 
@@ -72,7 +76,8 @@ created.foreach { newCompany: Company =>
     Company.find(newCompany.id)
   }
   Await.result(company, 5.seconds)
-  company.foreach { c => c.isDefined should be(true) }
+  val found: Option[Company]= company.value.get.get
+  found.isDefined should be(true)
 }
 ```
 

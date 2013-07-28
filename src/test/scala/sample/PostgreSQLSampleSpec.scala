@@ -14,34 +14,34 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
   val al = AsyncLover.syntax("al")
 
   it should "select a single value" in {
-    val f: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
+    val resultFuture: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, 1) }.map(AsyncLover(al)).single.future()
     }
-    Await.result(f, 5.seconds)
-    f.value.get.isSuccess should be(true)
-    f.value.get.get.isDefined should be(true)
+    Await.result(resultFuture, 5.seconds)
+    val result = resultFuture.value.get.get
+    result.isDefined should be(true)
   }
 
   it should "select values as a Traversable" in {
-    val f: Future[Traversable[AsyncLover]] = AsyncDB.withPool { implicit s =>
+    val resultsFuture: Future[Traversable[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).traversable.future()
     }
-    Await.result(f, 5.seconds)
-    f.value.get.isSuccess should be(true)
-    f.value.get.get.size should equal(2)
+    Await.result(resultsFuture, 5.seconds)
+    val results = resultsFuture.value.get.get
+    results.size should equal(2)
   }
 
   it should "select values as a List" in {
-    val f: Future[List[AsyncLover]] = AsyncDB.withPool { implicit s =>
+    val resultsFuture: Future[List[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).list.future()
     }
-    Await.result(f, 5.seconds)
-    f.value.get.isSuccess should be(true)
-    f.value.get.get.size should equal(2)
+    Await.result(resultsFuture, 5.seconds)
+    val results = resultsFuture.value.get.get
+    results.size should equal(2)
   }
 
   it should "return generated key" in {
-    val f: Future[Long] = AsyncDB.withPool { implicit s =>
+    val generatedIdFuture: Future[Long] = AsyncDB.withPool { implicit s =>
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Eric",
@@ -51,10 +51,10 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
       }.updateAndReturnGeneratedKey.future()
     }
     // the generated key should be found
-    Await.result(f, 5.seconds)
-    f.value.get.isSuccess should be(true)
-    val generatedId: Long = f.value.get.get
+    Await.result(generatedIdFuture, 5.seconds)
+
     // record should be found by the generated key
+    val generatedId = generatedIdFuture.value.get.get
     val created = DB.readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get
@@ -83,10 +83,9 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
       withSQL { delete.from(AsyncLover).where.eq(column.id, 1004) }.update.future()
     }
     Await.result(deletion, 5.seconds)
-    deletion.value.get.isSuccess should be(true)
 
     // should be committed
-    val deleted = DB.readOnly { implicit s =>
+    val deleted = NamedDB('mysql).readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, 1004) }.map(AsyncLover(al)).single.apply()
     }
     deleted.isDefined should be(false)
@@ -108,7 +107,6 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
       withSQL { delete.from(AsyncLover).where.eq(column.id, id) }.execute.future()
     }
     Await.result(deletion, 5.seconds)
-    deletion.value.get.isSuccess should be(true)
 
     // should be committed
     val deleted = DB.readOnly { implicit s =>
@@ -118,7 +116,7 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
   }
 
   it should "update in a local transaction" in {
-    val generatedKey: Future[Long] = AsyncDB.localTx { implicit tx =>
+    val generatedIdFuture: Future[Long] = AsyncDB.localTx { implicit tx =>
       withSQL(insert.into(AsyncLover).namedValues(
         column.name -> "Patric",
         column.rating -> 2,
@@ -126,14 +124,13 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
         column.createdAt -> createdTime
       ).returningId).updateAndReturnGeneratedKey.future
     }
-    Await.result(generatedKey, 5.seconds)
-    generatedKey.value.get.isSuccess should be(true)
-    val id = generatedKey.value.get.get
+    Await.result(generatedIdFuture, 5.seconds)
 
+    val generatedId = generatedIdFuture.value.get.get
     val created = DB.readOnly { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get
-    created.id should equal(id)
+    created.id should equal(generatedId)
     created.name should equal("Patric")
     created.rating should equal(2)
     created.isReactive should be(false)
@@ -144,7 +141,7 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     DB.autoCommit { implicit s =>
       withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update.apply()
     }
-    val f: Future[Unit] = AsyncDB.localTx { implicit tx =>
+    val failureFuture: Future[Unit] = AsyncDB.localTx { implicit tx =>
       import FutureImplicits._
       for {
         _ <- insert.into(AsyncLover).namedValues(
@@ -158,12 +155,12 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     }
     // exception should be thrown
     try {
-      Await.result(f, 5.seconds)
+      Await.result(failureFuture, 5.seconds)
       fail("Exception expected")
     } catch {
       case e: Exception => log.debug("expected", e)
     }
-    f.value.get.isFailure should be(true)
+    failureFuture.value.get.isFailure should be(true)
 
     // should be rolled back
     val notCreated = DB.readOnly { implicit s =>

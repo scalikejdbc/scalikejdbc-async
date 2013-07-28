@@ -20,6 +20,8 @@ package scalikejdbc.async
  */
 trait NonSharedAsyncConnection extends AsyncConnection {
 
+  override def isShared: Boolean = false
+
   /**
    * Gives back this connection to the pool, and the connection will be shared again.
    */
