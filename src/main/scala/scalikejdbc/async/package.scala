@@ -2,7 +2,7 @@ package scalikejdbc
 
 import scalikejdbc._, SQLInterpolation._
 import scala.concurrent.{ ExecutionContext, Future }
-
+import scalikejdbc.async.ShortenedNames._
 /**
  * Default package to import
  *
@@ -120,15 +120,13 @@ package object async {
   // ---------------------
 
   object updateFuture {
-    def apply(sql: => SQLBuilder[_])(
-      implicit session: AsyncDBSession, cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Int] = {
+    def apply(sql: => SQLBuilder[_])(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Int] = {
       withSQL(sql).update.future
     }
   }
 
   object executeFuture {
-    def apply(sql: => SQLBuilder[_])(
-      implicit session: AsyncDBSession, cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[Boolean] = {
+    def apply(sql: => SQLBuilder[_])(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Boolean] = {
       withSQL(sql).execute.future
     }
   }

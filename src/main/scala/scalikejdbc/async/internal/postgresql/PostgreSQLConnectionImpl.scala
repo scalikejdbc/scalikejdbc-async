@@ -17,15 +17,14 @@ package scalikejdbc.async.internal.postgresql
 
 import com.github.mauricio.async.db._
 import scala.concurrent._, duration.DurationInt
-import scalikejdbc.async._, internal._
+import scalikejdbc.async._, ShortenedNames._, internal._
 
 /**
  * PostgreSQL Connection Implementation
  */
 trait PostgreSQLConnectionImpl extends AsyncConnectionCommonImpl {
 
-  override def toNonSharedConnection()(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
+  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
 
     if (this.isInstanceOf[PoolableAsyncConnection[_]]) {
       val pool = this.asInstanceOf[PoolableAsyncConnection[Connection]].pool
@@ -35,8 +34,7 @@ trait PostgreSQLConnectionImpl extends AsyncConnectionCommonImpl {
     }
   }
 
-  protected def extractGeneratedKey(queryResult: QueryResult)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Option[Long] = {
+  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Option[Long] = {
     if (!this.isInstanceOf[NonSharedAsyncConnection]) {
       throw new IllegalStateException("This asynchronous connection must be a non-shared connection.")
     }

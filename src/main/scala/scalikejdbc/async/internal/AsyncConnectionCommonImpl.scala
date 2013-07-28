@@ -15,7 +15,7 @@
  */
 package scalikejdbc.async.internal
 
-import scalikejdbc.async._
+import scalikejdbc.async._, ShortenedNames._
 import scala.concurrent._, duration.DurationInt
 import com.github.mauricio.async.db._
 
@@ -27,8 +27,7 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
   private[scalikejdbc] val underlying: Connection
   private[scalikejdbc] val defaultTimeout = 10.seconds
 
-  override def sendQuery(statement: String)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[AsyncQueryResult] = {
+  override def sendQuery(statement: String)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult] = {
 
     underlying.sendQuery(statement).map { queryResult =>
       new AsyncQueryResult(
@@ -41,8 +40,7 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
     }
   }
 
-  override def sendPreparedStatement(statement: String, parameters: Any*)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[AsyncQueryResult] = {
+  override def sendPreparedStatement(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult] = {
 
     val queryResultFuture: Future[QueryResult] = {
       if (parameters.isEmpty) underlying.sendQuery(statement)
@@ -68,7 +66,6 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
    * @param cxt  execution context
    * @return optional generated key
    */
-  protected def extractGeneratedKey(queryResult: QueryResult)(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Option[Long]
+  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Option[Long]
 
 }

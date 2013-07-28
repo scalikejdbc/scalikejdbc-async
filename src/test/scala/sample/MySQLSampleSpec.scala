@@ -2,7 +2,7 @@ package sample
 
 import org.joda.time._
 import org.scalatest._, matchers._
-import scala.concurrent._, duration.DurationInt, ExecutionContext.Implicits.global
+import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 import scalikejdbc._, SQLInterpolation._, async._
 import unit._
 

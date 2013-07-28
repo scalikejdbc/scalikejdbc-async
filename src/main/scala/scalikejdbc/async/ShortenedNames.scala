@@ -20,8 +20,11 @@ import scala.concurrent.ExecutionContext
 /**
  * Shortened Names
  */
-private[scalikejdbc] object ShortenedNames {
+trait ShortenedNames {
   type EC = ExecutionContext
   val EC = ExecutionContext
   val ECGlobal = ExecutionContext.Implicits.global
+  type Session = AsyncDBSession
 }
+
+object ShortenedNames extends ShortenedNames

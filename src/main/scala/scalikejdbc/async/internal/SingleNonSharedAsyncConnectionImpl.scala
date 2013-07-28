@@ -18,6 +18,7 @@ package scalikejdbc.async.internal
 import scalikejdbc.async._
 import com.github.mauricio.async.db.Connection
 import scala.concurrent._
+import scalikejdbc.async.ShortenedNames._
 
 /**
  * Simple Asynchronous Connection
@@ -28,8 +29,7 @@ abstract class SingleNonSharedAsyncConnectionImpl(val underlying: Connection)
     extends NonSharedAsyncConnection
     with AsyncConnectionCommonImpl {
 
-  override def toNonSharedConnection()(
-    implicit cxt: ExecutionContext = ExecutionContext.Implicits.global): Future[NonSharedAsyncConnection] = {
+  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
     future(this)
   }
 
