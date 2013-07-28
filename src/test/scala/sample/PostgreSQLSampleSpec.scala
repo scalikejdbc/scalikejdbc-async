@@ -53,16 +53,18 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     // the generated key should be found
     Await.result(f, 5.seconds)
     f.value.get.isSuccess should be(true)
-    val generatedId: Long = f.value.get.get
-    // record should be found by the generated key
-    val created = DB.readOnly { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
-    }.get
-    created.id should equal(generatedId)
-    created.name should equal("Eric")
-    created.rating should equal(2)
-    created.isReactive should be(false)
-    created.createdAt should equal(createdTime)
+    f.foreach { generatedId =>
+
+      // record should be found by the generated key
+      val created = DB.readOnly { implicit s =>
+        withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
+      }.get
+      created.id should equal(generatedId)
+      created.name should equal("Eric")
+      created.rating should equal(2)
+      created.isReactive should be(false)
+      created.createdAt should equal(createdTime)
+    }
   }
 
   it should "update" in {
@@ -84,12 +86,14 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     }
     Await.result(deletion, 5.seconds)
     deletion.value.get.isSuccess should be(true)
+    deletion.foreach { _ =>
 
-    // should be committed
-    val deleted = DB.readOnly { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1004) }.map(AsyncLover(al)).single.apply()
+      // should be committed
+      val deleted = NamedDB('mysql).readOnly { implicit s =>
+        withSQL { select.from(AsyncLover as al).where.eq(al.id, 1004) }.map(AsyncLover(al)).single.apply()
+      }
+      deleted.isDefined should be(false)
     }
-    deleted.isDefined should be(false)
   }
 
   it should "execute" in {
@@ -109,12 +113,14 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     }
     Await.result(deletion, 5.seconds)
     deletion.value.get.isSuccess should be(true)
+    deletion.foreach { _ =>
 
-    // should be committed
-    val deleted = DB.readOnly { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
+      // should be committed
+      val deleted = DB.readOnly { implicit s =>
+        withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
+      }
+      deleted.isDefined should be(false)
     }
-    deleted.isDefined should be(false)
   }
 
   it should "update in a local transaction" in {
@@ -128,16 +134,17 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     }
     Await.result(generatedKey, 5.seconds)
     generatedKey.value.get.isSuccess should be(true)
-    val id = generatedKey.value.get.get
+    generatedKey.foreach { id =>
 
-    val created = DB.readOnly { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
-    }.get
-    created.id should equal(id)
-    created.name should equal("Patric")
-    created.rating should equal(2)
-    created.isReactive should be(false)
-    created.createdAt should equal(createdTime)
+      val created = DB.readOnly { implicit s =>
+        withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
+      }.get
+      created.id should equal(id)
+      created.name should equal("Patric")
+      created.rating should equal(2)
+      created.isReactive should be(false)
+      created.createdAt should equal(createdTime)
+    }
   }
 
   it should "rollback in a local transaction" in {
