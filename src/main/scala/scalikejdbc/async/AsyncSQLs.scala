@@ -25,7 +25,7 @@ trait AsyncSQLExecution extends Any {
     session.execute(underlying.statement, underlying.parameters: _*)
   }
 }
-class AsyncSQLExecutionImpl(val underlying: SQLExecution) extends AsyncSQLExecution
+class AsyncSQLExecutionImpl(val underlying: SQLExecution) extends AnyVal with AsyncSQLExecution
 
 trait AsyncSQLUpdate extends Any {
   val underlying: SQLUpdate
@@ -33,7 +33,7 @@ trait AsyncSQLUpdate extends Any {
     session.update(underlying.statement, underlying.parameters: _*)
   }
 }
-class AsyncSQLUpdateImpl(val underlying: SQLUpdate) extends AsyncSQLUpdate
+class AsyncSQLUpdateImpl(val underlying: SQLUpdate) extends AnyVal with AsyncSQLUpdate
 
 trait AsyncSQLUpdateAndReturnGeneratedKey extends Any {
   val underlying: SQLUpdateWithGeneratedKey
@@ -42,7 +42,7 @@ trait AsyncSQLUpdateAndReturnGeneratedKey extends Any {
     session.updateAndReturnGeneratedKey(underlying.statement, underlying.parameters: _*)
   }
 }
-class AsyncSQLUpdateAndReturnGeneratedKeyImpl(val underlying: SQLUpdateWithGeneratedKey) extends AsyncSQLUpdateAndReturnGeneratedKey
+class AsyncSQLUpdateAndReturnGeneratedKeyImpl(val underlying: SQLUpdateWithGeneratedKey) extends AnyVal with AsyncSQLUpdateAndReturnGeneratedKey
 
 trait AsyncSQLToOption[A] extends Any {
   val underlying: SQLToOption[A, HasExtractor]
@@ -50,7 +50,7 @@ trait AsyncSQLToOption[A] extends Any {
     session.single(underlying.statement, underlying.parameters: _*)(underlying.extractor)
   }
 }
-class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor]) extends AsyncSQLToOption[A]
+class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor]) extends AnyVal with AsyncSQLToOption[A]
 
 trait AsyncSQLToTraversable[A] extends Any {
   val underlying: SQLToTraversable[A, HasExtractor]
@@ -58,7 +58,7 @@ trait AsyncSQLToTraversable[A] extends Any {
     session.traversable(underlying.statement, underlying.parameters: _*)(underlying.extractor)
   }
 }
-class AsyncSQLToTraversableImpl[A](val underlying: SQLToTraversable[A, HasExtractor]) extends AsyncSQLToTraversable[A]
+class AsyncSQLToTraversableImpl[A](val underlying: SQLToTraversable[A, HasExtractor]) extends AnyVal with AsyncSQLToTraversable[A]
 
 trait AsyncSQLToList[A] extends Any {
   val underlying: SQLToList[A, HasExtractor]
@@ -66,5 +66,5 @@ trait AsyncSQLToList[A] extends Any {
     session.list(underlying.statement, underlying.parameters: _*)(underlying.extractor)
   }
 }
-class AsyncSQLToListImpl[A](val underlying: SQLToList[A, HasExtractor]) extends AsyncSQLToList[A]
+class AsyncSQLToListImpl[A](val underlying: SQLToList[A, HasExtractor]) extends AnyVal with AsyncSQLToList[A]
 
