@@ -36,8 +36,13 @@ libraryDependencies ++= Seq(
 ### Example
 
 [programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
+[programmerlist/Company.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Company.scala)
+[programmerlist/Programmer.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Programmer.scala)
 
 ```scala
+import scalikejdbc._, SQLInterpolation._, async._
+import scala.concurrent._, duration._, ExecutionContext.Implicits.global
+
 // create a new record within a transaction
 val created: Future[Company] = AsyncDB.localTx { implicit tx =>
   for {
@@ -72,7 +77,8 @@ created.foreach { newCompany: Company =>
     Company.find(newCompany.id)
   }
   Await.result(company, 5.seconds)
-  company.foreach { c => c.isDefined should be(true) }
+  val found: Option[Company]= company.value.get.get
+  found.isDefined should be(true)
 }
 ```
 

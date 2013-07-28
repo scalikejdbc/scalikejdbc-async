@@ -1,10 +1,7 @@
 package programmerlist
 
-import scalikejdbc._, async._, SQLInterpolation._
-
-import scala.concurrent._
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
+import scalikejdbc._, SQLInterpolation._, async._
+import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 
 import org.scalatest._, matchers._
 import unit._
@@ -60,7 +57,7 @@ class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logg
         Company.find(newCompany.id)
       }
       Await.result(company, 5.seconds)
-      val found = company.value.get.get
+      val found: Option[Company] = company.value.get.get
       found.isDefined should be(true)
     }
   }
