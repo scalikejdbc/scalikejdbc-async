@@ -84,6 +84,8 @@ created.foreach { newCompany: Company =>
 }
 ```
 
+Transactional queries should be executed in series. You cannot use `Future.traverse` or `Future.sequence`.
+
 ### FAQ
 
 #### Is it possible to combine scalikejdbc-async with normal scalikejdbc?
