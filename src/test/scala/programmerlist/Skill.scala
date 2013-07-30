@@ -10,8 +10,8 @@ case class Skill(
     createdAt: DateTime,
     deletedAt: Option[DateTime] = None) extends ShortenedNames {
 
-  def save()(implicit session: Session, cxt: EC = ECGlobal): Future[Skill] = Skill.save(this)(session, cxt)
-  def destroy()(implicit session: Session, cxt: EC = ECGlobal): Future[Unit] = Skill.destroy(id)(session, cxt)
+  def save()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Skill] = Skill.save(this)(session, cxt)
+  def destroy()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Unit] = Skill.destroy(id)(session, cxt)
 }
 
 object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
@@ -32,33 +32,33 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
   private val isNotDeleted = sqls.isNull(s.deletedAt)
 
-  def find(id: Long)(implicit session: Session, cxt: EC = ECGlobal): Future[Option[Skill]] = withSQL {
+  def find(id: Long)(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Skill]] = withSQL {
     select.from(Skill as s).where.eq(s.id, id).and.append(isNotDeleted)
   }.map(Skill(s))
 
-  def findAll()(implicit session: Session, cxt: EC = ECGlobal): Future[List[Skill]] = withSQL {
+  def findAll()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Skill]] = withSQL {
     select.from(Skill as s)
       .where.append(isNotDeleted)
       .orderBy(s.id)
   }.map(Skill(s))
 
-  def countAll()(implicit session: Session, cxt: EC = ECGlobal): Future[Long] = withSQL {
+  def countAll()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Skill as s).where.append(isNotDeleted)
   }.map(rs => rs.long(1)).single.future.map(_.get)
 
   def findAllBy(where: SQLSyntax)(
-    implicit session: Session, cxt: EC = ECGlobal): Future[List[Skill]] = withSQL {
+    implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Skill]] = withSQL {
     select.from(Skill as s)
       .where.append(isNotDeleted).and.append(sqls"${where}")
       .orderBy(s.id)
   }.map(Skill(s))
 
-  def countBy(where: SQLSyntax)(implicit session: Session, cxt: EC = ECGlobal): Future[Long] = withSQL {
+  def countBy(where: SQLSyntax)(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Skill as s).where.append(isNotDeleted).and.append(sqls"${where}")
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, createdAt: DateTime = DateTime.now)(
-    implicit session: Session, cxt: EC = ECGlobal): Future[Skill] = {
+    implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Skill] = {
     for {
       id <- withSQL {
         insert.into(Skill).namedValues(column.name -> name, column.createdAt -> createdAt)
@@ -67,11 +67,11 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
     } yield Skill(id = id, name = name, createdAt = createdAt)
   }
 
-  def save(m: Skill)(implicit session: Session, cxt: EC = ECGlobal): Future[Skill] = withSQL {
+  def save(m: Skill)(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Skill] = withSQL {
     update(Skill).set(column.name -> m.name).where.eq(column.id, m.id).and.isNull(column.deletedAt)
   }.update.future.map(_ => m)
 
-  def destroy(id: Long)(implicit session: Session, cxt: EC = ECGlobal): Future[Unit] = {
+  def destroy(id: Long)(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Unit] = {
     update(Skill).set(column.deletedAt -> DateTime.now).where.eq(column.id, id)
   }
 
