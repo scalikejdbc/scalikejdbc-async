@@ -1,18 +1,21 @@
 import sbt._
 import Keys._
+import play.Project._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  val scalikejdbcVersion = "1.6.7"
-  val mauricioVersion = "0.2.4"
+  lazy val _version = "0.2.2-SNAPSHOT"
+  lazy val defaultPlayVersion = "2.1.2"
+  lazy val scalikejdbcVersion = "1.6.7"
+  lazy val mauricioVersion = "0.2.4"
 
-  lazy val scalikejdbcAsync = Project(
-    id = "async",
-    base = file("."),
+  lazy val core = Project(
+    id = "core",
+    base = file("core"),
     settings = Defaults.defaultSettings ++ Seq(
       organization := "com.github.seratch",
       name := "scalikejdbc-async",
-      version := "0.2.1",
+      version := _version,
       scalaVersion := "2.10.2",
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -37,6 +40,32 @@ object ScalikeJDBCAsyncProject extends Build {
       pomExtra := _pomExtra
     )
   )
+
+  lazy val playPlugin = Project(
+    id = "play-plugin",
+    base = file("play-plugin"),
+    settings = Defaults.defaultSettings ++ Seq(
+      sbtPlugin := false,
+      organization := "com.github.seratch",
+      name := "scalikejdbc-async-play-plugin",
+      version := _version,
+      scalaVersion := "2.10.0",
+      resolvers ++= _resolvers,
+      libraryDependencies <++= (scalaVersion) { scalaVersion =>
+        Seq(
+          "play" % "play_2.10"      % defaultPlayVersion % "provided",
+          "play" % "play-test_2.10" % defaultPlayVersion % "test")
+      },
+      testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "sequential", "true"),
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra,
+      scalacOptions ++= _scalacOptions
+    )
+  ) dependsOn(core)
+
 
   def _publishTo(v: String) = {
     val nexus = "https://oss.sonatype.org/"
