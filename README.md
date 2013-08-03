@@ -113,7 +113,7 @@ password: sa
 - MySQL
 
 ```
-url: jdbc:mysql://localhost/scalikejdbc
+url: jdbc:mysql://localhost:3306/scalikejdbc
 username: sa
 password: sa
 ```

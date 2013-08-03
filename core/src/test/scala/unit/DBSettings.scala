@@ -24,8 +24,8 @@ object DBSettings {
     PgListDBInitializer.initPostgreSQL()
 
     // MySQL
-    ConnectionPool.add('mysql, "jdbc:mysql://localhost/scalikejdbc", "sa", "sa")
-    AsyncConnectionPool.add('mysql, "jdbc:mysql://localhost/scalikejdbc", "sa", "sa")
+    ConnectionPool.add('mysql, "jdbc:mysql://localhost:3306/scalikejdbc", "sa", "sa")
+    AsyncConnectionPool.add('mysql, "jdbc:mysql://localhost:3306/scalikejdbc", "sa", "sa")
 
     SampleDBInitializer.initMySQL()
     PgListDBInitializer.initMySQL()
