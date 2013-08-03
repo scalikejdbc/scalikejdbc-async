@@ -98,6 +98,25 @@ Yes, it's possible. See this example spec:
 
 This library is still in alpha stage. If this library becomes stable enough, it will be merged into the ScalikeJDBC project.
 
+#### How to contribute?
+
+Before sending pull requests, please prepare the following DB settings and write tests to ensure that your fixes work as expected. 
+
+- PostgreSQL
+
+```
+url: jdbc:postgresql://localhost:5432/scalikejdbc
+username: sa
+password: sa
+```
+
+- MySQL
+
+```
+url: jdbc:mysql://localhost/scalikejdbc
+username: sa
+password: sa
+```
 
 ### License
 
