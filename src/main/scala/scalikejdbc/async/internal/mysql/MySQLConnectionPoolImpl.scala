@@ -39,7 +39,13 @@ private[scalikejdbc] class MySQLConnectionPoolImpl(
     with LogSupport {
 
   private[this] val factory = new MySQLConnectionFactory(config)
-  private[this] val pool = new ConnectionPool[MySQLConnection](factory, PoolConfiguration.Default)
+  private[this] val pool = new ConnectionPool[MySQLConnection](
+    factory = factory,
+    configuration = PoolConfiguration(
+      maxObjects = settings.maxSize,
+      maxIdle = settings.maxSize / 2,
+      maxQueueSize = settings.maxSize)
+  )
 
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool) with MySQLConnectionImpl
 

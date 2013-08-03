@@ -38,7 +38,13 @@ private[scalikejdbc] class PostgreSQLConnectionPoolImpl(
     with LogSupport {
 
   private[this] val factory = new PostgreSQLConnectionFactory(config)
-  private[this] val pool = new ConnectionPool[PostgreSQLConnection](factory, PoolConfiguration.Default)
+  private[this] val pool = new ConnectionPool[PostgreSQLConnection](
+    factory = factory,
+    configuration = PoolConfiguration(
+      maxObjects = settings.maxSize,
+      maxIdle = settings.maxSize / 2,
+      maxQueueSize = settings.maxSize)
+  )
 
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool) with PostgreSQLConnectionImpl
 
