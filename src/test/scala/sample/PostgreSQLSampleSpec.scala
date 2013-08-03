@@ -197,6 +197,9 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
   }
 
   it should "provide transactional deletion by AsyncTx.withSQLBuilders" in {
+    DB.autoCommit { implicit s =>
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 998) }.update.apply()
+    }
     val creationAndDeletion: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
       AsyncTx.withSQLBuilders(
         insert.into(AsyncLover).namedValues(

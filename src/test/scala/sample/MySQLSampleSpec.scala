@@ -13,8 +13,17 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
   val al = AsyncLover.syntax("al")
 
   it should "select a single value" in {
+    val id = NamedDB('mysql).autoCommit { implicit s =>
+      withSQL {
+        insert.into(AsyncLover).namedValues(
+          column.name -> "Eric",
+          column.rating -> 2,
+          column.isReactive -> false,
+          column.createdAt -> createdTime)
+      }.updateAndReturnGeneratedKey.apply()
+    }
     val resultFuture: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1) }.map(AsyncLover(al)).single.future()
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.future()
     }
     Await.result(resultFuture, 5.seconds)
     val result = resultFuture.value.get.get
@@ -23,7 +32,11 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
 
   it should "select values as a Traversable" in {
     val resultsFuture: Future[Traversable[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).traversable.future()
+      withSQL {
+        select.from(AsyncLover as al)
+          .where.isNotNull(al.birthday) // mysql-async 0.2.4 cannot parse nullable date value.
+          .limit(2)
+      }.map(AsyncLover(al)).traversable.future()
     }
     Await.result(resultsFuture, 5.seconds)
     val results = resultsFuture.value.get.get
@@ -32,7 +45,11 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
 
   it should "select values as a List" in {
     val resultsFuture: Future[List[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).list.future()
+      withSQL {
+        select.from(AsyncLover as al)
+          .where.isNotNull(al.birthday) // mysql-async 0.2.4 cannot parse nullable date value.
+          .limit(2)
+      }.map(AsyncLover(al)).list.future()
     }
     Await.result(resultsFuture, 5.seconds)
     val results = resultsFuture.value.get.get
@@ -198,6 +215,9 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
   }
 
   it should "provide transactional deletion by AsyncTx.withSQLBuilders" in {
+    NamedDB('mysql).autoCommit { implicit s =>
+      withSQL { delete.from(AsyncLover).where.eq(column.id, 998) }.update.apply()
+    }
     val creationAndDeletion: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
       AsyncTx.withSQLBuilders(
         insert.into(AsyncLover).namedValues(
