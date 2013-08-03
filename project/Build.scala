@@ -26,7 +26,7 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.seratch"  %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
-          "postgresql"          %  "postgresql"                % "9.2-1002.jdbc4"   % "test",
+          "org.postgresql"      %  "postgresql"                % "9.2-1003-jdbc4"   % "test",
           "mysql"               %  "mysql-connector-java"      % "5.1.25"           % "test",
           "org.scalatest"       %% "scalatest"                 % "1.9.1"            % "test"
         )
