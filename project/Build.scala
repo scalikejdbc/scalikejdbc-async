@@ -51,12 +51,23 @@ object ScalikeJDBCAsyncProject extends Build {
       version := _version,
       scalaVersion := "2.10.0",
       resolvers ++= _resolvers,
+      resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies <++= (scalaVersion) { scalaVersion =>
         Seq(
-          "play" % "play_2.10"      % defaultPlayVersion % "provided",
-          "play" % "play-test_2.10" % defaultPlayVersion % "test")
+          "com.github.mauricio"    %% "postgresql-async" % mauricioVersion    % "provided",
+          "com.github.mauricio"    %% "mysql-async"      % mauricioVersion    % "provided",
+          "play"                    % "play_2.10"        % defaultPlayVersion % "provided",
+          "play"                    % "play-test_2.10"   % defaultPlayVersion % "test")
       },
       testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "sequential", "true"),
+      testOptions in Test += Tests.Setup { loader =>
+        val c = loader.loadClass("scalikejdbc.async.TestDB$")
+        c.getMethod("setup").invoke(c.getField("MODULE$").get(c))
+      },
+      testOptions in Test += Tests.Cleanup { loader =>
+        val c = loader.loadClass("scalikejdbc.async.TestDB$")
+        c.getMethod("cleanup").invoke(c.getField("MODULE$").get(c))
+      },
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       publishArtifact in Test := false,
