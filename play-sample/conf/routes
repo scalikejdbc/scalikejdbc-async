@@ -1,0 +1,27 @@
+# Routes
+# ~~~~
+
+GET     /                                   controllers.Root.index
+
+GET     /companies                          controllers.Companies.all
+GET     /companies/:id                      controllers.Companies.show(id: Long)
+POST    /companies                          controllers.Companies.create
+DELETE  /companies/:id                      controllers.Companies.delete(id: Long)
+
+GET     /programmers                        controllers.Programmers.all
+GET     /programmers/:id                    controllers.Programmers.show(id: Long)
+POST    /programmers                        controllers.Programmers.create
+DELETE  /programmers/:id                    controllers.Programmers.delete(id: Long)
+POST    /programmers/:id/company/:companyId controllers.Programmers.joinCompany(id: Long, companyId: Long)
+DELETE  /programmers/:id/company            controllers.Programmers.leaveCompany(id: Long)
+POST    /programmers/:id/skills/:skillId    controllers.Programmers.addSkill(id: Long, skillId: Long)
+DELETE  /programmers/:id/skills/:skillId    controllers.Programmers.deleteSkill(id: Long, skillId: Long)
+
+GET     /skills                             controllers.Skills.all
+GET     /skills/:id                         controllers.Skills.show(id: Long)
+POST    /skills                             controllers.Skills.create
+DELETE  /skills/:id                         controllers.Skills.delete(id: Long)
+
+GET     /assets/javascripts/routes          controllers.JsRouter.javascriptRoutes
+GET     /assets/*file                       controllers.Assets.at(path="/public", file)
+

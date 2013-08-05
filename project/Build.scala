@@ -69,6 +69,26 @@ object ScalikeJDBCAsyncProject extends Build {
     )
   ) dependsOn(core)
 
+  lazy val playSample = {
+    val appName         = "play-sample"
+    val appVersion      = "0.1"
+    val appDependencies = Seq(
+      "com.github.seratch"   %% "scalikejdbc"                     % scalikejdbcVersion,
+      "com.github.seratch"   %% "scalikejdbc-config"              % scalikejdbcVersion,
+      "com.github.seratch"   %% "scalikejdbc-interpolation"       % scalikejdbcVersion,
+      "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
+      "org.postgresql"       %  "postgresql"                      % "9.2-1003-jdbc4",
+      "org.json4s"           %% "json4s-ext"                      % "3.2.4",
+      "com.github.tototoshi" %% "play-json4s-native"              % "0.1.0"
+    )
+    play.Project(appName, appVersion, appDependencies, path = file("play-sample")).settings(
+      scalaVersion in ThisBuild := "2.10.2",
+      resolvers ++= Seq(
+        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
+        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      )
+    ).dependsOn(core, playPlugin)
+  }
 
   def _publishTo(v: String) = {
     val nexus = "https://oss.sonatype.org/"
