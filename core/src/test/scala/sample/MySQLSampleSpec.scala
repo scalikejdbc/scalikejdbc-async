@@ -25,8 +25,7 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
     val resultFuture: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.future()
     }
-    Await.result(resultFuture, 5.seconds)
-    val result = resultFuture.value.get.get
+    val result = Await.result(resultFuture, 5.seconds)
     result.isDefined should be(true)
   }
 
@@ -38,8 +37,7 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
           .limit(2)
       }.map(AsyncLover(al)).traversable.future()
     }
-    Await.result(resultsFuture, 5.seconds)
-    val results = resultsFuture.value.get.get
+    val results = Await.result(resultsFuture, 5.seconds)
     results.size should equal(2)
   }
 
@@ -51,8 +49,7 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
           .limit(2)
       }.map(AsyncLover(al)).list.future()
     }
-    Await.result(resultsFuture, 5.seconds)
-    val results = resultsFuture.value.get.get
+    val results = Await.result(resultsFuture, 5.seconds)
     results.size should equal(2)
   }
 
@@ -68,10 +65,7 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
       }.updateAndReturnGeneratedKey.future()
     }
     // the generated key should be found
-    Await.result(generatedIdFuture, 5.seconds)
-
-    // record should be found by the generated key
-    val generatedId = generatedIdFuture.value.get.get
+    val generatedId = Await.result(generatedIdFuture, 5.seconds)
     val created = NamedDB('mysql).readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get
@@ -142,9 +136,7 @@ class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with 
       ) //.returningId
       ).updateAndReturnGeneratedKey.future
     }
-    Await.result(generatedIdFuture, 5.seconds)
-
-    val generatedId = generatedIdFuture.value.get.get
+    val generatedId = Await.result(generatedIdFuture, 5.seconds)
     val created = NamedDB('mysql).readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get

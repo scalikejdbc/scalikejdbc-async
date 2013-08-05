@@ -76,10 +76,7 @@ object PlayPluginSpec extends Specification {
     )
   )
 
-  def plugin = fakeApp.plugin[PlayPlugin].get
-
   def simpleTest(table: SQLSyntax) = {
-
     try {
       val insert = sql"insert into ${table} (id, name) values ({id}, {name})"
       val init: Future[Seq[Unit]] = Future.sequence(Seq(

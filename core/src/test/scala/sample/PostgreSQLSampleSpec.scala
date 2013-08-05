@@ -17,8 +17,7 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     val resultFuture: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, 1) }.map(AsyncLover(al)).single.future()
     }
-    Await.result(resultFuture, 5.seconds)
-    val result = resultFuture.value.get.get
+    val result = Await.result(resultFuture, 5.seconds)
     result.isDefined should be(true)
   }
 
@@ -35,8 +34,7 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
     val resultsFuture: Future[List[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).list.future()
     }
-    Await.result(resultsFuture, 5.seconds)
-    val results = resultsFuture.value.get.get
+    val results = Await.result(resultsFuture, 5.seconds)
     results.size should equal(2)
   }
 
@@ -51,10 +49,7 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
       }.updateAndReturnGeneratedKey.future()
     }
     // the generated key should be found
-    Await.result(generatedIdFuture, 5.seconds)
-
-    // record should be found by the generated key
-    val generatedId = generatedIdFuture.value.get.get
+    val generatedId = Await.result(generatedIdFuture, 5.seconds)
     val created = DB.readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get
@@ -124,9 +119,7 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
         column.createdAt -> createdTime
       ).returningId).updateAndReturnGeneratedKey.future
     }
-    Await.result(generatedIdFuture, 5.seconds)
-
-    val generatedId = generatedIdFuture.value.get.get
+    val generatedId = Await.result(generatedIdFuture, 5.seconds)
     val created = DB.readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get
