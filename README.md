@@ -33,6 +33,16 @@ libraryDependencies ++= Seq(
 )
 ```
 
+If you're a Play2 user, use play-plugin too!
+
+```scala
+val appDependencies = Seq(
+  "com.github.seratch"  %% "scalikejdbc-async"             % "[0.2,)",
+  "com.github.seratch"  %% "scalikejdbc-async-play-plugin" % "[0.2,)",
+  "com.github.mauricio" %% "postgresql-async"              % "[0.2,)"
+)
+```
+
 ### Example
 
 - [programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
@@ -85,6 +95,12 @@ created.foreach { newCompany: Company =>
 ```
 
 Transactional queries should be executed in series. You cannot use `Future.traverse` or `Future.sequence`.
+
+#### Play2 Example
+
+See the play-sample project:
+
+https://github.com/seratch/scalikejdbc-async/blob/develop/play-sample
 
 ### FAQ
 
