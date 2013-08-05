@@ -31,7 +31,7 @@ class AsyncOneToOneSQLToOption[A, B, Z](val underlying: OneToOneSQLToOption[A, B
       results =>
         results match {
           case Nil => None
-          case one :: Nil => Option(one)
+          case _ if results.size == 1 => results.headOption
           case _ => throw new TooManyRowsException(1, results.size)
         }
     }
@@ -68,7 +68,7 @@ class AsyncOneToManySQLToOption[A, B, Z](val underlying: OneToManySQLToOption[A,
       results =>
         results match {
           case Nil => None
-          case one :: Nil => Option(one)
+          case _ if results.size == 1 => results.headOption
           case _ => throw new TooManyRowsException(1, results.size)
         }
     }
@@ -105,7 +105,7 @@ class AsyncOneToManies2SQLToOption[A, B1, B2, Z](val underlying: OneToManies2SQL
       results =>
         results match {
           case Nil => None
-          case one :: Nil => Option(one)
+          case _ if results.size == 1 => results.headOption
           case _ => throw new TooManyRowsException(1, results.size)
         }
     }
@@ -143,7 +143,7 @@ class AsyncOneToManies3SQLToOption[A, B1, B2, B3, Z](val underlying: OneToManies
         results =>
           results match {
             case Nil => None
-            case one :: Nil => Option(one)
+            case _ if results.size == 1 => results.headOption
             case _ => throw new TooManyRowsException(1, results.size)
           }
       }
@@ -182,7 +182,7 @@ class AsyncOneToManies4SQLToOption[A, B1, B2, B3, B4, Z](val underlying: OneToMa
         results =>
           results match {
             case Nil => None
-            case one :: Nil => Option(one)
+            case _ if results.size == 1 => results.headOption
             case _ => throw new TooManyRowsException(1, results.size)
           }
       }
@@ -221,7 +221,7 @@ class AsyncOneToManies5SQLToOption[A, B1, B2, B3, B4, B5, Z](val underlying: One
         results =>
           results match {
             case Nil => None
-            case one :: Nil => Option(one)
+            case _ if results.size == 1 => results.headOption
             case _ => throw new TooManyRowsException(1, results.size)
           }
       }
