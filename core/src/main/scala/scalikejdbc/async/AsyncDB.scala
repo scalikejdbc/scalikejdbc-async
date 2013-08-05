@@ -32,8 +32,15 @@ object AsyncDB {
    * @return a future value
    */
   def withPool[A](op: (SharedAsyncDBSession) => Future[A]): Future[A] = {
-    op.apply(SharedAsyncDBSession(AsyncConnectionPool().borrow()))
+    op.apply(sharedSession)
   }
+
+  /**
+   * Provides a shared session.
+   *
+   * @return shared session
+   */
+  def sharedSession: SharedAsyncDBSession = SharedAsyncDBSession(AsyncConnectionPool().borrow())
 
   /**
    * Provides a future world within a transaction.

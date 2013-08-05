@@ -32,8 +32,15 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
    * @return a Future value
    */
   def withPool[A](f: (SharedAsyncDBSession) => Future[A]): Future[A] = {
-    f.apply(SharedAsyncDBSession(AsyncConnectionPool(name).borrow()))
+    f.apply(sharedSession)
   }
+
+  /**
+   * Provides a shared session.
+   *
+   * @return shared session
+   */
+  def sharedSession: SharedAsyncDBSession = SharedAsyncDBSession(AsyncConnectionPool(name).borrow())
 
   /**
    * Provides a future world within a transaction.
