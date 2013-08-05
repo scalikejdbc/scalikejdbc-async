@@ -312,6 +312,8 @@ case class SharedAsyncDBSession(connection: AsyncConnection) extends AsyncDBSess
  */
 case class TxAsyncDBSession(connection: NonSharedAsyncConnection) extends AsyncDBSession {
 
+  def isActive: Boolean = connection.isActive
+
   def begin(): Future[AsyncQueryResult] = connection.sendQuery("BEGIN")
 
   def rollback(): Future[AsyncQueryResult] = connection.sendQuery("ROLLBACK")

@@ -51,6 +51,13 @@ trait AsyncConnection {
   def sendPreparedStatement(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult]
 
   /**
+   * Returns this connection is active.
+   *
+   * @return active
+   */
+  def isActive: Boolean = false
+
+  /**
    * Returns this connection is shared.
    *
    * @return shared

@@ -27,6 +27,8 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
   private[scalikejdbc] val underlying: Connection
   private[scalikejdbc] val defaultTimeout = 10.seconds
 
+  override def isActive: Boolean = underlying.isConnected
+
   override def sendQuery(statement: String)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult] = {
 
     underlying.sendQuery(statement).map { queryResult =>

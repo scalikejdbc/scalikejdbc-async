@@ -47,7 +47,7 @@ object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
         val _url = "jdbc:postgresql://%s/%s".format(_host, _dbname)
         new PostgreSQLConnectionPoolImpl(_url, _user, _password, settings)
 
-      case url @ HerokuMySQLRegexp(_user, _password, _host, _dbname) =>
+      case HerokuMySQLRegexp(_user, _password, _host, _dbname) =>
         // Heroku MySQL
         val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
         val addDefaultPropertiesIfNeeded = MysqlCustomProperties.findFirstMatchIn(url).map(_ => "").getOrElse(defaultProperties)

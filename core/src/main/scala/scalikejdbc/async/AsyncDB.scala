@@ -44,8 +44,8 @@ object AsyncDB {
    * @return a future value
    */
   def localTx[A](op: (TxAsyncDBSession) => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
-    AsyncConnectionPool().borrow().toNonSharedConnection().map { txConn =>
-      TxAsyncDBSession(txConn)
+    AsyncConnectionPool().borrow().toNonSharedConnection().map { nonSharedConnection =>
+      TxAsyncDBSession(nonSharedConnection)
     }.flatMap { tx =>
       tx.begin().flatMap { _ =>
         op.apply(tx).andThen {
