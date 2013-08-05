@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Hello ScalikeJDBC!</title>
+<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.min.css")">
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.7.1.js")"></script>
+<style type="text/css"> body { padding-top: 60px; } </style>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="/"/>Hello ScalikeJDBC!</a>
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li><a href="/#/programmers">Programmers</a></li>
+          <li><a href="/#/companies">Companies</a></li>
+          <li><a href="/#/skills">Skills</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <p>This is a ScalikeJDBC sample app which is built with Play2, Backbone.js, CoffeeScript and Bootstrap.</p>
+  <div id="main">
+  Now Loading...
+  </div>
+</div>
+
+<script type="text/javascript" src="@routes.Assets.at("javascripts/underscore-min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/backbone-min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/main.js")"></script>
+
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-play-1.7.1.js")"></script>
+<script type="text/javascript" src="@routes.JsRouter.javascriptRoutes"></script>
+
+<script type="text/template" id="main_programmers">
+<h3>Programmers</h3>
+<table class="table table-bordered table-condensed">
+<thead>
+<tr>
+  <th>id</th>
+  <th>name</th>
+  <th>skills</th>
+  <th>company</th>
+  <th>createdAt</th>
+  <th>operations</th>
+</tr>
+</thead>
+<tbody>
+<% programmers.each(function(programmer) { %>
+  <tr>
+    <td><%= programmer.get("id") %></td>
+    <td><%= programmer.get("name") %></td>
+    <td>
+      <% _.each(programmer.get("skills"), function(skill) { %> 
+        "<%= skill.name %>" <a href="" class="deleteSkill" data-programmer-id="<%= programmer.get("id") %>" data-skill-id="<%= skill.id %>"><i class="icon-remove"></i></a><br/>
+      <% }); %>
+      <select class="addSkill" data-id="<%= programmer.get("id") %>">
+      <option value="">-</option>
+      <% skills.each(function(skill) { %>
+        <option value="<%= skill.get("id") %>"><%= skill.get("name") %></option>
+      <% }); %>
+      </select>
+
+    </td>
+    <td>
+      <div id="changeCompanyHolder<%= programmer.get("id") %>">
+      <select class="changeCompany" data-id="<%= programmer.get("id") %>">
+      <option value="">-</option>
+      <% companies.each(function(company) { %>
+        <option value="<%= company.get("id") %>" <% if (programmer.get("companyId") == company.get("id")) { %>selected<% } %>  ><%= company.get("name") %></option>
+      <% }); %>
+      </select>
+      </div>
+    </td>
+    <td><%= programmer.get("createdAt") %></td>
+    <td>
+      <button data-id="<%= programmer.get("id") %>" class="btn btn-danger deleteProgrammer">Delete</button>
+    </td>
+  </tr>
+<% }); %>
+<tr>
+  <form class="addProgrammer" method="post">
+  <td></td>
+  <td><input type="text" id="newName" name="name"/></td>
+  <td></td>
+  <td>
+    <select id="newCompanyId" name="companyId">
+    <option value="">-</option>
+    <% companies.each(function(company) { %>
+      <option value="<%= company.get("id") %>"><%= company.get("name") %></option>
+    <% }); %>
+    </select>
+  </td>
+  <td></td>
+  <td><input type="submit" class="btn btn-primary" value="Add" /></td>
+  </form>
+</tr>
+</tbody>
+</table>
+</script>
+
+<script type="text/template" id="main_companies">
+<h3>Companies</h3>
+<table class="table table-bordered table-condensed">
+<thead>
+<tr>
+  <th>id</th>
+  <th>name</th>
+  <th>createdAt</th>
+  <th>operations</th>
+</tr>
+</thead>
+<tbody>
+<% companies.each(function(company) { %>
+  <tr>
+    <td><%= company.get("id") %></td>
+    <td><%= company.get("name") %></td>
+    <td><%= company.get("createdAt") %></td>
+    <td><button data-id="<%= company.get("id") %>" class="btn btn-danger deleteCompany">Delete</button></td>
+  </tr>
+<% }); %>
+<tr>
+  <form class="addCompany" method="post">
+  <td></td>
+  <td><input type="text" id="newName" name="name"/></td>
+  <td></td>
+  <td><input type="submit" class="btn btn-primary" value="Add" /></td>
+  </form>
+</tr>
+</tbody>
+</table>
+</script>
+
+<script type="text/template" id="main_skills">
+<h3>Skills</h3>
+<table class="table table-bordered table-condensed">
+<thead>
+<tr>
+  <th>id</th>
+  <th>name</th>
+  <th>createdAt</th>
+  <th>operations</th>
+</tr>
+</thead>
+<tbody>
+<% skills.each(function(skill) { %>
+  <tr>
+    <td><%= skill.get("id") %></td>
+    <td><%= skill.get("name") %></td>
+    <td><%= skill.get("createdAt") %></td>
+    <td><button data-id="<%= skill.get("id") %>" class="btn btn-danger deleteSkill">Delete</button></td>
+  </tr>
+<% }); %>
+<tr>
+  <form class="addSkill" method="post">
+  <td></td>
+  <td><input type="text" id="newName" name="name"/></td>
+  <td></td>
+  <td><input type="submit" class="btn btn-primary" value="Add" /></td>
+  </form>
+</tr>
+</tbody>
+</table>
+</script>
+
+</body>
+</html>
+
