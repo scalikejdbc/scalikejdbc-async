@@ -1,15 +1,18 @@
 package scalikejdbc.async
 
-import scalikejdbc._
+import scalikejdbc._, SQLInterpolation._
 
 import org.specs2.mutable.Specification
 
 import play.api.test._
 import play.api.test.Helpers._
-import scala.concurrent.{ Future, Await }
+import scala.concurrent._
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object PlayPluginSpec extends Specification {
+
+  // TODO [error] c.g.m.a.d.p.PostgreSQLConnection - Trying to give back a connection that is not ready for query
 
   override def intToRichLong(v: Int) = super.intToRichLong(v)
 
@@ -21,10 +24,10 @@ object PlayPluginSpec extends Specification {
     additionalConfiguration = Map(
       "logger.root" -> "INFO",
       "logger.play" -> "INFO",
-      "logger.application" -> "DEBUG",
+      "logger.application" -> "INFO",
       "dbplugin" -> "disabled",
       "evolutionplugin" -> "disabled",
-      "db.default.url" -> "jdbc:postgresql://localhost:5435/mem:default",
+      "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
       "db.default.password" -> "sa",
       "db.default.schema" -> "",
@@ -32,15 +35,10 @@ object PlayPluginSpec extends Specification {
       "db.default.poolMaxSize" -> "2",
       "db.default.poolValidationQuery" -> "select 1",
       "db.default.poolConnectionTimeoutMillis" -> "2000",
-      "db.legacydb.url" -> "jdbc:postgresql://localhost:5435/mem:legacy",
-      "db.legacydb.user" -> "l",
-      "db.legacydb.password" -> "g",
+      "db.legacydb.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc2",
+      "db.legacydb.user" -> "sa",
+      "db.legacydb.password" -> "sa",
       "db.legacydb.schema" -> "",
-      "db.global.loggingSQLAndTime.enabled" -> "true",
-      "db.global.loggingSQLAndTime.logLevel" -> "debug",
-      "db.global.loggingSQLAndTime.warningEnabled" -> "true",
-      "db.global.loggingSQLAndTime.warningThreasholdMillis" -> "1",
-      "db.global.loggingSQLAndTime.warningLogLevel" -> "warn",
       "scalikejdbc.global.loggingSQLAndTime.enabled" -> "true",
       "scalikejdbc.global.loggingSQLAndTime.singleLineMode" -> "true",
       "scalikejdbc.global.loggingSQLAndTime.logLevel" -> "debug",
@@ -54,12 +52,12 @@ object PlayPluginSpec extends Specification {
     withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
     additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
-      "db.default.url" -> "jdbc:postgresql://localhost:5435/mem:default",
+      "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
       "db.default.password" -> "sa",
-      "db.legacydb.url" -> "jdbc:postgresql://localhost:5435/mem:legacy",
-      "db.legacydb.user" -> "l",
-      "db.legacydb.password" -> "g",
+      "db.legacydb.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc2",
+      "db.legacydb.user" -> "sa",
+      "db.legacydb.password" -> "sa",
       "scalikejdbc.play.closeAllOnStop.enabled" -> "false"
     )
   )
@@ -68,13 +66,13 @@ object PlayPluginSpec extends Specification {
     withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
     additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
-      "db.default.url" -> "jdbc:postgresql://localhost:5435/mem:default",
+      "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
       "db.default.password" -> "sa",
       "db.default.schema" -> "",
-      "db.legacydb.url" -> "jdbc:postgresql://localhost:5435/mem:legacy",
-      "db.legacydb.user" -> "l",
-      "db.legacydb.password" -> "g",
+      "db.legacydb.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc2",
+      "db.legacydb.user" -> "sa",
+      "db.legacydb.password" -> "sa",
       "db.legacydb.schema" -> "",
       "scalikejdbc.global.loggingSQLAndTime.enabled" -> "true",
       "scalikejdbc.global.loggingSQLAndTime.logLevel" -> "debug",
@@ -86,16 +84,15 @@ object PlayPluginSpec extends Specification {
 
   def plugin = fakeApp.plugin[PlayPlugin].get
 
-  def simpleTest(table: String) = {
-    import scala.concurrent.ExecutionContext.Implicits.global
+  def simpleTest(table: SQLSyntax) = {
 
     try {
       val init = Future.sequence(Seq(
-        AsyncDB localTx { implicit s =>
+        AsyncDB localTx { implicit tx =>
           for {
-            _ <- SQL("DROP TABLE " + table + " IF EXISTS").execute.future()
-            _ <- SQL("CREATE TABLE " + table + " (ID BIGINT PRIMARY KEY NOT NULL, NAME VARCHAR(256))").execute.future()
-            insert = SQL("INSERT INTO " + table + " (ID, NAME) VALUES (/*'id*/123, /*'name*/'Alice')")
+            _ <- sql"drop table if exists ${table}".execute.future()
+            _ <- sql"create table ${table} (id bigint primary key not null, name varchar(255))".execute.future()
+            insert = sql"insert into ${table} (id, name) values ({id}, {name})"
             _ <- insert.bindByName('id -> 1, 'name -> "Alice").update.future()
             _ <- insert.bindByName('id -> 2, 'name -> "Bob").update.future()
             _ <- insert.bindByName('id -> 3, 'name -> "Eve").update.future()
@@ -103,9 +100,9 @@ object PlayPluginSpec extends Specification {
         },
         NamedAsyncDB('legacydb) localTx { implicit s =>
           for {
-            _ <- SQL("DROP TABLE " + table + " IF EXISTS").execute.future()
-            _ <- SQL("CREATE TABLE " + table + " (ID BIGINT PRIMARY KEY NOT NULL, NAME VARCHAR(256))").execute.future()
-            insert = SQL("INSERT INTO " + table + " (ID, NAME) VALUES (/*'id*/123, /*'name*/'Alice')")
+            _ <- sql"drop table if exists ${table}".execute.future()
+            _ <- sql"create table ${table} (id bigint primary key not null, name varchar(255))".execute.future()
+            insert = sql"insert into ${table} (id, name) values ({id}, {name})"
             _ <- insert.bindByName('id -> 1, 'name -> "Alice").update.future()
             _ <- insert.bindByName('id -> 2, 'name -> "Bob").update.future()
             _ <- insert.bindByName('id -> 3, 'name -> "Eve").update.future()
@@ -116,20 +113,20 @@ object PlayPluginSpec extends Specification {
 
       case class User(id: Long, name: Option[String])
 
-//      val result = for {
-//        _ <- init
-//        users :: usersInLegacy :: Nil <- Future.sequence(Seq(
-//          AsyncDB localTx { implicit s =>
-//            SQL("SELECT * FROM " + table).map(rs => User(rs.long("id"), Option(rs.string("name")))).list.future()
-//          },
-//          NamedAsyncDB('legacydb) localTx { implicit s =>
-//            SQL("SELECT * FROM " + table).map(rs => User(rs.long("id"), Option(rs.string("name")))).list.future()
-//          }
-//        ))
-//      } yield (users, usersInLegacy)
-//      val (users, usersInLegacy) = Await.result(result, 5.seconds)
-//      users.size must_== (3)
-//      usersInLegacy.size must_== (4)
+      val result = for {
+        _ <- init
+        users :: usersInLegacy :: Nil <- Future.sequence(Seq(
+          AsyncDB localTx { implicit s =>
+            sql"select * from ${table}".map(rs => User(rs.long("id"), Option(rs.string("name")))).list.future()
+          },
+          NamedAsyncDB('legacydb) localTx { implicit s =>
+            sql"select * from ${table}".map(rs => User(rs.long("id"), Option(rs.string("name")))).list.future()
+          }
+        ))
+      } yield (users, usersInLegacy)
+      val (users, usersInLegacy) = Await.result(result, 5.seconds)
+      users.size must_== (3)
+      usersInLegacy.size must_== (4)
 
       Await.result(init, 5.seconds)
       10 must_== (10)
@@ -137,15 +134,14 @@ object PlayPluginSpec extends Specification {
     } finally {
       val clean = Future.sequence(Seq(
         AsyncDB localTx { implicit s =>
-          SQL("DROP TABLE " + table + " IF EXISTS").execute.future()
+          sql"drop table if exists ${table}".execute.future()
         },
         NamedAsyncDB('legacydb) localTx { implicit s =>
-          SQL("DROP TABLE " + table + " IF EXISTS").execute.future()
+          sql"drop table if exists ${table}".execute.future()
         }
       ))
       Await.result(clean, 5.seconds)
     }
-
   }
 
   "Play plugin" should {
@@ -157,30 +153,30 @@ object PlayPluginSpec extends Specification {
         settings.maxSize must_== (2)
         settings.validationQuery must_== ("select 1")
         settings.connectionTimeoutMillis must_== (2000)
-        simpleTest("user_1")
+        simpleTest(sqls"user_1")
       }
-      running(fakeApp) { simpleTest("user_2") }
-      running(fakeApp) { simpleTest("user_3") }
+      running(fakeApp) { simpleTest(sqls"user_2") }
+      running(fakeApp) { simpleTest(sqls"user_3") }
     }
 
     "be available when DB plugin is also active" in {
-      running(fakeAppWithDBPlugin) { simpleTest("user_withdbplugin") }
+      running(fakeAppWithDBPlugin) { simpleTest(sqls"user_withdbplugin") }
     }
 
     "close connection pools after stopping Play app" in {
-      try {
-        // Play 2.0.4 throws Exception here
-        running(fakeApp) { simpleTest("user_4") }
-      } catch { case e: Exception => }
-      simpleTest("user_5") must throwA[NullPointerException]
+      running(fakeApp) {
+        simpleTest(sqls"user_4")
+      }
+      simpleTest(sqls"user_5") must throwA[NullPointerException]
     }
 
     "skip closing connection pools after stopping Play app" in {
       running(fakeAppWithoutCloseAllOnStop) {
-        simpleTest("user_4")
+        simpleTest(sqls"user_4")
       }
-      simpleTest("user_5")
+      simpleTest(sqls"user_5")
     }
+
   }
 
 }

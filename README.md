@@ -110,6 +110,12 @@ username: sa
 password: sa
 ```
 
+```
+url: jdbc:postgresql://localhost:5432/scalikejdbc2
+username: sa
+password: sa
+```
+
 - MySQL
 
 ```
