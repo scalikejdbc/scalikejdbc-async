@@ -86,13 +86,13 @@ object AsyncConnectionPool extends LogSupport {
   def add(name: Any, url: String, user: String, password: String, settings: CPSettings = ConnectionPoolSettings())(
     implicit factory: CPFactory = AsyncConnectionPoolFactory): Unit = {
     val newPool: AsyncConnectionPool = factory.apply(url, user, password, settings)
+    log.debug(s"Registered connection pool (url: ${url}, user: ${user}, settings: ${settings}")
     pools.put(name, newPool)
   }
 
   def singleton(url: String, user: String, password: String, settings: CPSettings = ConnectionPoolSettings())(
     implicit factory: CPFactory = AsyncConnectionPoolFactory): Unit = {
     add(DEFAULT_NAME, url, user, password, settings)(factory)
-    log.debug("Registered singleton connection pool : " + get().toString())
   }
 
   def borrow(name: Any = DEFAULT_NAME): AsyncConnection = {

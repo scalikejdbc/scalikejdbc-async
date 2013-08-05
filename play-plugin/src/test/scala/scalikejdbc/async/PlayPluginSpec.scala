@@ -38,13 +38,7 @@ object PlayPluginSpec extends Specification {
       "db.legacydb.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc2",
       "db.legacydb.user" -> "sa",
       "db.legacydb.password" -> "sa",
-      "db.legacydb.schema" -> "",
-      "scalikejdbc.global.loggingSQLAndTime.enabled" -> "true",
-      "scalikejdbc.global.loggingSQLAndTime.singleLineMode" -> "true",
-      "scalikejdbc.global.loggingSQLAndTime.logLevel" -> "debug",
-      "scalikejdbc.global.loggingSQLAndTime.warningEnabled" -> "true",
-      "scalikejdbc.global.loggingSQLAndTime.warningThreasholdMillis" -> "1",
-      "scalikejdbc.global.loggingSQLAndTime.warningLogLevel" -> "warn"
+      "db.legacydb.schema" -> ""
     )
   )
 
@@ -87,12 +81,12 @@ object PlayPluginSpec extends Specification {
   def simpleTest(table: SQLSyntax) = {
 
     try {
-      val init = Future.sequence(Seq(
+      val insert = sql"insert into ${table} (id, name) values ({id}, {name})"
+      val init: Future[Seq[Unit]] = Future.sequence(Seq(
         AsyncDB localTx { implicit tx =>
           for {
             _ <- sql"drop table if exists ${table}".execute.future()
             _ <- sql"create table ${table} (id bigint primary key not null, name varchar(255))".execute.future()
-            insert = sql"insert into ${table} (id, name) values ({id}, {name})"
             _ <- insert.bindByName('id -> 1, 'name -> "Alice").update.future()
             _ <- insert.bindByName('id -> 2, 'name -> "Bob").update.future()
             _ <- insert.bindByName('id -> 3, 'name -> "Eve").update.future()
@@ -102,7 +96,6 @@ object PlayPluginSpec extends Specification {
           for {
             _ <- sql"drop table if exists ${table}".execute.future()
             _ <- sql"create table ${table} (id bigint primary key not null, name varchar(255))".execute.future()
-            insert = sql"insert into ${table} (id, name) values ({id}, {name})"
             _ <- insert.bindByName('id -> 1, 'name -> "Alice").update.future()
             _ <- insert.bindByName('id -> 2, 'name -> "Bob").update.future()
             _ <- insert.bindByName('id -> 3, 'name -> "Eve").update.future()
@@ -113,7 +106,7 @@ object PlayPluginSpec extends Specification {
 
       case class User(id: Long, name: Option[String])
 
-      val result = for {
+      val result: Future[(List[User], List[User])] = for {
         _ <- init
         users :: usersInLegacy :: Nil <- Future.sequence(Seq(
           AsyncDB localTx { implicit s =>
@@ -148,7 +141,7 @@ object PlayPluginSpec extends Specification {
 
     "be available when DB plugin is not active" in {
       running(fakeApp) {
-        val settings = AsyncConnectionPool.get('default).settings
+        val settings = AsyncConnectionPool().settings
         settings.initialSize must_== (1)
         settings.maxSize must_== (2)
         settings.validationQuery must_== ("select 1")
