@@ -1,8 +1,6 @@
 package unit
 
 import scalikejdbc._, async._
-import sample._
-import programmerlist._
 
 trait DBSettings {
   DBSettings.initialize()
