@@ -49,7 +49,10 @@ object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
 
       case HerokuMySQLRegexp(_user, _password, _host, _dbname) =>
         // Heroku MySQL
-        val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
+        
+        // issue #5 Error: database name is too long
+        //val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
+        val defaultProperties = ""
         val addDefaultPropertiesIfNeeded = MysqlCustomProperties.findFirstMatchIn(url).map(_ => "").getOrElse(defaultProperties)
         val _url = "jdbc:mysql://%s/%s".format(_host, _dbname + addDefaultPropertiesIfNeeded)
         new MySQLConnectionPoolImpl(_url, _user, _password, settings)

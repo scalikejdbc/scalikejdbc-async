@@ -4,10 +4,10 @@ import play.Project._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.2.2"
-  lazy val defaultPlayVersion = "2.1.2"
+  lazy val _version = "0.2.3"
+  lazy val defaultPlayVersion = "2.1.3"
   lazy val scalikejdbcVersion = "1.6.7"
-  lazy val mauricioVersion = "0.2.4"
+  lazy val mauricioVersion = "0.2.6"
 
   lazy val core = Project(
     id = "core",
@@ -27,7 +27,7 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.2-1003-jdbc4"   % "test",
-          "mysql"               %  "mysql-connector-java"      % "5.1.25"           % "test",
+          "mysql"               %  "mysql-connector-java"      % "5.1.26"           % "test",
           "org.scalatest"       %% "scalatest"                 % "1.9.1"            % "test"
         )
       },
@@ -77,7 +77,9 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.seratch"   %% "scalikejdbc-config"              % scalikejdbcVersion,
       "com.github.seratch"   %% "scalikejdbc-interpolation"       % scalikejdbcVersion,
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
+      "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % "9.2-1003-jdbc4",
+      "mysql"                %  "mysql-connector-java"            % "5.1.26",
       "org.json4s"           %% "json4s-ext"                      % "3.2.4",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.1.0"
     )

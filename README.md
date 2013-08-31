@@ -45,9 +45,9 @@ val appDependencies = Seq(
 
 ### Example
 
-- [programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/ExampleSpec.scala)
-- [programmerlist/Company.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Company.scala)
-- [programmerlist/Programmer.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/programmerlist/Programmer.scala)
+- [programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/ExampleSpec.scala)
+- [programmerlist/Company.scala](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/Company.scala)
+- [programmerlist/Programmer.scala](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/Programmer.scala)
 
 ```scala
 import scalikejdbc._, SQLInterpolation._, async._
@@ -104,11 +104,13 @@ https://github.com/seratch/scalikejdbc-async/blob/develop/play-sample
 
 ### FAQ
 
+#### Is it production-ready?
+
+ScalikeJDBC-Async and [postgrsql-async and mysql-async,incredible works by @mauricio](https://github.com/mauricio/postgresql-async) basically works fine. But to be honest, ScalikeJBDC-Async don't have much of a record of production applications.
+
 #### Is it possible to combine scalikejdbc-async with normal scalikejdbc?
 
-Yes, it's possible. See this example spec:
-
-[sample/PostgreSQLSampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/master/src/test/scala/sample/PostgreSQLSampleSpec.scala)
+Yes, it's possible. See [this example](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/sample/PostgreSQLSampleSpec.scala).
 
 #### Why isn't it a part of scalikejdbc project now?
 
