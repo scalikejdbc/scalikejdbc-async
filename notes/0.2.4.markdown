@@ -1,0 +1,19 @@
+ScalikeJDBC-Async 0.2.4 is out. AsyncConnectionPoolSettings is added.
+
+![ScalikeJDBC Logo](http://scalikejdbc.org/img/logo.png)
+
+https://github.com/seratch/scalikejdbc
+
+https://github.com/seratch/scalikejdbc-async
+
+## core
+
+- Fixed Heroku MySQL deploy issue (0.2.3)
+- Replaced ConnectionPoolSettings with AsyncConnectionPoolSettings
+
+## play-plugin
+
+- Changed config parameters
+
+Enjoy writing typesafe and reactive SQL and get things done!
+
