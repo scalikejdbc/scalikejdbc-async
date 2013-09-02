@@ -25,7 +25,8 @@ import scalikejdbc.async.internal.postgresql.PostgreSQLConnectionPoolImpl
  */
 trait AsyncConnectionPoolFactory {
 
-  def apply(url: String, user: String, password: String, settings: ConnectionPoolSettings = ConnectionPoolSettings()): AsyncConnectionPool
+  def apply(url: String, user: String, password: String,
+    settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()): AsyncConnectionPool
 
 }
 
@@ -34,7 +35,9 @@ trait AsyncConnectionPoolFactory {
  */
 object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
 
-  override def apply(url: String, user: String, password: String, settings: ConnectionPoolSettings = ConnectionPoolSettings()): AsyncConnectionPool = {
+  override def apply(url: String, user: String, password: String,
+    settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()): AsyncConnectionPool = {
+
     url match {
       case _ if url.startsWith("jdbc:postgresql://") =>
         new PostgreSQLConnectionPoolImpl(url, user, password, settings)
@@ -49,7 +52,7 @@ object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
 
       case HerokuMySQLRegexp(_user, _password, _host, _dbname) =>
         // Heroku MySQL
-        
+
         // issue #5 Error: database name is too long
         //val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
         val defaultProperties = ""
