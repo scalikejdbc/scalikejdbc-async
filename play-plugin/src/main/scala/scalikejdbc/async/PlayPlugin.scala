@@ -27,14 +27,13 @@ class PlayPlugin(implicit app: Application) extends Plugin {
   override def onStart(): Unit = {
     playDbConfig.subKeys map {
       name =>
-        def load(name: String): (String, String, String, ConnectionPoolSettings) = {
+        def load(name: String): (String, String, String, AsyncConnectionPoolSettings) = {
           implicit val config = playDbConfig
-          val default = ConnectionPoolSettings()
-          val settings = ConnectionPoolSettings(
-            initialSize = opt(name, "poolInitialSize").map(v => v.toInt).getOrElse(default.initialSize),
-            maxSize = opt(name, "poolMaxSize").map(v => v.toInt).getOrElse(default.maxSize),
-            validationQuery = opt(name, "poolValidationQuery").getOrElse(default.validationQuery),
-            connectionTimeoutMillis = opt(name, "poolConnectionTimeoutMillis").map(v => v.toLong).getOrElse(default.connectionTimeoutMillis)
+          val default = AsyncConnectionPoolSettings()
+          val settings = AsyncConnectionPoolSettings(
+            maxPoolSize = opt(name, "maxPoolSize").map(v => v.toInt).getOrElse(default.maxPoolSize),
+            maxIdleMillis = opt(name, "maxIdleMillis").map(v => v.toLong).getOrElse(default.maxIdleMillis),
+            maxQueueSize = opt(name, "maxQueueSize").map(v => v.toInt).getOrElse(default.maxQueueSize)
           )
           (require(name, "url"), opt(name, "user").getOrElse(""), opt(name, "password").getOrElse(""), settings)
         }

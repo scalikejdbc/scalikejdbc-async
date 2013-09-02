@@ -34,7 +34,7 @@ private[scalikejdbc] class MySQLConnectionPoolImpl(
   override val url: String,
   override val user: String,
   password: String,
-  override val settings: ConnectionPoolSettings = ConnectionPoolSettings())
+  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings())
     extends AsyncConnectionPool(url, user, password, settings)
     with LogSupport {
 
@@ -42,9 +42,9 @@ private[scalikejdbc] class MySQLConnectionPoolImpl(
   private[this] val pool = new ConnectionPool[MySQLConnection](
     factory = factory,
     configuration = PoolConfiguration(
-      maxObjects = settings.maxSize,
-      maxIdle = settings.maxSize / 2,
-      maxQueueSize = settings.maxSize)
+      maxObjects = settings.maxPoolSize,
+      maxIdle = settings.maxIdleMillis,
+      maxQueueSize = settings.maxQueueSize)
   )
 
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool) with MySQLConnectionImpl
