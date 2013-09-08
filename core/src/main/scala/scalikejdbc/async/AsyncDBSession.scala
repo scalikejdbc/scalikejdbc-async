@@ -306,14 +306,11 @@ trait AsyncDBSession extends LogSupport {
   protected def withListeners[A](statement: String, parameters: Seq[Any], startMillis: Long = System.currentTimeMillis)(
     f: Future[A])(implicit cxt: EC = EC.global): Future[A] = {
     f.onSuccess {
-      case v =>
+      case _ =>
         val millis = System.currentTimeMillis - startMillis
         GlobalSettings.queryCompletionListener.apply(statement, parameters, millis)
     }
-    f.onFailure {
-      case e: Exception =>
-        GlobalSettings.queryFailureListener.apply(statement, parameters, e)
-    }
+    f.onFailure { case e: Throwable => GlobalSettings.queryFailureListener.apply(statement, parameters, e) }
     f
   }
 
