@@ -32,7 +32,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, parameters) {
       queryLogging(statement, parameters)
       if (connection.isShared) {
-        // create local transaction becauase postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
+        // create local transaction because postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
         connection.toNonSharedConnection().map(c => TxAsyncDBSession(c)).flatMap { tx: TxAsyncDBSession =>
           tx.execute(statement, parameters: _*)
         }
@@ -47,7 +47,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, parameters) {
       queryLogging(statement, parameters)
       if (connection.isShared) {
-        // create local transaction becauase postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
+        // create local transaction because postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
         connection.toNonSharedConnection().map(c => TxAsyncDBSession(c)).flatMap { tx: TxAsyncDBSession =>
           tx.update(statement, parameters: _*)
         }
