@@ -19,7 +19,7 @@ import scalikejdbc._
 import com.github.mauricio.async.db.RowData
 import scalikejdbc.WrappedResultSet
 import scalikejdbc.async.AsyncResultSet
-import org.joda.time.{ LocalTime, DateTime, LocalDateTime }
+import org.joda.time._
 import scala.concurrent.duration.FiniteDuration
 
 /**
@@ -73,6 +73,7 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     case t: java.sql.Time => new java.sql.Date(t.getTime)
     case t: java.sql.Timestamp => new java.sql.Date(t.getTime)
     case ldt: LocalDateTime => new java.sql.Date(ldt.toDateTime.getMillis)
+    case ld: LocalDate => new java.sql.Date(ld.toDate.getTime)
     case dt: DateTime => new java.sql.Date(dt.getMillis)
     case t: LocalTime => t.toSqlTimestamp.toSqlDate
     case dt: java.util.Date => new java.sql.Date(dt.getTime)
@@ -87,6 +88,7 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     case t: java.sql.Time => new java.sql.Date(t.getTime)
     case t: java.sql.Timestamp => new java.sql.Date(t.getTime)
     case ldt: LocalDateTime => new java.sql.Date(ldt.toDateTime.getMillis)
+    case ld: LocalDate => new java.sql.Date(ld.toDate.getTime)
     case dt: DateTime => new java.sql.Date(dt.getMillis)
     case t: LocalTime => t.toSqlTimestamp.toSqlDate
     case dt: java.util.Date => new java.sql.Date(dt.getTime)
@@ -117,6 +119,7 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     case dt: DateTime => new java.sql.Time(dt.getMillis)
     case dt: java.util.Date => new java.sql.Time(dt.getTime)
     case fd: FiniteDuration => new java.sql.Time(fd.toMillis)
+    case ld: LocalDate => new java.sql.Time(ld.toDate.getTime)
     case other => throw new UnsupportedOperationException(
       s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #time(Int)!")
   }
@@ -131,6 +134,7 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     case dt: DateTime => new java.sql.Time(dt.getMillis)
     case d: java.util.Date => new java.sql.Time(d.getTime)
     case fd: FiniteDuration => new java.sql.Time(fd.toMillis)
+    case ld: LocalDate => new java.sql.Time(ld.toDate.getTime)
     case other => throw new UnsupportedOperationException(
       s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #time(String)!")
   }
