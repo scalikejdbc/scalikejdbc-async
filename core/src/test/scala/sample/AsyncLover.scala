@@ -27,8 +27,8 @@ object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
     rating = rs.int(c.rating),
     isReactive = rs.boolean(c.isReactive),
     lunchtime = rs.timeOpt(c.lunchtime),
-    birthday = rs.dateOpt(c.lunchtime).map(_.toDateTime),
-    createdAt = rs.timestamp(c.createdAt).toDateTime)
+    birthday = rs.dateTimeOpt(c.lunchtime),
+    createdAt = rs.dateTime(c.createdAt))
 
 }
 

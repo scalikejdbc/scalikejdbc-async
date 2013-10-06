@@ -12,8 +12,8 @@ create table async_lover (
   is_reactive boolean default true, 
   lunchtime time, 
   birthday date,
-  created_at timestamp without time zone not null,
-  deleted_at timestamp without time zone
+  created_at timestamp with time zone not null,
+  deleted_at timestamp with time zone
 );
 """
 
@@ -41,25 +41,21 @@ create table async_lover (
 
   def initPostgreSQL(): Unit = {
     DB autoCommit { implicit s =>
-      try {
-        sql"select 1 from async_lover limit 1".map(_.long(1)).single.apply()
-      } catch {
-        case e: Exception =>
-          SQL(pgCreateTable).execute.apply()
-          insertQueries.foreach(q => SQL(q).update.apply())
-      }
+      try sql"drop table async_lover".execute.apply()
+      catch { case e: Exception => }
+
+      SQL(pgCreateTable).execute.apply()
+      insertQueries.foreach(q => SQL(q).update.apply())
     }
   }
 
   def initMySQL(): Unit = {
     NamedDB('mysql) autoCommit { implicit s =>
-      try {
-        sql"select 1 from async_lover limit 1".map(_.long(1)).single.apply()
-      } catch {
-        case e: Exception =>
-          SQL(mysqlCreateTable).execute.apply()
-          insertQueries.foreach(q => SQL(q).update.apply())
-      }
+      try sql"drop table async_lover".execute.apply()
+      catch { case e: Exception => }
+
+      SQL(mysqlCreateTable).execute.apply()
+      insertQueries.foreach(q => SQL(q).update.apply())
     }
   }
 

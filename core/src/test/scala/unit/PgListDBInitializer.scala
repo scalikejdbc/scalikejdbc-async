@@ -8,14 +8,11 @@ object PgListDBInitializer {
   val log = LoggerFactory.getLogger(this.getClass)
 
   def initPostgreSQL() {
-    DB readOnly { implicit s =>
+    DB autoCommit { implicit s =>
+      try sql"drop table programmer".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
       try {
-        sql"select 1 from programmer limit 1".map(_.long(1)).single.apply()
-      } catch {
-        case e: java.sql.SQLException =>
-          DB autoCommit { implicit s =>
-            try {
-              sql"""
+        sql"""
 create table programmer (
   id bigserial primary key,
   name varchar(255) not null,
@@ -24,9 +21,12 @@ create table programmer (
   deleted_timestamp timestamp without time zone
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try sql"drop table company".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
+      try {
+        sql"""
 create table company (
   id bigserial primary key,
   name varchar(255) not null,
@@ -35,9 +35,12 @@ create table company (
   deleted_at timestamp without time zone
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try sql"drop table skill".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
+      try {
+        sql"""
 create table skill (
   id bigserial primary key,
   name varchar(255) not null,
@@ -45,18 +48,22 @@ create table skill (
   deleted_at timestamp without time zone
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try sql"drop table programmer_skill".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
+      try {
+        sql"""
 create table programmer_skill (
   programmer_id bigint not null,
   skill_id bigint not null,
   primary key(programmer_id, skill_id)
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try {
+        sql"""
 insert into company (name, url, created_at) values ('Typesafe', 'http://typesafe.com/', current_timestamp);
 insert into company (name, url, created_at) values ('Oracle', 'http://www.oracle.com/', current_timestamp);
 insert into company (name, url, created_at) values ('Google', 'http://www.google.com/', current_timestamp);
@@ -76,21 +83,17 @@ insert into programmer_skill values (1, 1);
 insert into programmer_skill values (1, 2);
 insert into programmer_skill values (2, 2);
    """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-          }
-      }
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
     }
   }
 
   def initMySQL() {
-    NamedDB('mysql) readOnly { implicit s =>
+    NamedDB('mysql) autoCommit { implicit s =>
+
+      try sql"drop table programmer_skill".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
       try {
-        sql"select 1 from programmer limit 1".map(_.long(1)).single.apply()
-      } catch {
-        case e: java.sql.SQLException =>
-          DB autoCommit { implicit s =>
-            try {
-              sql"""
+        sql"""
 create table programmer (
   id bigint auto_increment primary key,
   name varchar(255) not null,
@@ -99,9 +102,12 @@ create table programmer (
   deleted_timestamp timestamp 
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try sql"drop table company".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
+      try {
+        sql"""
 create table company (
   id bigint auto_increment primary key,
   name varchar(255) not null,
@@ -110,9 +116,12 @@ create table company (
   deleted_at timestamp 
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try sql"drop table skill".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
+      try {
+        sql"""
 create table skill (
   id bigint auto_increment primary key,
   name varchar(255) not null,
@@ -120,18 +129,22 @@ create table skill (
   deleted_at timestamp 
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try sql"drop table programmer_skill".execute.apply()
+      catch { case e: Exception => log.debug(e.getMessage, e) }
+      try {
+        sql"""
 create table programmer_skill (
   programmer_id bigint not null,
   skill_id bigint not null,
   primary key(programmer_id, skill_id)
 );
 """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-            try {
-              sql"""
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
+
+      try {
+        sql"""
 insert into company (name, url, created_at) values ('Typesafe', 'http://typesafe.com/', current_timestamp);
 insert into company (name, url, created_at) values ('Oracle', 'http://www.oracle.com/', current_timestamp);
 insert into company (name, url, created_at) values ('Google', 'http://www.google.com/', current_timestamp);
@@ -151,9 +164,7 @@ insert into programmer_skill values (1, 1);
 insert into programmer_skill values (1, 2);
 insert into programmer_skill values (2, 2);
    """.execute.apply()
-            } catch { case e: Exception => log.debug(e.getMessage, e) }
-          }
-      }
+      } catch { case e: Exception => log.debug(e.getMessage, e) }
     }
   }
 

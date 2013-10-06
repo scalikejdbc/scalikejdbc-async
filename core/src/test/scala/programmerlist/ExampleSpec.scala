@@ -14,13 +14,9 @@ class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logg
     val findAllFuture: Future[List[Programmer]] = AsyncDB.withPool { implicit session =>
       Programmer.findAll
     }
-
-    Await.result(findAllFuture, 5.seconds)
-    findAllFuture.foreach { programmers: List[Programmer] =>
-
-      log.debug(s"Programmers: ${programmers}")
-      programmers.size should be > 0
-    }
+    val programmers: List[Programmer] = Await.result(findAllFuture, 5.seconds)
+    log.debug(s"Programmers: ${programmers}")
+    programmers.size should be > 0
   }
 
   it should "work within a transaction" in {
