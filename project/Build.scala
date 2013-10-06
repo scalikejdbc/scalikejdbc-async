@@ -57,8 +57,8 @@ object ScalikeJDBCAsyncProject extends Build {
         Seq(
           "com.github.mauricio"    %% "postgresql-async" % mauricioVersion    % "provided",
           "com.github.mauricio"    %% "mysql-async"      % mauricioVersion    % "provided",
-          "play"                   %% "play"             % defaultPlayVersion % "provided",
-          "play"                   %% "play-test"        % defaultPlayVersion % "test")
+          "com.typesafe.play"      %% "play"             % defaultPlayVersion % "provided",
+          "com.typesafe.play"      %% "play-test"        % defaultPlayVersion % "test")
       },
       testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "sequential", "true"),
       publishTo <<= version { (v: String) => _publishTo(v) },
