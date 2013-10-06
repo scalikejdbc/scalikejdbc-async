@@ -5,9 +5,9 @@ import play.Project._
 object ScalikeJDBCAsyncProject extends Build {
 
   lazy val _version = "0.2.6-SNAPSHOT"
-  lazy val scalikejdbcVersion = "1.6.8"
-  lazy val mauricioVersion = "0.2.6"
-  lazy val defaultPlayVersion = "2.1.3"
+  lazy val scalikejdbcVersion = "1.6.9"
+  lazy val mauricioVersion = "0.2.8"
+  lazy val defaultPlayVersion = "2.2.0"
 
   lazy val core = Project(
     id = "core",
@@ -16,7 +16,7 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "com.github.seratch",
       name := "scalikejdbc-async",
       version := _version,
-      scalaVersion := "2.10.2",
+      scalaVersion := "2.10.3",
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       resolvers ++= _resolvers,
@@ -28,7 +28,8 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.2-1003-jdbc4"   % "test",
           "mysql"               %  "mysql-connector-java"      % "5.1.26"           % "test",
-          "org.scalatest"       %% "scalatest"                 % "1.9.1"            % "test"
+          "org.scalatest"       %% "scalatest"                 % "1.9.1"            % "test",
+          "ch.qos.logback"      %  "logback-classic"           % "1.0.13"           % "test"
         )
       },
       sbtPlugin := false,
