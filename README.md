@@ -27,8 +27,8 @@ Add `scalikejdbc-async` to your dependencies.
 ```scala
 libraryDependencies ++= Seq(
   "com.github.seratch"  %% "scalikejdbc-async" % "[0.2,)",
-  "com.github.mauricio" %% "postgresql-async"  % "[0.2,)",
-  "com.github.mauricio" %% "mysql-async"       % "[0.2,)",
+  "com.github.mauricio" %% "postgresql-async"  % "0.2.8",
+  "com.github.mauricio" %% "mysql-async"       % "0.2.8",
   "org.slf4j"           %  "slf4j-simple"      % "[1.7,)" // slf4j implementation
 )
 ```
@@ -39,7 +39,7 @@ If you're a Play2 user, use play-plugin too!
 val appDependencies = Seq(
   "com.github.seratch"  %% "scalikejdbc-async"             % "[0.2,)",
   "com.github.seratch"  %% "scalikejdbc-async-play-plugin" % "[0.2,)",
-  "com.github.mauricio" %% "postgresql-async"              % "[0.2,)"
+  "com.github.mauricio" %% "postgresql-async"              % "0.2.8"
 )
 ```
 
