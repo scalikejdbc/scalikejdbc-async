@@ -15,6 +15,10 @@ https://github.com/seratch/scalikejdbc
 ScalikeJDBC is a tidy SQL-based DB access library for Scala developers. This library naturally wraps JDBC APIs and provides you easy-to-use APIs.
 
 
+### Important Notice
+
+ScalikeJDBC-Async and [postgrsql-async and mysql-async](https://github.com/mauricio/postgresql-async) are still in the alpha stage. If you don't have motivation to investigate or fix issues by yourself, we recommend you waiting until stable version release someday.
+
 ### Supported RDBMS
 
 - PostgreSQL
@@ -106,7 +110,7 @@ https://github.com/seratch/scalikejdbc-async/blob/develop/play-sample
 
 #### Is it production-ready?
 
-ScalikeJDBC-Async and [postgrsql-async and mysql-async,incredible works by @mauricio](https://github.com/mauricio/postgresql-async) basically works fine. But to be honest, ScalikeJBDC-Async don't have much of a record of production applications.
+ScalikeJDBC-Async and [postgrsql-async and mysql-async](https://github.com/mauricio/postgresql-async) basically works fine. But to be honest, ScalikeJBDC-Async don't have much of a record of production applications.
 
 #### Is it possible to combine scalikejdbc-async with normal scalikejdbc?
 
