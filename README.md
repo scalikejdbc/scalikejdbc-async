@@ -10,7 +10,7 @@ This library is built with [postgrsql-async and mysql-async,incredible works by 
 
 ScalikeJDBC:
 
-https://github.com/seratch/scalikejdbc
+https://github.com/scalikejdbc/scalikejdbc
 
 ScalikeJDBC is a tidy SQL-based DB access library for Scala developers. This library naturally wraps JDBC APIs and provides you easy-to-use APIs.
 
@@ -30,7 +30,7 @@ Add `scalikejdbc-async` to your dependencies.
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.github.seratch"  %% "scalikejdbc-async" % "[0.2,)",
+  "org.scalikejdbc"     %% "scalikejdbc-async" % "[0.3,)",
   "com.github.mauricio" %% "postgresql-async"  % "0.2.8",
   "com.github.mauricio" %% "mysql-async"       % "0.2.8",
   "org.slf4j"           %  "slf4j-simple"      % "[1.7,)" // slf4j implementation
@@ -41,17 +41,17 @@ If you're a Play2 user, use play-plugin too!
 
 ```scala
 val appDependencies = Seq(
-  "com.github.seratch"  %% "scalikejdbc-async"             % "[0.2,)",
-  "com.github.seratch"  %% "scalikejdbc-async-play-plugin" % "[0.2,)",
+  "org.scalikejdbc"     %% "scalikejdbc-async"             % "[0.3,)",
+  "org.scalikejdbc"     %% "scalikejdbc-async-play-plugin" % "[0.3,)",
   "com.github.mauricio" %% "postgresql-async"              % "0.2.8"
 )
 ```
 
 ### Example
 
-- [programmerlist/ExampleSpec.scala](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/ExampleSpec.scala)
-- [programmerlist/Company.scala](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/Company.scala)
-- [programmerlist/Programmer.scala](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/Programmer.scala)
+- [programmerlist/ExampleSpec.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/ExampleSpec.scala)
+- [programmerlist/Company.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/Company.scala)
+- [programmerlist/Programmer.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/Programmer.scala)
 
 ```scala
 import scalikejdbc._, SQLInterpolation._, async._
@@ -104,7 +104,7 @@ Transactional queries should be executed in series. You cannot use `Future.trave
 
 See the play-sample project:
 
-https://github.com/seratch/scalikejdbc-async/blob/develop/play-sample
+https://github.com/scalikejdbc/scalikejdbc-async/blob/develop/play-sample
 
 ### FAQ
 
@@ -114,7 +114,7 @@ ScalikeJDBC-Async and [postgrsql-async and mysql-async](https://github.com/mauri
 
 #### Is it possible to combine scalikejdbc-async with normal scalikejdbc?
 
-Yes, it's possible. See [this example](https://github.com/seratch/scalikejdbc-async/blob/develop/core/src/test/scala/sample/PostgreSQLSampleSpec.scala).
+Yes, it's possible. See [this example](https://github.com/scalikejdbc/scalikejdbc-async/blob/develop/core/src/test/scala/sample/PostgreSQLSampleSpec.scala).
 
 #### Why isn't it a part of scalikejdbc project now?
 

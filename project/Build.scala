@@ -4,16 +4,16 @@ import play.Project._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.2.6-SNAPSHOT"
-  lazy val scalikejdbcVersion = "1.6.9"
+  lazy val _version = "0.3.0"
+  lazy val scalikejdbcVersion = "1.7.0"
   lazy val mauricioVersion = "0.2.8"
-  lazy val defaultPlayVersion = "2.2.0"
+  lazy val defaultPlayVersion = "2.2.1"
 
   lazy val core = Project(
     id = "core",
     base = file("core"),
     settings = Defaults.defaultSettings ++ Seq(
-      organization := "com.github.seratch",
+      organization := "org.scalikejdbc",
       name := "scalikejdbc-async",
       version := _version,
       scalaVersion := "2.10.3",
@@ -22,8 +22,8 @@ object ScalikeJDBCAsyncProject extends Build {
       resolvers ++= _resolvers,
       libraryDependencies <++= (scalaVersion) { scalaVersion =>
         Seq(
-          "com.github.seratch"  %% "scalikejdbc"               % scalikejdbcVersion % "compile",
-          "com.github.seratch"  %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
+          "org.scalikejdbc"     %% "scalikejdbc"               % scalikejdbcVersion % "compile",
+          "org.scalikejdbc"     %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.2-1003-jdbc4"   % "test",
@@ -47,7 +47,7 @@ object ScalikeJDBCAsyncProject extends Build {
     base = file("play-plugin"),
     settings = Defaults.defaultSettings ++ Seq(
       sbtPlugin := false,
-      organization := "com.github.seratch",
+      organization := "org.scalikejdbc",
       name := "scalikejdbc-async-play-plugin",
       version := _version,
       scalaVersion := "2.10.0",
@@ -74,9 +74,9 @@ object ScalikeJDBCAsyncProject extends Build {
     val appName         = "play-sample"
     val appVersion      = "0.1"
     val appDependencies = Seq(
-      "com.github.seratch"   %% "scalikejdbc"                     % scalikejdbcVersion,
-      "com.github.seratch"   %% "scalikejdbc-config"              % scalikejdbcVersion,
-      "com.github.seratch"   %% "scalikejdbc-interpolation"       % scalikejdbcVersion,
+      "org.scalikejdbc"      %% "scalikejdbc"                     % scalikejdbcVersion,
+      "org.scalikejdbc"      %% "scalikejdbc-config"              % scalikejdbcVersion,
+      "org.scalikejdbc"      %% "scalikejdbc-interpolation"       % scalikejdbcVersion,
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % "9.2-1003-jdbc4",
@@ -103,7 +103,7 @@ object ScalikeJDBCAsyncProject extends Build {
     "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
   )
   val _scalacOptions = Seq("-deprecation", "-unchecked")
-  val _pomExtra = <url>http://seratch.github.com/scalikejdbc</url>
+  val _pomExtra = <url>http://scalikejdbc.org/</url>
       <licenses>
         <license>
           <name>Apache License, Version 2.0</name>
@@ -112,8 +112,8 @@ object ScalikeJDBCAsyncProject extends Build {
         </license>
       </licenses>
       <scm>
-        <url>git@github.com:seratch/scalikejdbc-async.git</url>
-        <connection>scm:git:git@github.com:seratch/scalikejdbc-async.git</connection>
+        <url>git@github.com:scalikejdbc/scalikejdbc-async.git</url>
+        <connection>scm:git:git@github.com:scalikejdbc/scalikejdbc-async.git</connection>
       </scm>
       <developers>
         <developer>
