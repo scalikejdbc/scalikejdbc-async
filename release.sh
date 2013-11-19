@@ -1,4 +1,4 @@
 #!/bin/sh
 
-sbt clean "project core" publish "project play-plugin" publish
+sbt clean "project core" publish-signed "project play-plugin" publish-signed
 
