@@ -181,4 +181,165 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     case any => new java.net.URL(any.toString)
   }
 
+  override def nullableBoolean(columnIndex: Int): java.lang.Boolean = {
+    ensureCursor()
+    Option(any(columnIndex))
+      .map {
+        case b if b == null => b.asInstanceOf[java.lang.Boolean]
+        case b: java.lang.Boolean => b
+        case b: Boolean => b.asInstanceOf[java.lang.Boolean]
+        case s: String => {
+          try s.toInt != 0
+          catch { case e: NumberFormatException => !s.isEmpty }
+        }.asInstanceOf[java.lang.Boolean]
+        case v => (v != 0).asInstanceOf[java.lang.Boolean]
+      }.orNull[java.lang.Boolean]
+  }
+
+  override def nullableBoolean(columnLabel: String): java.lang.Boolean = {
+    ensureCursor()
+    Option(any(columnLabel))
+      .map {
+        case b if b == null => b.asInstanceOf[java.lang.Boolean]
+        case b: java.lang.Boolean => b
+        case b: Boolean => b.asInstanceOf[java.lang.Boolean]
+        case s: String => {
+          try s.toInt != 0
+          catch { case e: NumberFormatException => !s.isEmpty }
+        }.asInstanceOf[java.lang.Boolean]
+        case v => (v != 0).asInstanceOf[java.lang.Boolean]
+      }.orNull[java.lang.Boolean]
+  }
+
+  override def boolean(columnIndex: Int): Boolean = nullableBoolean(columnIndex).asInstanceOf[Boolean]
+  override def boolean(columnLabel: String): Boolean = nullableBoolean(columnLabel).asInstanceOf[Boolean]
+  override def booleanOpt(columnIndex: Int): Option[Boolean] = opt[Boolean](nullableBoolean(columnIndex))
+  override def booleanOpt(columnLabel: String): Option[Boolean] = opt[Boolean](nullableBoolean(columnLabel))
+
+  override def nullableByte(columnIndex: Int): java.lang.Byte = {
+    ensureCursor()
+    Option(any(columnIndex))
+      .map(v => java.lang.Byte.valueOf(v.toString))
+      .orNull[java.lang.Byte]
+  }
+
+  override def nullableByte(columnLabel: String): java.lang.Byte = {
+    ensureCursor()
+    Option(any(columnLabel))
+      .map(v => java.lang.Byte.valueOf(v.toString))
+      .orNull[java.lang.Byte]
+  }
+
+  override def byte(columnIndex: Int): Byte = nullableByte(columnIndex).asInstanceOf[Byte]
+  override def byte(columnLabel: String): Byte = nullableByte(columnLabel).asInstanceOf[Byte]
+  override def byteOpt(columnIndex: Int): Option[Byte] = opt[Byte](nullableByte(columnIndex))
+  override def byteOpt(columnLabel: String): Option[Byte] = opt[Byte](nullableByte(columnLabel))
+
+  override def nullableDouble(columnIndex: Int): java.lang.Double = {
+    ensureCursor()
+    Option(any(columnIndex))
+      .map(v => java.lang.Double.valueOf(v.toString))
+      .orNull[java.lang.Double]
+  }
+
+  override def nullableDouble(columnLabel: String): java.lang.Double = {
+    ensureCursor()
+    Option(any(columnLabel))
+      .map(v => java.lang.Double.valueOf(v.toString))
+      .orNull[java.lang.Double]
+  }
+
+  override def double(columnIndex: Int): Double = nullableDouble(columnIndex).asInstanceOf[Double]
+  override def double(columnLabel: String): Double = nullableDouble(columnLabel).asInstanceOf[Double]
+  override def doubleOpt(columnIndex: Int): Option[Double] = opt[Double](nullableDouble(columnIndex))
+  override def doubleOpt(columnLabel: String): Option[Double] = opt[Double](nullableDouble(columnLabel))
+
+  override def nullableFloat(columnIndex: Int): java.lang.Float = {
+    ensureCursor()
+    Option(any(columnIndex))
+      .map(v => java.lang.Float.valueOf(v.toString))
+      .orNull[java.lang.Float]
+  }
+
+  override def nullableFloat(columnLabel: String): java.lang.Float = {
+    ensureCursor()
+    Option(any(columnLabel))
+      .map(v => java.lang.Float.valueOf(v.toString))
+      .orNull[java.lang.Float]
+  }
+
+  override def float(columnIndex: Int): Float = nullableFloat(columnIndex).asInstanceOf[Float]
+  override def float(columnLabel: String): Float = nullableFloat(columnLabel).asInstanceOf[Float]
+  override def floatOpt(columnIndex: Int): Option[Float] = opt[Float](nullableFloat(columnIndex))
+  override def floatOpt(columnLabel: String): Option[Float] = opt[Float](nullableFloat(columnLabel))
+
+  override def nullableInt(columnIndex: Int): java.lang.Integer = {
+    ensureCursor()
+    Option(any(columnIndex)).map {
+      case v: Float => v.toInt.asInstanceOf[java.lang.Integer]
+      case v: Double => v.toInt.asInstanceOf[java.lang.Integer]
+      case v => java.lang.Integer.valueOf(v.toString)
+    }.orNull[java.lang.Integer]
+  }
+
+  override def nullableInt(columnLabel: String): java.lang.Integer = {
+    ensureCursor()
+    Option(any(columnLabel)).map {
+      case v: Float => v.toInt.asInstanceOf[java.lang.Integer]
+      case v: Double => v.toInt.asInstanceOf[java.lang.Integer]
+      case v => java.lang.Integer.valueOf(v.toString)
+    }.orNull[java.lang.Integer]
+  }
+
+  override def int(columnIndex: Int): Int = nullableInt(columnIndex).asInstanceOf[Int]
+  override def int(columnLabel: String): Int = nullableInt(columnLabel).asInstanceOf[Int]
+  override def intOpt(columnIndex: Int): Option[Int] = opt[Int](nullableInt(columnIndex))
+  override def intOpt(columnLabel: String): Option[Int] = opt[Int](nullableInt(columnLabel))
+
+  override def nullableLong(columnIndex: Int): java.lang.Long = {
+    ensureCursor()
+    Option(any(columnIndex)).map {
+      case v: Float => v.toLong.asInstanceOf[java.lang.Long]
+      case v: Double => v.toLong.asInstanceOf[java.lang.Long]
+      case v => java.lang.Long.valueOf(v.toString)
+    }.orNull[java.lang.Long]
+  }
+
+  override def nullableLong(columnLabel: String): java.lang.Long = {
+    ensureCursor()
+    Option(any(columnLabel)).map {
+      case v: Float => v.toLong.asInstanceOf[java.lang.Long]
+      case v: Double => v.toLong.asInstanceOf[java.lang.Long]
+      case v => java.lang.Long.valueOf(v.toString)
+    }.orNull[java.lang.Long]
+  }
+
+  override def long(columnIndex: Int): Long = nullableLong(columnIndex).asInstanceOf[Long]
+  override def long(columnLabel: String): Long = nullableLong(columnLabel).asInstanceOf[Long]
+  override def longOpt(columnIndex: Int): Option[Long] = opt[Long](nullableLong(columnIndex))
+  override def longOpt(columnLabel: String): Option[Long] = opt[Long](nullableLong(columnLabel))
+
+  override def nullableShort(columnIndex: Int): java.lang.Short = {
+    ensureCursor()
+    Option(any(columnIndex)).map {
+      case v: Float => v.toShort.asInstanceOf[java.lang.Short]
+      case v: Double => v.toShort.asInstanceOf[java.lang.Short]
+      case v => java.lang.Short.valueOf(v.toString)
+    }.orNull[java.lang.Short]
+  }
+
+  override def nullableShort(columnLabel: String): java.lang.Short = {
+    ensureCursor()
+    Option(any(columnLabel)).map {
+      case v: Float => v.toShort.asInstanceOf[java.lang.Short]
+      case v: Double => v.toShort.asInstanceOf[java.lang.Short]
+      case v => java.lang.Short.valueOf(v.toString)
+    }.orNull[java.lang.Short]
+  }
+
+  override def short(columnIndex: Int): Short = nullableShort(columnIndex).asInstanceOf[Short]
+  override def short(columnLabel: String): Short = nullableShort(columnLabel).asInstanceOf[Short]
+  override def shortOpt(columnIndex: Int): Option[Short] = opt[Short](nullableShort(columnIndex))
+  override def shortOpt(columnLabel: String): Option[Short] = opt[Short](nullableShort(columnLabel))
+
 }

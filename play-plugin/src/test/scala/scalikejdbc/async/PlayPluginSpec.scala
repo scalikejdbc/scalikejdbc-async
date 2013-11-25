@@ -139,10 +139,9 @@ object PlayPluginSpec extends Specification {
     "be available when DB plugin is not active" in {
       running(fakeApp) {
         val settings = AsyncConnectionPool().settings
-        settings.initialSize must_== (1)
-        settings.maxSize must_== (2)
-        settings.validationQuery must_== ("select 1")
-        settings.connectionTimeoutMillis must_== (2000)
+        settings.maxPoolSize must_== (8)
+        settings.maxQueueSize must_== (8)
+        settings.maxIdleMillis must_== (1000)
         simpleTest(sqls"user_1")
       }
       running(fakeApp) { simpleTest(sqls"user_2") }
