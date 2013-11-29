@@ -13,6 +13,14 @@ class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings 
   val createdTime = DateTime.now.withMillisOfSecond(0)
   val al = AsyncLover.syntax("al")
 
+  it should "count" in {
+    val countFuture: Future[Long] = AsyncDB.withPool { implicit s =>
+      withSQL { select(sqls.count).from(AsyncLover as al) }.map(_.long(1)).single.future().map(_.get)
+    }
+    val c = Await.result(countFuture, 5.seconds)
+    c should be > 0L
+  }
+
   it should "select a single value" in {
     val resultFuture: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, 1) }.map(AsyncLover(al)).single.future()
