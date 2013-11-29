@@ -38,7 +38,13 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
 
   // WrappedResultSet API
 
-  override def any(columnIndex: Int): Any = currentRow.map(_.apply(columnIndex)).orNull[Any]
+  override def any(columnIndex: Int): Any = {
+    // To be compatible with JDBC, index should be 1-origin
+    // But postgresql-async/mysql-async is 0-origin
+    val index0origin = columnIndex - 1
+    currentRow.map(_.apply(index0origin)).orNull[Any]
+  }
+
   override def any(columnLabel: String): Any = currentRow.map(_.apply(columnLabel)).orNull[Any]
 
   override def bigDecimal(columnIndex: Int): java.math.BigDecimal = any(columnIndex) match {
