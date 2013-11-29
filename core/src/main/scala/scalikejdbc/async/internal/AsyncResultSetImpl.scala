@@ -109,6 +109,10 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     case any => any.toString
   }
 
+  override def stringOpt(columnIndex: Int): Option[String] = Option(string(columnIndex))
+
+  override def stringOpt(columnLabel: String): Option[String] = Option(string(columnLabel))
+
   override def time(columnIndex: Int): java.sql.Time = any(columnIndex) match {
     case null => null
     case t: java.sql.Time => t
