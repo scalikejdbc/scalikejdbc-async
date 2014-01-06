@@ -5,7 +5,7 @@ import play.Project._
 object ScalikeJDBCAsyncProject extends Build {
 
   lazy val _version = "0.3.3"
-  lazy val scalikejdbcVersion = "1.7.0"
+  lazy val scalikejdbcVersion = "1.7.3"
   lazy val mauricioVersion = "0.2.8"
   lazy val defaultPlayVersion = "2.2.1"
 
