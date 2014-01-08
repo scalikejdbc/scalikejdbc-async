@@ -6,6 +6,7 @@ import play.api.data._, Forms._, validation.Constraints._
 import org.json4s._, ext.JodaTimeSerializers
 import com.github.tototoshi.play2.json4s.native._
 
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import models._
@@ -14,17 +15,13 @@ object Companies extends Controller with Json4s {
 
   implicit val formats = DefaultFormats ++ JodaTimeSerializers.all
 
-  def all = Action {
-    Async {
-      Company.findAll.map(companies => Ok(Extraction.decompose(companies)))
-    }
+  def all = Action.async {
+    Company.findAll.map(companies => Ok(Extraction.decompose(companies)))
   }
 
-  def show(id: Long) = Action {
-    Async {
-      Company.find(id) map { companyOpt =>
-        companyOpt map { company => Ok(Extraction.decompose(company)) } getOrElse NotFound
-      }
+  def show(id: Long) = Action.async {
+    Company.find(id) map { companyOpt =>
+      companyOpt map { company => Ok(Extraction.decompose(company)) } getOrElse NotFound
     }
   }
 
@@ -37,27 +34,21 @@ object Companies extends Controller with Json4s {
     )(CompanyForm.apply)(CompanyForm.unapply)
   )
 
-  def create = Action { implicit req =>
+  def create = Action.async { implicit req =>
     companyForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("invalid parameters"),
-      form => {
-        Async {
-          Company.create(name = form.name, url = form.url).map { company =>
-            Created.withHeaders(LOCATION -> s"/companies/${company.id}")
-          }
-        }
+      formWithErrors => Future.successful(BadRequest("invalid parameters")),
+      form => Company.create(name = form.name, url = form.url).map { company =>
+        Created.withHeaders(LOCATION -> s"/companies/${company.id}")
       }
     )
   }
 
-  def delete(id: Long) = Action {
-    Async {
-      Company.find(id).map { companyOpt =>
-        companyOpt map { company =>
-          company.destroy()
-          NoContent
-        } getOrElse NotFound
-      }
+  def delete(id: Long) = Action.async {
+    Company.find(id).map { companyOpt =>
+      companyOpt map { company =>
+        company.destroy()
+        NoContent
+      } getOrElse NotFound
     }
   }
 

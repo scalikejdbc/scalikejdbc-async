@@ -27,7 +27,7 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.2-1003-jdbc4"   % "test",
-          "mysql"               %  "mysql-connector-java"      % "5.1.26"           % "test",
+          "mysql"               %  "mysql-connector-java"      % "5.1.28"           % "test",
           "org.scalatest"       %% "scalatest"                 % "1.9.1"            % "test",
           "ch.qos.logback"      %  "logback-classic"           % "1.0.13"           % "test"
         )
@@ -79,9 +79,10 @@ object ScalikeJDBCAsyncProject extends Build {
       "org.scalikejdbc"      %% "scalikejdbc-interpolation"       % scalikejdbcVersion,
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
-      "org.postgresql"       %  "postgresql"                      % "9.2-1003-jdbc4",
-      "mysql"                %  "mysql-connector-java"            % "5.1.26",
-      "org.json4s"           %% "json4s-ext"                      % "3.2.4",
+      "org.postgresql"       %  "postgresql"                      % "9.2-1004-jdbc41",
+      "com.github.tototoshi" %% "play-flyway"                     % "1.0.0",
+      "mysql"                %  "mysql-connector-java"            % "5.1.28",
+      "org.json4s"           %% "json4s-ext"                      % "3.2.6",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.1.0"
     )
     play.Project(appName, appVersion, appDependencies, path = file("play-sample")).settings(
