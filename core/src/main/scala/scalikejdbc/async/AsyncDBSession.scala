@@ -328,11 +328,11 @@ case class TxAsyncDBSession(connection: NonSharedAsyncConnection) extends AsyncD
 
   def isActive: Boolean = connection.isActive
 
-  def begin(): Future[AsyncQueryResult] = connection.sendQuery("BEGIN")
+  def begin()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] = connection.sendQuery("BEGIN")
 
-  def rollback(): Future[AsyncQueryResult] = connection.sendQuery("ROLLBACK")
+  def rollback()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] = connection.sendQuery("ROLLBACK")
 
-  def commit(): Future[AsyncQueryResult] = connection.sendQuery("COMMIT")
+  def commit()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] = connection.sendQuery("COMMIT")
 
   def release(): Unit = connection.release()
 
