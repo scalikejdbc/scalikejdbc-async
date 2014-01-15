@@ -4,9 +4,9 @@ import play.Project._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.3.4"
+  lazy val _version = "0.3.5-SNAPSHOT"
   lazy val scalikejdbcVersion = "1.7.3"
-  lazy val mauricioVersion = "0.2.10"
+  lazy val mauricioVersion = "0.2.11"
   lazy val defaultPlayVersion = "2.2.1"
 
   lazy val core = Project(
@@ -26,7 +26,7 @@ object ScalikeJDBCAsyncProject extends Build {
           "org.scalikejdbc"     %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
-          "org.postgresql"      %  "postgresql"                % "9.2-1003-jdbc4"   % "test",
+          "org.postgresql"      %  "postgresql"                % "9.3-1100-jdbc41"  % "test",
           "mysql"               %  "mysql-connector-java"      % "5.1.28"           % "test",
           "org.scalatest"       %% "scalatest"                 % "1.9.1"            % "test",
           "ch.qos.logback"      %  "logback-classic"           % "1.0.13"           % "test"
@@ -50,7 +50,7 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "org.scalikejdbc",
       name := "scalikejdbc-async-play-plugin",
       version := _version,
-      scalaVersion := "2.10.0",
+      scalaVersion := "2.10.3",
       resolvers ++= _resolvers,
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies <++= (scalaVersion) { scalaVersion =>
@@ -83,10 +83,10 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.tototoshi" %% "play-flyway"                     % "1.0.0",
       "mysql"                %  "mysql-connector-java"            % "5.1.28",
       "org.json4s"           %% "json4s-ext"                      % "3.2.6",
-      "com.github.tototoshi" %% "play-json4s-native"              % "0.1.0"
+      "com.github.tototoshi" %% "play-json4s-native"              % "0.2.0"
     )
     play.Project(appName, appVersion, appDependencies, path = file("play-sample")).settings(
-      scalaVersion in ThisBuild := "2.10.2",
+      scalaVersion in ThisBuild := "2.10.3",
       resolvers ++= Seq(
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
