@@ -5,7 +5,7 @@ import play.Project._
 object ScalikeJDBCAsyncProject extends Build {
 
   lazy val _version = "0.3.5-SNAPSHOT"
-  lazy val scalikejdbcVersion = "1.7.3"
+  lazy val scalikejdbcVersion = "1.7.4"
   lazy val mauricioVersion = "0.2.11"
   lazy val defaultPlayVersion = "2.2.1"
 
@@ -28,8 +28,8 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.3-1100-jdbc41"  % "test",
           "mysql"               %  "mysql-connector-java"      % "5.1.28"           % "test",
-          "org.scalatest"       %% "scalatest"                 % "1.9.1"            % "test",
-          "ch.qos.logback"      %  "logback-classic"           % "1.0.13"           % "test"
+          "org.scalatest"       %% "scalatest"                 % "1.9.2"            % "test",
+          "ch.qos.logback"      %  "logback-classic"           % "1.1.1"            % "test"
         )
       },
       sbtPlugin := false,
@@ -79,8 +79,8 @@ object ScalikeJDBCAsyncProject extends Build {
       "org.scalikejdbc"      %% "scalikejdbc-interpolation"       % scalikejdbcVersion,
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
-      "org.postgresql"       %  "postgresql"                      % "9.2-1004-jdbc41",
-      "com.github.tototoshi" %% "play-flyway"                     % "1.0.0",
+      "org.postgresql"       %  "postgresql"                      % "9.3-1100-jdbc41",
+      "com.github.tototoshi" %% "play-flyway"                     % "1.0.1",
       "mysql"                %  "mysql-connector-java"            % "5.1.28",
       "org.json4s"           %% "json4s-ext"                      % "3.2.6",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.2.0"
