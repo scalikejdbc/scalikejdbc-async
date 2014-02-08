@@ -37,8 +37,13 @@ class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logg
       // delete a record and rollback
       val withinTx: Future[Unit] = AsyncDB.localTx { implicit tx =>
         for {
-          restructuring <- Programmer.findAllBy(sqls.eq(p.companyId, newCompany.id)).map { programmers =>
-            programmers.foreach(_.destroy())
+          programmers <- Programmer.findAllBy(sqls.eq(p.companyId, newCompany.id))
+          restructuring <- programmers.foldLeft(Future.successful()) {
+            (prev, programmer) =>
+              for {
+                _ <- prev
+                _ <- programmer.destroy()
+              } yield ()
           }
           dissolution <- newCompany.destroy()
           _ <- sql"Just joking!".update.future
