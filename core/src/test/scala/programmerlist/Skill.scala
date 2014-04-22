@@ -22,8 +22,8 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
   def apply(s: ResultName[Skill])(rs: WrappedResultSet): Skill = new Skill(
     id = rs.long(s.id),
     name = rs.string(s.name),
-    createdAt = rs.timestamp(s.createdAt).toDateTime,
-    deletedAt = rs.timestampOpt(s.deletedAt).map(_.toDateTime)
+    createdAt = rs.jodaDateTime(s.createdAt),
+    deletedAt = rs.jodaDateTimeOpt(s.deletedAt)
   )
 
   def opt(s: SyntaxProvider[Skill])(rs: WrappedResultSet): Option[Skill] = rs.longOpt(s.resultName.id).map(_ => apply(s.resultName)(rs))

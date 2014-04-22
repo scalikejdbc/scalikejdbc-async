@@ -6,7 +6,7 @@ import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 import org.scalatest._, matchers._
 import unit._
 
-class ExampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logging {
+class ExampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   val p = Programmer.syntax("p")
 

@@ -7,7 +7,7 @@ import scala.concurrent._, duration.DurationInt, ExecutionContext.Implicits.glob
 import scalikejdbc._, SQLInterpolation._, async._
 import unit._
 
-class PostgreSQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logging {
+class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   val column = AsyncLover.column
   val createdTime = DateTime.now.withMillisOfSecond(0)

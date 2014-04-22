@@ -119,48 +119,48 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     case dt: DateTime => dt
     case TimeInMillis(ms) => new DateTime(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #dateTime!")
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaDateTime!")
   }
-  override def dateTime(columnIndex: Int): DateTime = anyToDateTime(any(columnIndex))
-  override def dateTime(columnLabel: String): DateTime = anyToDateTime(any(columnLabel))
-  override def dateTimeOpt(columnIndex: Int): Option[DateTime] = Option(dateTime(columnIndex))
-  override def dateTimeOpt(columnLabel: String): Option[DateTime] = Option(dateTime(columnLabel))
+  override def jodaDateTime(columnIndex: Int): DateTime = anyToDateTime(any(columnIndex))
+  override def jodaDateTime(columnLabel: String): DateTime = anyToDateTime(any(columnLabel))
+  override def jodaDateTimeOpt(columnIndex: Int): Option[DateTime] = Option(jodaDateTime(columnIndex))
+  override def jodaDateTimeOpt(columnLabel: String): Option[DateTime] = Option(jodaDateTime(columnLabel))
 
   private def anyToLocalDateTime(any: Any): LocalDateTime = any match {
     case null => null
     case ldt: LocalDateTime => ldt
     case TimeInMillis(ms) => new LocalDateTime(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #localDateTime!")
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDateTime!")
   }
-  override def localDateTime(columnIndex: Int): LocalDateTime = anyToLocalDateTime(any(columnIndex))
-  override def localDateTime(columnLabel: String): LocalDateTime = anyToLocalDateTime(any(columnLabel))
-  override def localDateTimeOpt(columnIndex: Int): Option[LocalDateTime] = Option(localDateTime(columnIndex))
-  override def localDateTimeOpt(columnLabel: String): Option[LocalDateTime] = Option(localDateTime(columnLabel))
+  override def jodaLocalDateTime(columnIndex: Int): LocalDateTime = anyToLocalDateTime(any(columnIndex))
+  override def jodaLocalDateTime(columnLabel: String): LocalDateTime = anyToLocalDateTime(any(columnLabel))
+  override def jodaLocalDateTimeOpt(columnIndex: Int): Option[LocalDateTime] = Option(jodaLocalDateTime(columnIndex))
+  override def jodaLocalDateTimeOpt(columnLabel: String): Option[LocalDateTime] = Option(jodaLocalDateTime(columnLabel))
 
   private def anyToLocalDate(any: Any): LocalDate = any match {
     case null => null
     case ld: LocalDate => ld
     case TimeInMillis(ms) => new LocalDate(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #localDate!")
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDate!")
   }
-  override def localDate(columnIndex: Int): LocalDate = anyToLocalDate(any(columnIndex))
-  override def localDate(columnLabel: String): LocalDate = anyToLocalDate(any(columnLabel))
-  override def localDateOpt(columnIndex: Int): Option[LocalDate] = Option(localDate(columnIndex))
-  override def localDateOpt(columnLabel: String): Option[LocalDate] = Option(localDate(columnLabel))
+  override def jodaLocalDate(columnIndex: Int): LocalDate = anyToLocalDate(any(columnIndex))
+  override def jodaLocalDate(columnLabel: String): LocalDate = anyToLocalDate(any(columnLabel))
+  override def jodaLocalDateOpt(columnIndex: Int): Option[LocalDate] = Option(jodaLocalDate(columnIndex))
+  override def jodaLocalDateOpt(columnLabel: String): Option[LocalDate] = Option(jodaLocalDate(columnLabel))
 
   private def anyToLocalTime(any: Any): LocalTime = any match {
     case null => null
     case lt: LocalTime => lt
     case TimeInMillis(ms) => new LocalTime(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #localTime!")
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalTime!")
   }
-  override def localTime(columnIndex: Int): LocalTime = anyToLocalTime(any(columnIndex))
-  override def localTime(columnLabel: String): LocalTime = anyToLocalTime(any(columnLabel))
-  override def localTimeOpt(columnIndex: Int): Option[LocalTime] = Option(localTime(columnIndex))
-  override def localTimeOpt(columnLabel: String): Option[LocalTime] = Option(localTime(columnLabel))
+  override def jodaLocalTime(columnIndex: Int): LocalTime = anyToLocalTime(any(columnIndex))
+  override def jodaLocalTime(columnLabel: String): LocalTime = anyToLocalTime(any(columnLabel))
+  override def jodaLocalTimeOpt(columnIndex: Int): Option[LocalTime] = Option(jodaLocalTime(columnIndex))
+  override def jodaLocalTimeOpt(columnLabel: String): Option[LocalTime] = Option(jodaLocalTime(columnLabel))
 
   private def anyToUrl(any: Any): java.net.URL = any match {
     case null => null
