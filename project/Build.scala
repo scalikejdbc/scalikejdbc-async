@@ -4,10 +4,11 @@ import play.Project._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.3.6-SNAPSHOT"
-  lazy val scalikejdbcVersion = "2.0.0-beta2"
+  lazy val _version = "0.4.0-RC"
+  lazy val scalikejdbcVersion = "2.0.0-RC3"
+  // TODO Scala 2.11 https://github.com/mauricio/postgresql-async/pull/87
   lazy val mauricioVersion = "0.2.13"
-  lazy val defaultPlayVersion = "2.2.2"
+  lazy val defaultPlayVersion = "2.2.3"
 
   lazy val core = Project(
     id = "core",
@@ -27,9 +28,9 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.3-1101-jdbc41"  % "test",
-          "mysql"               %  "mysql-connector-java"      % "5.1.30"           % "test",
-          "org.scalatest"       %% "scalatest"                 % "2.1.3"            % "test",
-          "ch.qos.logback"      %  "logback-classic"           % "1.1.2"            % "test"
+          "mysql"               %  "mysql-connector-java"      % "5.1.+"            % "test",
+          "org.scalatest"       %% "scalatest"                 % "2.1.+"            % "test",
+          "ch.qos.logback"      %  "logback-classic"           % "1.1.+"            % "test"
         )
       },
       sbtPlugin := false,
@@ -84,10 +85,10 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % "9.3-1101-jdbc41",
-      "com.github.tototoshi" %% "play-flyway"                     % "1.0.1",
-      "mysql"                %  "mysql-connector-java"            % "5.1.30",
-      "org.json4s"           %% "json4s-ext"                      % "3.2.8",
-      "com.github.tototoshi" %% "play-json4s-native"              % "0.2.0"
+      "com.github.tototoshi" %% "play-flyway"                     % "1.0.+",
+      "mysql"                %  "mysql-connector-java"            % "5.1.+",
+      "org.json4s"           %% "json4s-ext"                      % "3.2.+",
+      "com.github.tototoshi" %% "play-json4s-native"              % "0.2.+"
     )
     play.Project(appName, appVersion, appDependencies, path = file("play-sample")).settings(
       scalaVersion in ThisBuild := "2.10.3",

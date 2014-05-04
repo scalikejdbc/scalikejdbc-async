@@ -10,7 +10,11 @@ libraryDependencies <+= (sbtVersion){ sv =>
   }
 }
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.2.2")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.2.3")
 
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.4")
+
+addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.8.3")
 
