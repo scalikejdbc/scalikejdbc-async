@@ -24,8 +24,8 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
     id = rs.long(c.id),
     name = rs.string(c.name),
     url = rs.stringOpt(c.url),
-    createdAt = rs.timestamp(c.createdAt).toDateTime,
-    deletedAt = rs.timestampOpt(c.deletedAt).map(_.toDateTime)
+    createdAt = rs.jodaDateTime(c.createdAt),
+    deletedAt = rs.jodaDateTimeOpt(c.deletedAt)
   )
 
   lazy val c = Company.syntax("c")

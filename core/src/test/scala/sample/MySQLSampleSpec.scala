@@ -6,7 +6,7 @@ import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 import scalikejdbc._, SQLInterpolation._, async._
 import unit._
 
-class MySQLSampleSpec extends FlatSpec with ShouldMatchers with DBSettings with Logging {
+class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   val column = AsyncLover.column
   val createdTime = DateTime.now.withMillisOfSecond(0)

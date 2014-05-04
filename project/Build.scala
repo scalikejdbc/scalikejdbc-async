@@ -4,10 +4,11 @@ import play.Project._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.3.5"
-  lazy val scalikejdbcVersion = "1.7.4"
-  lazy val mauricioVersion = "0.2.11"
-  lazy val defaultPlayVersion = "2.2.1"
+  lazy val _version = "0.4.0-RC"
+  lazy val scalikejdbcVersion = "2.0.0-RC3"
+  // TODO Scala 2.11 https://github.com/mauricio/postgresql-async/pull/87
+  lazy val mauricioVersion = "0.2.13"
+  lazy val defaultPlayVersion = "2.2.3"
 
   lazy val core = Project(
     id = "core",
@@ -26,13 +27,15 @@ object ScalikeJDBCAsyncProject extends Build {
           "org.scalikejdbc"     %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
-          "org.postgresql"      %  "postgresql"                % "9.3-1100-jdbc41"  % "test",
-          "mysql"               %  "mysql-connector-java"      % "5.1.28"           % "test",
-          "org.scalatest"       %% "scalatest"                 % "1.9.2"            % "test",
-          "ch.qos.logback"      %  "logback-classic"           % "1.1.1"            % "test"
+          "org.postgresql"      %  "postgresql"                % "9.3-1101-jdbc41"  % "test",
+          "mysql"               %  "mysql-connector-java"      % "5.1.+"            % "test",
+          "org.scalatest"       %% "scalatest"                 % "2.1.+"            % "test",
+          "ch.qos.logback"      %  "logback-classic"           % "1.1.+"            % "test"
         )
       },
       sbtPlugin := false,
+      transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
+      incOptions := incOptions.value.withNameHashing(true),
       scalacOptions ++= _scalacOptions,
       publishMavenStyle := true,
       publishArtifact in Test := false,
@@ -66,6 +69,8 @@ object ScalikeJDBCAsyncProject extends Build {
       publishArtifact in Test := false,
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra,
+      transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
+      incOptions := incOptions.value.withNameHashing(true),
       scalacOptions ++= _scalacOptions
     )
   ) dependsOn(core)
@@ -79,11 +84,11 @@ object ScalikeJDBCAsyncProject extends Build {
       "org.scalikejdbc"      %% "scalikejdbc-interpolation"       % scalikejdbcVersion,
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
-      "org.postgresql"       %  "postgresql"                      % "9.3-1100-jdbc41",
-      "com.github.tototoshi" %% "play-flyway"                     % "1.0.1",
-      "mysql"                %  "mysql-connector-java"            % "5.1.28",
-      "org.json4s"           %% "json4s-ext"                      % "3.2.6",
-      "com.github.tototoshi" %% "play-json4s-native"              % "0.2.0"
+      "org.postgresql"       %  "postgresql"                      % "9.3-1101-jdbc41",
+      "com.github.tototoshi" %% "play-flyway"                     % "1.0.+",
+      "mysql"                %  "mysql-connector-java"            % "5.1.+",
+      "org.json4s"           %% "json4s-ext"                      % "3.2.+",
+      "com.github.tototoshi" %% "play-json4s-native"              % "0.2.+"
     )
     play.Project(appName, appVersion, appDependencies, path = file("play-sample")).settings(
       scalaVersion in ThisBuild := "2.10.3",
@@ -119,7 +124,7 @@ object ScalikeJDBCAsyncProject extends Build {
       <developers>
         <developer>
           <id>seratch</id>
-          <name>Kazuhuiro Sera</name>
+          <name>Kazuhiro Sera</name>
           <url>http://seratch.net/</url>
         </developer>
       </developers>
