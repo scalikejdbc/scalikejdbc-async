@@ -60,9 +60,11 @@ object AsyncDB {
 
       connection.inTransaction(_ => op.apply(tx)).onComplete {
         case Success(result) =>
+          tx.commit()
           tx.release()
           p.success(result)
         case Failure(e) =>
+          tx.rollback()
           // As documentation recommends - close connection after rollback
           connection.disconnect
           tx.release()
