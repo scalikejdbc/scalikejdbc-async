@@ -4,11 +4,11 @@ import play.Project._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.4.0-RC"
-  lazy val scalikejdbcVersion = "2.0.0-RC3"
+  lazy val _version = "0.4.0"
+  lazy val scalikejdbcVersion = "2.0.1"
   // TODO Scala 2.11 https://github.com/mauricio/postgresql-async/pull/87
   lazy val mauricioVersion = "0.2.13"
-  lazy val defaultPlayVersion = "2.2.3"
+  lazy val defaultPlayVersion = "2.3.0"
 
   lazy val core = Project(
     id = "core",
