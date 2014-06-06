@@ -1,4 +1,4 @@
-## ScalikeJDBC-Async
+## ScalikeJDBC-Async [![Build Status](https://travis-ci.org/scalikejdbc/scalikejdbc-async.svg?branch=develop)](https://travis-ci.org/scalikejdbc/scalikejdbc-async)
 
 ### ScalikeJDBC Extension: Non-blocking APIs in the JDBC way
 
