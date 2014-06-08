@@ -86,7 +86,7 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.tototoshi" %% "play-flyway"                     % "1.1.0",
       "mysql"                %  "mysql-connector-java"            % "5.1.+",
       "org.json4s"           %% "json4s-ext"                      % "3.2.+",
-      "com.github.tototoshi" %% "play-json4s-native"              % "0.2.+" // TODO https://github.com/tototoshi/play-json4s/pull/5
+      "com.github.tototoshi" %% "play-json4s-native"              % "0.3.0"
     )
     Project(appName, file("play-sample")).enablePlugins(play.PlayScala).settings(
       scalaVersion in ThisBuild := "2.10.3",
