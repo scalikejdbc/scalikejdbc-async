@@ -42,8 +42,8 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     id = rs.long(p.id),
     name = rs.string(p.name),
     companyId = rs.longOpt(p.companyId),
-    createdAt = rs.dateTime(p.createdAt),
-    deletedAt = rs.dateTimeOpt(p.deletedAt)
+    createdAt = rs.jodaDateTime(p.createdAt),
+    deletedAt = rs.jodaDateTimeOpt(p.deletedAt)
   )
 
   // join query with company table

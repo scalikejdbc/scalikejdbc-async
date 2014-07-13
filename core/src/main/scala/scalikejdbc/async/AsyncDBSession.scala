@@ -31,15 +31,8 @@ trait AsyncDBSession extends LogSupport {
   def execute(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Boolean] =
     withListeners(statement, parameters) {
       queryLogging(statement, parameters)
-      if (connection.isShared) {
-        // create local transaction because postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
-        connection.toNonSharedConnection().map(c => TxAsyncDBSession(c)).flatMap { tx: TxAsyncDBSession =>
-          tx.execute(statement, parameters: _*)
-        }
-      } else {
-        connection.sendPreparedStatement(statement, parameters: _*).map { result =>
-          result.rowsAffected.map(_ > 0).getOrElse(false)
-        }
+      connection.sendPreparedStatement(statement, parameters: _*).map { result =>
+        result.rowsAffected.map(_ > 0).getOrElse(false)
       }
     }
 

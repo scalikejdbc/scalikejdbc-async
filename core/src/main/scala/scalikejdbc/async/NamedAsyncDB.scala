@@ -15,6 +15,8 @@
  */
 package scalikejdbc.async
 
+import scalikejdbc.async.internal.AsyncConnectionCommonImpl
+
 import scala.concurrent._
 import scala.util.{ Failure, Success }
 import scalikejdbc.async.ShortenedNames._
@@ -54,14 +56,22 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
     AsyncConnectionPool(name).borrow().toNonSharedConnection().map { txConn =>
       TxAsyncDBSession(txConn)
     }.flatMap { tx =>
-      tx.begin().flatMap { _ =>
-        op.apply(tx).andThen {
-          case Success(_) => tx.commit()
-          case Failure(e) => tx.rollback()
-        }.andThen {
-          case _ => tx.release()
-        }
+      val p = Promise[A]()
+      val connection = tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
+
+      connection.inTransaction(_ => op.apply(tx)).onComplete {
+        case Success(result) =>
+          tx.commit()
+          tx.release()
+          p.success(result)
+        case Failure(e) =>
+          tx.rollback()
+          // As documentation recommends - close connection after rollback
+          connection.disconnect
+          tx.release()
+          p.failure(e)
       }
+      p.future
     }
   }
 
