@@ -1,6 +1,6 @@
 package sample
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 
 case class AsyncLover(
@@ -28,8 +28,8 @@ object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
     rating = rs.int(c.rating),
     isReactive = rs.boolean(c.isReactive),
     lunchtime = rs.timeOpt(c.lunchtime),
-    birthday = rs.dateTimeOpt(c.lunchtime),
-    createdAt = rs.dateTime(c.createdAt))
+    birthday = rs.jodaDateTimeOpt(c.lunchtime),
+    createdAt = rs.jodaDateTime(c.createdAt))
 
 }
 

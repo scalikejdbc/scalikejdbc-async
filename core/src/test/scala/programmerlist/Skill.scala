@@ -1,6 +1,6 @@
 package programmerlist
 
-import scalikejdbc._, async._, FutureImplicits._, SQLInterpolation._
+import scalikejdbc._, async._, FutureImplicits._
 import org.joda.time.DateTime
 import scala.concurrent._
 

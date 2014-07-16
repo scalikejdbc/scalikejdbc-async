@@ -1,6 +1,6 @@
 package scalikejdbc.async
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 import org.specs2.mutable.Specification
 
@@ -8,7 +8,6 @@ import play.api.test._
 import play.api.test.Helpers._
 import scala.concurrent._
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object PlayPluginSpec extends Specification {
 
@@ -22,9 +21,9 @@ object PlayPluginSpec extends Specification {
     withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
     additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
-      "logger.root" -> "INFO",
-      "logger.play" -> "INFO",
-      "logger.application" -> "INFO",
+      "logger.root" -> "WARN",
+      "logger.play" -> "WARN",
+      "logger.application" -> "WARN",
       "dbplugin" -> "disabled",
       "evolutionplugin" -> "disabled",
       "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
@@ -114,6 +113,7 @@ object PlayPluginSpec extends Specification {
           }
         ))
       } yield (users, usersInLegacy)
+
       val (users, usersInLegacy) = Await.result(result, 5.seconds)
       users.size must_== (3)
       usersInLegacy.size must_== (4)
