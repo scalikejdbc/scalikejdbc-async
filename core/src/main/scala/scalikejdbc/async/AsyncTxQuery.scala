@@ -16,6 +16,7 @@
 package scalikejdbc.async
 
 import scalikejdbc._
+import scalikejdbc.async.internal.AsyncConnectionCommonImpl
 import scala.concurrent._
 import scala.util._
 import scalikejdbc.async.ShortenedNames._
@@ -26,22 +27,17 @@ import scalikejdbc.async.ShortenedNames._
 class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
 
   def future()(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): Future[Seq[AsyncQueryResult]] = {
-
-    session.connection.toNonSharedConnection.map(conn => TxAsyncDBSession(conn)).flatMap { tx =>
-      tx.begin().flatMap { _ =>
-        sqls.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (resultsFuture, sql) =>
-          for {
-            results <- resultsFuture
-            current <- tx.connection.sendPreparedStatement(sql.statement, sql.parameters: _*)
-          } yield results :+ current
-        }.andThen {
-          case Success(_) => tx.commit()
-          case Failure(e) => tx.rollback()
-        }.andThen {
-          case _ => tx.release()
-        }
+    def op(tx: TxAsyncDBSession) = {
+      sqls.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (resultsFuture, sql) =>
+        for {
+          results <- resultsFuture
+          current <- tx.connection.sendPreparedStatement(sql.statement, sql.parameters: _*)
+        } yield results :+ current
       }
     }
+    session.connection.toNonSharedConnection
+      .map(conn => TxAsyncDBSession(conn))
+      .flatMap { tx => AsyncTx.inTransaction(tx, op) }
   }
 
 }

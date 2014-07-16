@@ -53,26 +53,9 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
    * @return a future value
    */
   def localTx[A](op: (TxAsyncDBSession) => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
-    AsyncConnectionPool(name).borrow().toNonSharedConnection().map { txConn =>
-      TxAsyncDBSession(txConn)
-    }.flatMap { tx =>
-      val p = Promise[A]()
-      val connection = tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
-
-      connection.inTransaction(_ => op.apply(tx)).onComplete {
-        case Success(result) =>
-          tx.commit()
-          tx.release()
-          p.success(result)
-        case Failure(e) =>
-          tx.rollback()
-          // As documentation recommends - close connection after rollback
-          connection.disconnect
-          tx.release()
-          p.failure(e)
-      }
-      p.future
-    }
+    AsyncConnectionPool(name).borrow().toNonSharedConnection()
+      .map { txConn => TxAsyncDBSession(txConn) }
+      .flatMap { tx => AsyncTx.inTransaction[A](tx, op) }
   }
 
 }
