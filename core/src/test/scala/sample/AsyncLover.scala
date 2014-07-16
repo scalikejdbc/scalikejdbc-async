@@ -1,6 +1,6 @@
 package sample
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 
 case class AsyncLover(

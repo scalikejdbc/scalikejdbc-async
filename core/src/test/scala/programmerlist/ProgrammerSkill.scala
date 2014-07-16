@@ -1,6 +1,6 @@
 package programmerlist
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 case class ProgrammerSkill(programmerId: Long, skillId: Long)
 

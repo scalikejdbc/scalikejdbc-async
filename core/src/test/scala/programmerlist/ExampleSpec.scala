@@ -1,9 +1,9 @@
 package programmerlist
 
-import scalikejdbc._, SQLInterpolation._, async._
+import scalikejdbc._, async._
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 
-import org.scalatest._, matchers._
+import org.scalatest._
 import unit._
 
 class ExampleSpec extends FlatSpec with Matchers with DBSettings with Logging {

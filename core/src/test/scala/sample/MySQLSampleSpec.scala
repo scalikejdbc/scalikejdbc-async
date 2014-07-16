@@ -1,9 +1,9 @@
 package sample
 
 import org.joda.time._
-import org.scalatest._, matchers._
+import org.scalatest._
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
-import scalikejdbc._, SQLInterpolation._, async._
+import scalikejdbc._, async._
 import unit._
 
 class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
