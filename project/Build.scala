@@ -3,8 +3,8 @@ import Keys._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.4.1"
-  lazy val scalikejdbcVersion = "2.0.4"
+  lazy val _version = "0.5.0"
+  lazy val scalikejdbcVersion = "2.1.0"
   // TODO Scala 2.11 https://github.com/mauricio/postgresql-async/pull/87
   lazy val mauricioVersion = "0.2.13"
   lazy val defaultPlayVersion = play.core.PlayVersion.current
