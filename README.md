@@ -30,7 +30,7 @@ Add `scalikejdbc-async` to your dependencies.
 
 ```scala
 libraryDependencies ++= Seq(
-  "org.scalikejdbc"     %% "scalikejdbc-async" % "0.4.0",
+  "org.scalikejdbc"     %% "scalikejdbc-async" % "0.5.+",
   "com.github.mauricio" %% "postgresql-async"  % "0.2.+",
   "com.github.mauricio" %% "mysql-async"       % "0.2.+",
   "org.slf4j"           %  "slf4j-simple"      % "1.7.+" // slf4j implementation
@@ -41,8 +41,8 @@ If you're a Play2 user, use play-plugin too!
 
 ```scala
 val appDependencies = Seq(
-  "org.scalikejdbc"     %% "scalikejdbc-async"             % "0.4.0",
-  "org.scalikejdbc"     %% "scalikejdbc-async-play-plugin" % "0.4.0",
+  "org.scalikejdbc"     %% "scalikejdbc-async"             % "0.5.+",
+  "org.scalikejdbc"     %% "scalikejdbc-async-play-plugin" % "0.5.+",
   "com.github.mauricio" %% "postgresql-async"              % "0.2.+"
 )
 ```
@@ -54,7 +54,7 @@ val appDependencies = Seq(
 - [programmerlist/Programmer.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/develop/core/src/test/scala/programmerlist/Programmer.scala)
 
 ```scala
-import scalikejdbc._, SQLInterpolation._, async._
+import scalikejdbc._, async._
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 
 // set up connection pool (that's all you need to do)
@@ -110,7 +110,7 @@ https://github.com/scalikejdbc/scalikejdbc-async/blob/develop/play-sample
 
 #### Is it production-ready?
 
-ScalikeJDBC-Async and [postgrsql-async and mysql-async](https://github.com/mauricio/postgresql-async) basically works fine. But to be honest, ScalikeJBDC-Async don't have much of a record of production applications.
+ScalikeJDBC-Async and [postgrsql-async and mysql-async](https://github.com/mauricio/postgresql-async) basically works fine. However, to be honest, ScalikeJBDC-Async doesn't have much of a record of production applications.
 
 #### Is it possible to combine scalikejdbc-async with normal scalikejdbc?
 

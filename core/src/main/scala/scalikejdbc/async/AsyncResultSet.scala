@@ -75,25 +75,25 @@ trait AsyncResultSet extends WrappedResultSet {
   override def timestampOpt(columnIndex: Int): Option[java.sql.Timestamp]
   override def timestampOpt(columnLabel: String): Option[java.sql.Timestamp]
 
-  override def dateTime(columnIndex: Int): DateTime
-  override def dateTime(columnLabel: String): DateTime
-  override def dateTimeOpt(columnIndex: Int): Option[DateTime]
-  override def dateTimeOpt(columnLabel: String): Option[DateTime]
+  override def jodaDateTime(columnIndex: Int): DateTime
+  override def jodaDateTime(columnLabel: String): DateTime
+  override def jodaDateTimeOpt(columnIndex: Int): Option[DateTime]
+  override def jodaDateTimeOpt(columnLabel: String): Option[DateTime]
 
-  override def localDate(columnIndex: Int): LocalDate
-  override def localDate(columnLabel: String): LocalDate
-  override def localDateOpt(columnIndex: Int): Option[LocalDate]
-  override def localDateOpt(columnLabel: String): Option[LocalDate]
+  override def jodaLocalDate(columnIndex: Int): LocalDate
+  override def jodaLocalDate(columnLabel: String): LocalDate
+  override def jodaLocalDateOpt(columnIndex: Int): Option[LocalDate]
+  override def jodaLocalDateOpt(columnLabel: String): Option[LocalDate]
 
-  override def localDateTime(columnIndex: Int): LocalDateTime
-  override def localDateTime(columnLabel: String): LocalDateTime
-  override def localDateTimeOpt(columnIndex: Int): Option[LocalDateTime]
-  override def localDateTimeOpt(columnLabel: String): Option[LocalDateTime]
+  override def jodaLocalDateTime(columnIndex: Int): LocalDateTime
+  override def jodaLocalDateTime(columnLabel: String): LocalDateTime
+  override def jodaLocalDateTimeOpt(columnIndex: Int): Option[LocalDateTime]
+  override def jodaLocalDateTimeOpt(columnLabel: String): Option[LocalDateTime]
 
-  override def localTime(columnIndex: Int): LocalTime
-  override def localTime(columnLabel: String): LocalTime
-  override def localTimeOpt(columnIndex: Int): Option[LocalTime]
-  override def localTimeOpt(columnLabel: String): Option[LocalTime]
+  override def jodaLocalTime(columnIndex: Int): LocalTime
+  override def jodaLocalTime(columnLabel: String): LocalTime
+  override def jodaLocalTimeOpt(columnIndex: Int): Option[LocalTime]
+  override def jodaLocalTimeOpt(columnLabel: String): Option[LocalTime]
 
   override def url(columnIndex: Int): java.net.URL
   override def url(columnLabel: String): java.net.URL
