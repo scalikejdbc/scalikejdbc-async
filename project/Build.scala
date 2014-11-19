@@ -28,7 +28,7 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.3-1102-jdbc41"  % "test",
           "mysql"               %  "mysql-connector-java"      % "5.1.34"           % "test",
-          "org.scalatest"       %% "scalatest"                 % "2.2.1"            % "test",
+          "org.scalatest"       %% "scalatest"                 % "2.2.2"            % "test",
           "ch.qos.logback"      %  "logback-classic"           % "1.1.2"            % "test"
         )
       },
@@ -53,7 +53,7 @@ object ScalikeJDBCAsyncProject extends Build {
       name := "scalikejdbc-async-play-plugin",
       version := _version,
       scalaVersion := "2.10.4",
-      crossScalaVersions := "2.11.2" :: scalaVersion.value :: Nil,
+      crossScalaVersions := "2.11.4" :: scalaVersion.value :: Nil,
       resolvers ++= _resolvers,
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies <++= (scalaVersion) { scalaVersion =>
@@ -84,7 +84,7 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % "9.3-1102-jdbc41",
-      "com.github.tototoshi" %% "play-flyway"                     % "1.1.2",
+      "com.github.tototoshi" %% "play-flyway"                     % "1.1.3",
       "mysql"                %  "mysql-connector-java"            % "5.1.34",
       "org.json4s"           %% "json4s-ext"                      % "3.2.11",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.3.0"
