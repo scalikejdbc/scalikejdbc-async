@@ -23,15 +23,16 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   }
 
   private def notsupported = throw new SQLFeatureNotSupportedException
-  private def notvalid(methodName: String) = throw new SQLException(s"$methodName called on FORWARD_ONLY read only result set")
+  private def notvalid = throw new SQLException(s"Not valid method called on forward only, read only result set")
+  private def expectedbutnotsupported = throw new UnsupportedOperationException
 
   override def getType: Int = ResultSet.TYPE_FORWARD_ONLY
 
-  override def isBeforeFirst: Boolean = throw new SQLFeatureNotSupportedException
+  override def isBeforeFirst: Boolean = notsupported
 
-  override def updateString(columnIndex: Int, x: String): Unit = notsupported
+  override def updateString(columnIndex: Int, x: String): Unit = notvalid
 
-  override def updateString(columnLabel: String, x: String): Unit = notsupported
+  override def updateString(columnLabel: String, x: String): Unit = notvalid
 
   override def getTimestamp(columnIndex: Int): Timestamp = timestamp(columnIndex)
 
@@ -47,67 +48,67 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     new Timestamp(cal.getTimeInMillis)
   }
 
-  override def updateNString(columnIndex: Int, nString: String): Unit = notsupported
+  override def updateNString(columnIndex: Int, nString: String): Unit = notvalid
 
-  override def updateNString(columnLabel: String, nString: String): Unit = notsupported
+  override def updateNString(columnLabel: String, nString: String): Unit = notvalid
 
   override def clearWarnings(): Unit = {
     //noop
   }
 
-  override def updateTimestamp(columnIndex: Int, x: Timestamp): Unit = notsupported
+  override def updateTimestamp(columnIndex: Int, x: Timestamp): Unit = notvalid
 
-  override def updateTimestamp(columnLabel: String, x: Timestamp): Unit = notsupported
+  override def updateTimestamp(columnLabel: String, x: Timestamp): Unit = notvalid
 
-  override def updateByte(columnIndex: Int, x: Byte): Unit = notsupported
+  override def updateByte(columnIndex: Int, x: Byte): Unit = notvalid
 
-  override def updateByte(columnLabel: String, x: Byte): Unit = notsupported
+  override def updateByte(columnLabel: String, x: Byte): Unit = notvalid
 
-  override def updateBigDecimal(columnIndex: Int, x: BigDecimal): Unit = notsupported
+  override def updateBigDecimal(columnIndex: Int, x: BigDecimal): Unit = notvalid
 
-  override def updateBigDecimal(columnLabel: String, x: BigDecimal): Unit = notsupported
+  override def updateBigDecimal(columnLabel: String, x: BigDecimal): Unit = notvalid
 
-  override def updateDouble(columnIndex: Int, x: Double): Unit = notsupported
+  override def updateDouble(columnIndex: Int, x: Double): Unit = notvalid
 
-  override def updateDouble(columnLabel: String, x: Double): Unit = notsupported
+  override def updateDouble(columnLabel: String, x: Double): Unit = notvalid
 
-  override def updateDate(columnIndex: Int, x: Date): Unit = notsupported
+  override def updateDate(columnIndex: Int, x: Date): Unit = notvalid
 
-  override def updateDate(columnLabel: String, x: Date): Unit = notsupported
+  override def updateDate(columnLabel: String, x: Date): Unit = notvalid
 
   override def isAfterLast: Boolean = notsupported
 
-  override def updateBoolean(columnIndex: Int, x: Boolean): Unit = notsupported
+  override def updateBoolean(columnIndex: Int, x: Boolean): Unit = notvalid
 
-  override def updateBoolean(columnLabel: String, x: Boolean): Unit = notsupported
+  override def updateBoolean(columnLabel: String, x: Boolean): Unit = notvalid
 
   override def getBinaryStream(columnIndex: Int): InputStream = new ByteArrayInputStream(bytes(columnIndex))
 
   override def getBinaryStream(columnLabel: String): InputStream = new ByteArrayInputStream(bytes(columnLabel))
 
-  override def beforeFirst(): Unit = notvalid("beforeFirst")
+  override def beforeFirst(): Unit = notvalid
 
-  override def updateNCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = notsupported
+  override def updateNCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = notvalid
 
-  override def updateNCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = notsupported
+  override def updateNCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = notvalid
 
-  override def updateNCharacterStream(columnIndex: Int, x: Reader): Unit = notsupported
+  override def updateNCharacterStream(columnIndex: Int, x: Reader): Unit = notvalid
 
-  override def updateNCharacterStream(columnLabel: String, reader: Reader): Unit = notsupported
+  override def updateNCharacterStream(columnLabel: String, reader: Reader): Unit = notvalid
 
-  override def updateNClob(columnIndex: Int, nClob: NClob): Unit = notsupported
+  override def updateNClob(columnIndex: Int, nClob: NClob): Unit = notvalid
 
-  override def updateNClob(columnLabel: String, nClob: NClob): Unit = notsupported
+  override def updateNClob(columnLabel: String, nClob: NClob): Unit = notvalid
 
-  override def updateNClob(columnIndex: Int, reader: Reader, length: Long): Unit = notsupported
+  override def updateNClob(columnIndex: Int, reader: Reader, length: Long): Unit = notvalid
 
-  override def updateNClob(columnLabel: String, reader: Reader, length: Long): Unit = notsupported
+  override def updateNClob(columnLabel: String, reader: Reader, length: Long): Unit = notvalid
 
-  override def updateNClob(columnIndex: Int, reader: Reader): Unit = notsupported
+  override def updateNClob(columnIndex: Int, reader: Reader): Unit = notvalid
 
-  override def updateNClob(columnLabel: String, reader: Reader): Unit = notsupported
+  override def updateNClob(columnLabel: String, reader: Reader): Unit = notvalid
 
-  override def last(): Boolean = notvalid("last")
+  override def last(): Boolean = notvalid
 
   override def isLast: Boolean = notsupported
 
@@ -119,21 +120,21 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def getCharacterStream(columnLabel: String): Reader = new StringReader(string(columnLabel))
 
-  override def updateArray(columnIndex: Int, x: Array): Unit = notsupported
+  override def updateArray(columnIndex: Int, x: Array): Unit = notvalid
 
-  override def updateArray(columnLabel: String, x: Array): Unit = notsupported
+  override def updateArray(columnLabel: String, x: Array): Unit = notvalid
 
-  override def updateBlob(columnIndex: Int, x: Blob): Unit = notsupported
+  override def updateBlob(columnIndex: Int, x: Blob): Unit = notvalid
 
-  override def updateBlob(columnLabel: String, x: Blob): Unit = notsupported
+  override def updateBlob(columnLabel: String, x: Blob): Unit = notvalid
 
-  override def updateBlob(columnIndex: Int, inputStream: InputStream, length: Long): Unit = notsupported
+  override def updateBlob(columnIndex: Int, inputStream: InputStream, length: Long): Unit = notvalid
 
-  override def updateBlob(columnLabel: String, inputStream: InputStream, length: Long): Unit = notsupported
+  override def updateBlob(columnLabel: String, inputStream: InputStream, length: Long): Unit = notvalid
 
-  override def updateBlob(columnIndex: Int, inputStream: InputStream): Unit = notsupported
+  override def updateBlob(columnIndex: Int, inputStream: InputStream): Unit = notvalid
 
-  override def updateBlob(columnLabel: String, inputStream: InputStream): Unit = notsupported
+  override def updateBlob(columnLabel: String, inputStream: InputStream): Unit = notvalid
 
   override def getDouble(columnIndex: Int): Double = double(columnIndex)
 
@@ -149,35 +150,35 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def getURL(columnLabel: String): URL = url(columnLabel)
 
-  override def updateRow(): Unit = notsupported
+  override def updateRow(): Unit = notvalid
 
-  override def insertRow(): Unit = notsupported
+  override def insertRow(): Unit = notvalid
 
-  override def getMetaData: ResultSetMetaData = throw new UnsupportedOperationException
+  override def getMetaData: ResultSetMetaData = expectedbutnotsupported
 
-  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Int): Unit = notsupported
+  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Int): Unit = notvalid
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Int): Unit = notsupported
+  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Int): Unit = notvalid
 
-  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Long): Unit = notsupported
+  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Long): Unit = notvalid
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Long): Unit = notsupported
+  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Long): Unit = notvalid
 
-  override def updateBinaryStream(columnIndex: Int, x: InputStream): Unit = notsupported
+  override def updateBinaryStream(columnIndex: Int, x: InputStream): Unit = notvalid
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream): Unit = notsupported
+  override def updateBinaryStream(columnLabel: String, x: InputStream): Unit = notvalid
 
-  override def absolute(row: Int): Boolean = notvalid("absolute")
+  override def absolute(row: Int): Boolean = notvalid
 
-  override def updateRowId(columnIndex: Int, x: RowId): Unit = notsupported
+  override def updateRowId(columnIndex: Int, x: RowId): Unit = notvalid
 
-  override def updateRowId(columnLabel: String, x: RowId): Unit = notsupported
+  override def updateRowId(columnLabel: String, x: RowId): Unit = notvalid
 
   override def getRowId(columnIndex: Int): RowId = notsupported
 
   override def getRowId(columnLabel: String): RowId = notsupported
 
-  override def moveToInsertRow(): Unit = notsupported
+  override def moveToInsertRow(): Unit = notvalid
 
   override def rowInserted(): Boolean = notsupported
 
@@ -209,27 +210,27 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def updateFloat(columnLabel: String, x: Float): Unit = notsupported
 
-  override def afterLast(): Unit = notvalid("afterLast")
+  override def afterLast(): Unit = notvalid
 
-  override def refreshRow(): Unit = notsupported
+  override def refreshRow(): Unit = notvalid
 
   override def getNString(columnIndex: Int): String = notsupported
 
   override def getNString(columnLabel: String): String = notsupported
 
-  override def deleteRow(): Unit = notvalid("deleteRow")
+  override def deleteRow(): Unit = notvalid
 
   override def getConcurrency: Int = ResultSet.CONCUR_READ_ONLY
 
-  override def updateObject(columnIndex: Int, x: scala.Any, scaleOrLength: Int): Unit = notvalid("updateObject")
+  override def updateObject(columnIndex: Int, x: scala.Any, scaleOrLength: Int): Unit = notvalid
 
-  override def updateObject(columnIndex: Int, x: scala.Any): Unit = notvalid("updateObject")
+  override def updateObject(columnIndex: Int, x: scala.Any): Unit = notvalid
 
-  override def updateObject(columnLabel: String, x: scala.Any, scaleOrLength: Int): Unit = notvalid("updateObject")
+  override def updateObject(columnLabel: String, x: scala.Any, scaleOrLength: Int): Unit = notvalid
 
-  override def updateObject(columnLabel: String, x: scala.Any): Unit = notvalid("updateObject")
+  override def updateObject(columnLabel: String, x: scala.Any): Unit = notvalid
 
-  override def getFetchSize: Int = throw new UnsupportedOperationException
+  override def getFetchSize: Int = expectedbutnotsupported
 
   override def getTime(columnIndex: Int): Time = time(columnIndex)
 
@@ -245,17 +246,17 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     new Time(cal.getTimeInMillis)
   }
 
-  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Int): Unit = notvalid("updateCharacterStream")
+  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Int): Unit = notvalid
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Int): Unit = notvalid("updateCharacterStream")
+  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Int): Unit = notvalid
 
-  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = notvalid("updateCharacterStream")
+  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = notvalid
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = notvalid("updateCharacterStream")
+  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = notvalid
 
-  override def updateCharacterStream(columnIndex: Int, x: Reader): Unit = notvalid("updateCharacterStream")
+  override def updateCharacterStream(columnIndex: Int, x: Reader): Unit = notvalid
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader): Unit = notvalid("updateCharacterStream")
+  override def updateCharacterStream(columnLabel: String, reader: Reader): Unit = notvalid
 
   override def getByte(columnIndex: Int): Byte = byte(columnIndex)
 
@@ -267,15 +268,15 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def setFetchDirection(direction: Int): Unit = {
     if (direction != ResultSet.FETCH_FORWARD) {
-      notvalid("setFetchDirection")
+      notvalid
     }
   }
 
   override def getFetchDirection: Int = ResultSet.FETCH_FORWARD
 
-  override def updateRef(columnIndex: Int, x: Ref): Unit = notvalid("updateRef")
+  override def updateRef(columnIndex: Int, x: Ref): Unit = notvalid
 
-  override def updateRef(columnLabel: String, x: Ref): Unit = notvalid("updateRef")
+  override def updateRef(columnLabel: String, x: Ref): Unit = notvalid
 
   override def getAsciiStream(columnIndex: Int): InputStream = new ByteArrayInputStream(string(columnIndex).getBytes("UTF8"))
 
@@ -292,7 +293,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
       null
     } else {
       any match {
-        case ref: AnyRef => ref
         case s: Short => short2Short(s)
         case i: Int => int2Integer(i)
         case f: Float => float2Float(f)
@@ -300,8 +300,8 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
         case b: Byte => byte2Byte(b)
         case c: Char => char2Character(c)
         case b: Boolean => boolean2Boolean(b)
-        case any: Any => throw new SQLException(s"Unknown class for getObject: ${any.getClass}")
-
+        case ref: AnyRef => ref
+        case _ => throw new SQLException(s"Unknown class for getObject: ${any.getClass}")
       }
     }
   }
@@ -332,9 +332,9 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     }
   }
 
-  override def updateShort(columnIndex: Int, x: Short): Unit = notvalid("updateShort")
+  override def updateShort(columnIndex: Int, x: Short): Unit = notvalid
 
-  override def updateShort(columnLabel: String, x: Short): Unit = notvalid("updateShort")
+  override def updateShort(columnLabel: String, x: Short): Unit = notvalid
 
   override def getNCharacterStream(columnIndex: Int): Reader = notsupported
 
@@ -344,13 +344,13 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     closed = true;
   }
 
-  override def relative(rows: Int): Boolean = notvalid("relative")
+  override def relative(rows: Int): Boolean = notvalid
 
-  override def updateInt(columnIndex: Int, x: Int): Unit = notvalid("updateInt")
+  override def updateInt(columnIndex: Int, x: Int): Unit = notvalid
 
-  override def updateInt(columnLabel: String, x: Int): Unit = notvalid("updateInt")
+  override def updateInt(columnLabel: String, x: Int): Unit = notvalid
 
-  override def wasNull(): Boolean = throw new UnsupportedOperationException
+  override def wasNull(): Boolean = expectedbutnotsupported
 
   override def rowUpdated(): Boolean = notsupported
 
@@ -358,27 +358,27 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def getRef(columnLabel: String): Ref = notsupported
 
-  override def updateLong(columnIndex: Int, x: Long): Unit = notvalid("updateLong")
+  override def updateLong(columnIndex: Int, x: Long): Unit = notvalid
 
-  override def updateLong(columnLabel: String, x: Long): Unit = notvalid("updateLong")
+  override def updateLong(columnLabel: String, x: Long): Unit = notvalid
 
-  override def moveToCurrentRow(): Unit = notvalid("moveToCurrentRow")
+  override def moveToCurrentRow(): Unit = notvalid
 
   override def isClosed: Boolean = closed
 
-  override def updateClob(columnIndex: Int, x: Clob): Unit = notvalid("updateClob")
+  override def updateClob(columnIndex: Int, x: Clob): Unit = notvalid
 
-  override def updateClob(columnLabel: String, x: Clob): Unit = notvalid("updateClob")
+  override def updateClob(columnLabel: String, x: Clob): Unit = notvalid
 
-  override def updateClob(columnIndex: Int, reader: Reader, length: Long): Unit = notvalid("updateClob")
+  override def updateClob(columnIndex: Int, reader: Reader, length: Long): Unit = notvalid
 
-  override def updateClob(columnLabel: String, reader: Reader, length: Long): Unit = notvalid("updateClob")
+  override def updateClob(columnLabel: String, reader: Reader, length: Long): Unit = notvalid
 
-  override def updateClob(columnIndex: Int, reader: Reader): Unit = notvalid("updateClob")
+  override def updateClob(columnIndex: Int, reader: Reader): Unit = notvalid
 
-  override def updateClob(columnLabel: String, reader: Reader): Unit = notvalid("updateClob")
+  override def updateClob(columnLabel: String, reader: Reader): Unit = notvalid
 
-  override def findColumn(columnLabel: String): Int = throw new UnsupportedOperationException
+  override def findColumn(columnLabel: String): Int = expectedbutnotsupported
 
   override def getWarnings: SQLWarning = null
 
@@ -398,13 +398,13 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def getCursorName: String = notsupported
 
-  override def updateNull(columnIndex: Int): Unit = notvalid("updateNull")
+  override def updateNull(columnIndex: Int): Unit = notvalid
 
-  override def updateNull(columnLabel: String): Unit = notvalid("updateNull")
+  override def updateNull(columnLabel: String): Unit = notvalid
 
-  override def getStatement: Statement = throw new UnsupportedOperationException
+  override def getStatement: Statement = expectedbutnotsupported
 
-  override def cancelRowUpdates(): Unit = notvalid("cancelRowUpdates")
+  override def cancelRowUpdates(): Unit = notvalid
 
   override def getSQLXML(columnIndex: Int): SQLXML = notsupported
 
@@ -418,25 +418,25 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def getInt(columnLabel: String): Int = int(columnLabel)
 
-  override def updateTime(columnIndex: Int, x: Time): Unit = notvalid("updateTime")
+  override def updateTime(columnIndex: Int, x: Time): Unit = notvalid
 
-  override def updateTime(columnLabel: String, x: Time): Unit = notvalid("updateTime")
+  override def updateTime(columnLabel: String, x: Time): Unit = notvalid
 
-  override def setFetchSize(rows: Int): Unit = throw new UnsupportedOperationException
+  override def setFetchSize(rows: Int): Unit = expectedbutnotsupported
 
-  override def previous(): Boolean = notvalid("previous")
+  override def previous(): Boolean = notvalid
 
-  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Int): Unit = notvalid("updateAsciiStream")
+  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Int): Unit = notvalid
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Int): Unit = notvalid("updateAsciiStream")
+  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Int): Unit = notvalid
 
-  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Long): Unit = notvalid("updateAsciiStream")
+  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Long): Unit = notvalid
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Long): Unit = notvalid("updateAsciiStream")
+  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Long): Unit = notvalid
 
-  override def updateAsciiStream(columnIndex: Int, x: InputStream): Unit = notvalid("updateAsciiStream")
+  override def updateAsciiStream(columnIndex: Int, x: InputStream): Unit = notvalid
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream): Unit = notvalid("updateAsciiStream")
+  override def updateAsciiStream(columnLabel: String, x: InputStream): Unit = notvalid
 
   override def rowDeleted(): Boolean = notsupported
 
@@ -444,27 +444,27 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def getBlob(columnLabel: String): Blob = notsupported
 
-  override def first(): Boolean = notvalid("first")
+  override def first(): Boolean = notvalid
 
   override def getBytes(columnIndex: Int): scala.Array[Byte] = bytes(columnIndex)
 
   override def getBytes(columnLabel: String): scala.Array[Byte] = bytes(columnLabel)
 
-  override def updateBytes(columnIndex: Int, x: scala.Array[Byte]): Unit = notvalid("upadteBytes")
+  override def updateBytes(columnIndex: Int, x: scala.Array[Byte]): Unit = notvalid
 
-  override def updateBytes(columnLabel: String, x: scala.Array[Byte]): Unit = notvalid("updateBytes")
+  override def updateBytes(columnLabel: String, x: scala.Array[Byte]): Unit = notvalid
 
-  override def updateSQLXML(columnIndex: Int, xmlObject: SQLXML): Unit = notvalid("updateSQLXML")
+  override def updateSQLXML(columnIndex: Int, xmlObject: SQLXML): Unit = notvalid
 
-  override def updateSQLXML(columnLabel: String, xmlObject: SQLXML): Unit = notvalid("updateSQLXML")
+  override def updateSQLXML(columnLabel: String, xmlObject: SQLXML): Unit = notvalid
 
   override def getString(columnIndex: Int): String = string(columnIndex)
 
   override def getString(columnLabel: String): String = string(columnLabel)
 
-  override def unwrap[T](iface: Class[T]): T = notvalid("unwrap")
+  override def unwrap[T](iface: Class[T]): T = notvalid
 
-  override def isWrapperFor(iface: Class[_]): Boolean = notvalid("unwrap")
+  override def isWrapperFor(iface: Class[_]): Boolean = notvalid
 
   private def any(columnIndex: Int): Any = {
     // To be compatible with JDBC, index should be 1-origin
