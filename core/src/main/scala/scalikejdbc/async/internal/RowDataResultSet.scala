@@ -19,6 +19,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   override def next(): Boolean = {
     currentRow = other.headOption
+    other = other.drop(1)
     currentRow.isDefined
   }
 
