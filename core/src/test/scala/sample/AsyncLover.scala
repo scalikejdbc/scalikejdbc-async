@@ -22,8 +22,7 @@ object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
   def apply(c: SyntaxProvider[AsyncLover])(rs: WrappedResultSet): AsyncLover = apply(c.resultName)(rs)
 
   def apply(c: ResultName[AsyncLover])(rs: WrappedResultSet): AsyncLover = new AsyncLover(
-    id = rs.long(c.id),
-    //name = rs.string(c.name),
+    id = rs.get[Long](c.id),
     name = rs.get[Option[String]](c.name).get,
     rating = rs.get[Int](c.rating),
     isReactive = rs.get[Boolean](c.isReactive),
