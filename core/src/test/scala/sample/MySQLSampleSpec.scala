@@ -53,6 +53,37 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
     results.size should equal(2)
   }
 
+  it should "read values with convenience methods" in {
+    val generatedIdFuture: Future[Long] = AsyncDB.withPool { implicit s =>
+      withSQL {
+        insert.into(AsyncLover).namedValues(
+          column.name -> "Eric",
+          column.rating -> 2,
+          column.isReactive -> false,
+          column.createdAt -> createdTime).returningId
+      }.updateAndReturnGeneratedKey.future()
+    }
+    // in AsyncLover#apply we are using get with typebinders, specialized getters should work
+    val generatedId = Await.result(generatedIdFuture, 5.seconds)
+    val created = DB.readOnly { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map((rs: WrappedResultSet) => {
+        AsyncLover(
+          id = rs.long(al.resultName.id),
+          name = rs.stringOpt(al.resultName.name).get,
+          rating = rs.int(al.resultName.rating),
+          isReactive = rs.boolean(al.resultName.isReactive),
+          lunchtime = rs.timeOpt(al.resultName.lunchtime),
+          birthday = rs.jodaDateTimeOpt(al.resultName.lunchtime),
+          createdAt = rs.jodaDateTime(al.resultName.createdAt))
+      }).single.apply()
+    }.get
+    created.id should equal(generatedId)
+    created.name should equal("Eric")
+    created.rating should equal(2)
+    created.isReactive should be(false)
+    created.createdAt should equal(createdTime)
+  }
+
   it should "return generated key" in {
     val generatedIdFuture: Future[Long] = NamedAsyncDB('mysql).withPool { implicit s =>
       withSQL {
