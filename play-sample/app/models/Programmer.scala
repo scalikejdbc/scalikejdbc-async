@@ -1,6 +1,6 @@
 package models
 
-import scalikejdbc._, async._, SQLInterpolation._, FutureImplicits._
+import scalikejdbc._, async._, FutureImplicits._
 import org.joda.time.DateTime
 import scala.concurrent._
 
@@ -56,10 +56,10 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
   // SyntaxProvider objects
   lazy val p = Programmer.syntax("p")
 
-  private val (c, s, ps) = (Company.c, Skill.s, ProgrammerSkill.ps)
+  private lazy val (c, s, ps) = (Company.c, Skill.s, ProgrammerSkill.ps)
 
   // reusable part of SQL
-  private val isNotDeleted = sqls.isNull(p.deletedAt)
+  private lazy val isNotDeleted = sqls.isNull(p.deletedAt)
 
   // find by primary key
   def find(id: Long)(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Option[Programmer]] = {
