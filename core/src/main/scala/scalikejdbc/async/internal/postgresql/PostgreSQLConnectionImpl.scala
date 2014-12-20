@@ -30,7 +30,7 @@ trait PostgreSQLConnectionImpl extends AsyncConnectionCommonImpl {
       val pool = this.asInstanceOf[PoolableAsyncConnection[Connection]].pool
       pool.take.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with PostgreSQLConnectionImpl)
     } else {
-      future(new SingleNonSharedAsyncConnectionImpl(underlying) with PostgreSQLConnectionImpl)
+      Future(new SingleNonSharedAsyncConnectionImpl(underlying) with PostgreSQLConnectionImpl)
     }
   }
 

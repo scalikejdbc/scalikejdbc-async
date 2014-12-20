@@ -38,15 +38,14 @@ class ExampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
       val withinTx: Future[Unit] = AsyncDB.localTx { implicit tx =>
         for {
           programmers <- Programmer.findAllBy(sqls.eq(p.companyId, newCompany.id))
-          restructuring <- programmers.foldLeft(Future.successful()) {
-            (prev, programmer) =>
-              for {
-                _ <- prev
-                _ <- programmer.destroy()
-              } yield ()
+          restructuring <- programmers.foldLeft(Future.successful()) { (prev, programmer) =>
+            for {
+              _ <- prev
+              res <- programmer.destroy()
+            } yield ()
           }
           dissolution <- newCompany.destroy()
-          _ <- sql"Just joking!".update.future
+          f <- sql"Just joking!".update.future
         } yield ()
       }
       try Await.result(withinTx, 5.seconds)
