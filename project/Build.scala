@@ -15,8 +15,8 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "org.scalikejdbc",
       name := "scalikejdbc-async",
       version := _version,
-      scalaVersion := "2.11.4",
-      crossScalaVersions := Seq("2.11.4", "2.10.4"),
+      scalaVersion := "2.11.5",
+      crossScalaVersions := Seq("2.11.5", "2.10.4"),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       resolvers ++= _resolvers,
@@ -52,8 +52,8 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "org.scalikejdbc",
       name := "scalikejdbc-async-play-plugin",
       version := _version,
-      scalaVersion := "2.11.4",
-      crossScalaVersions := Seq("2.11.4", "2.10.4"),
+      scalaVersion := "2.11.5",
+      crossScalaVersions := Seq("2.11.5", "2.10.4"),
       resolvers ++= _resolvers,
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies <++= (scalaVersion) { scalaVersion =>
@@ -90,7 +90,7 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.tototoshi" %% "play-json4s-native"              % "0.3.0"
     )
     Project(appName, file("play-sample")).enablePlugins(play.PlayScala).settings(
-      scalaVersion in ThisBuild := "2.11.4",
+      scalaVersion in ThisBuild := "2.11.5",
       libraryDependencies ++= appDependencies,
       resolvers ++= Seq(
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
