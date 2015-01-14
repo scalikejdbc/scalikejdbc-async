@@ -34,8 +34,8 @@ abstract class AsyncConnectionPool(
     username = user,
     host = jdbcUrl.host,
     port = jdbcUrl.port,
-    password = Option(password),
-    database = Option(jdbcUrl.database)
+    password = Option(password).filterNot(_.trim.isEmpty),
+    database = Option(jdbcUrl.database).filterNot(_.trim.isEmpty)
   )
 
   /**
