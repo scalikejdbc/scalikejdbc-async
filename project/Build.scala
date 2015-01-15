@@ -3,8 +3,8 @@ import Keys._
 
 object ScalikeJDBCAsyncProject extends Build {
 
-  lazy val _version = "0.5.5-SNAPSHOT"
-  lazy val scalikejdbcVersion = "2.2.1"
+  lazy val _version = "0.5.5"
+  lazy val scalikejdbcVersion = "2.2.2"
   lazy val mauricioVersion = "0.2.15"
   lazy val defaultPlayVersion = play.core.PlayVersion.current
 
@@ -87,13 +87,13 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.tototoshi" %% "play-flyway"                     % "1.2.0",
       "mysql"                %  "mysql-connector-java"            % "5.1.34",
       "org.json4s"           %% "json4s-ext"                      % "3.2.11",
-      "com.github.tototoshi" %% "play-json4s-native"              % "0.3.0"
+      "com.github.tototoshi" %% "play-json4s-native"              % "0.3.+"
     )
     Project(appName, file("play-sample")).enablePlugins(play.PlayScala).settings(
       scalaVersion in ThisBuild := "2.11.5",
       libraryDependencies ++= appDependencies,
       resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
+        "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       )
     ).dependsOn(core, playPlugin)
   }
@@ -104,7 +104,7 @@ object ScalikeJDBCAsyncProject extends Build {
     else Some("releases" at nexus + "service/local/staging/deploy/maven2")
   }
   val _resolvers = Seq(
-    "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
+    "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
   )
   val _scalacOptions = Seq("-deprecation", "-unchecked")
   val _pomExtra = <url>http://scalikejdbc.org/</url>
