@@ -4,7 +4,7 @@ import Keys._
 object ScalikeJDBCAsyncProject extends Build {
 
   lazy val _version = "0.5.6-SNAPSHOT"
-  lazy val scalikejdbcVersion = "2.2.2"
+  lazy val scalikejdbcVersion = "2.2.3"
   lazy val mauricioVersion = "0.2.15"
   lazy val defaultPlayVersion = play.core.PlayVersion.current
 
@@ -27,9 +27,9 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % "9.3-1102-jdbc41"  % "test",
-          "mysql"               %  "mysql-connector-java"      % "5.1.34"           % "test",
-          "org.scalatest"       %% "scalatest"                 % "2.2.3"            % "test",
-          "ch.qos.logback"      %  "logback-classic"           % "1.1.2"            % "test"
+          "mysql"               %  "mysql-connector-java"      % "5.1.+"            % "test",
+          "org.scalatest"       %% "scalatest"                 % "2.2.+"            % "test",
+          "ch.qos.logback"      %  "logback-classic"           % "1.1.+"            % "test"
         )
       },
       sbtPlugin := false,
@@ -84,8 +84,8 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % "9.3-1102-jdbc41",
-      "com.github.tototoshi" %% "play-flyway"                     % "1.2.0",
-      "mysql"                %  "mysql-connector-java"            % "5.1.34",
+      "com.github.tototoshi" %% "play-flyway"                     % "1.2.+"
+      "mysql"                %  "mysql-connector-java"            % "5.1.+",
       "org.json4s"           %% "json4s-ext"                      % "3.2.11",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.3.+"
     )
