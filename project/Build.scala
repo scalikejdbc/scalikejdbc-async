@@ -84,7 +84,7 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % "9.3-1102-jdbc41",
-      "com.github.tototoshi" %% "play-flyway"                     % "1.2.+"
+      "com.github.tototoshi" %% "play-flyway"                     % "1.2.+",
       "mysql"                %  "mysql-connector-java"            % "5.1.+",
       "org.json4s"           %% "json4s-ext"                      % "3.2.11",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.3.+"
