@@ -11,17 +11,23 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 libraryDependencies ++= Seq(
   jdbc,
-  "com.typesafe.play"   %% "play"                          % playV withSources(),
-  "com.typesafe.play"   %% "play-json"                     % playV withSources(),
-  "org.webjars"         %% "webjars-play"                  % "2.3.0-2"   withSources(),
-  "org.scalikejdbc"     %% "scalikejdbc-async"             % "0.5.+",
-  "com.github.mauricio" %% "postgresql-async"              % "0.2.+",
-  "org.scalikejdbc"     %% "scalikejdbc-async-play-plugin" % "0.5.+",
-  "org.webjars"         %  "bootstrap"                     % "3.3.2",
+  "com.typesafe.play"    %% "play"                          % playV withSources(),
+  "com.typesafe.play"    %% "play-json"                     % playV withSources(),
+  "org.webjars"          %% "webjars-play"                  % "2.3.0-2"   withSources(),
+  "org.scalikejdbc"      %% "scalikejdbc-async"             % "0.5.+",
+  "com.github.mauricio"  %% "postgresql-async"              % "0.2.+",
+  "org.postgresql"       %  "postgresql"                    % "9.3-1102-jdbc41" withSources(),
+  "org.scalikejdbc"      %% "scalikejdbc-async-play-plugin" % "0.5.+",
+  "org.webjars"          %  "bootstrap"                     % "3.3.2",
+  "com.github.tototoshi" %% "play-json4s-native"            % "0.3.1",
+  "com.github.tototoshi" %% "play-flyway"                   % "1.2.1",
+  "org.json4s"           %% "json4s-native"                 % "3.2.11",
+  "org.json4s"           %% "json4s-ext"                    % "3.2.11",
   //
-  "org.scalatestplus"   %% "play"                          % "1.2.0" % "test",
-  "org.scalatest"       %% "scalatest"                     % "2.2.1" % "test" withSources(),
-  "junit"               %  "junit"                         % "4.12"  % "test"
+  "org.scalatestplus"    %% "play"                          % "1.2.0" % "test",
+  "org.scalatest"        %% "scalatest"                     % "2.2.1" % "test" withSources(),
+  "com.github.tototoshi" %% "play-json4s-test-native"       % "0.3.1" % "test",
+  "junit"                %  "junit"                         % "4.12"  % "test"
 )
 
 //scalariformSettings
