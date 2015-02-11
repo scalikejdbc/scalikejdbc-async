@@ -1,30 +1,43 @@
 package scalikejdbc.async
 
+import javax.inject.{ Inject, Singleton }
+import scala.concurrent.Future
 import scalikejdbc._
-import play.api._
+import play.api.{ Configuration, Environment, Logger }
+import play.api.inject.{ ApplicationLifecycle, Module }
+
+/**
+ * Play module
+ */
+class PlayModule extends Module {
+  def bindings(env: Environment, config: Configuration) = Seq(
+    bind[PlayInitializer].toSelf.eagerly()
+  )
+}
 
 /**
  * The Play plugin to use ScalikeJDBC
  */
-class PlayPlugin(implicit app: Application) extends Plugin {
+@Singleton
+class PlayInitializer @Inject() (lifecycle: ApplicationLifecycle, configuration: Configuration) {
 
-  import PlayPlugin._
+  import PlayInitializer._
 
   // Play DB configuration
 
-  private[this] lazy val playDbConfig = app.configuration.getConfig("db").getOrElse(Configuration.empty)
+  private[this] lazy val playDbConfig = configuration.getConfig("db").getOrElse(Configuration.empty)
 
   // ScalikeJDBC global configuration
 
-  private[this] lazy val globalConfig = app.configuration.getConfig("scalikejdbc.global").getOrElse(Configuration.empty)
+  private[this] lazy val globalConfig = configuration.getConfig("scalikejdbc.global").getOrElse(Configuration.empty)
 
-  private[this] lazy val playConfig = app.configuration.getConfig("scalikejdbc.play").getOrElse(Configuration.empty)
+  private[this] lazy val playConfig = configuration.getConfig("scalikejdbc.play").getOrElse(Configuration.empty)
 
   private[this] val loggingSQLAndTime = "loggingSQLAndTime"
 
   private[this] var closeAllOnStop = true
 
-  override def onStart(): Unit = {
+  def onStart(): Unit = {
     playDbConfig.subKeys map {
       name =>
         def load(name: String): (String, String, String, AsyncConnectionPoolSettings) = {
@@ -42,7 +55,7 @@ class PlayPlugin(implicit app: Application) extends Plugin {
           name match {
             case "global" =>
               // because "db.global" was used as "scalikejdbc.global" previously
-              Logger(classOf[PlayPlugin]).warn("Configuration with \"db.global\" is ignored. Use \"scalikejdbc.global\" instead.")
+              Logger(classOf[PlayInitializer]).warn("Configuration with \"db.global\" is ignored. Use \"scalikejdbc.global\" instead.")
             case "default" =>
               if (!registeredPoolNames.contains("default")) {
                 val (url, user, password, settings) = load(name)
@@ -77,15 +90,18 @@ class PlayPlugin(implicit app: Application) extends Plugin {
 
   }
 
-  override def onStop(): Unit = {
+  def onStop(): Unit = {
     if (closeAllOnStop) {
       AsyncConnectionPool.closeAll()
       registeredPoolNames.synchronized(registeredPoolNames.clear())
     }
   }
+
+  lifecycle.addStopHook(() => Future.successful(onStop()))
+  onStart()
 }
 
-object PlayPlugin {
+object PlayInitializer {
 
   private val registeredPoolNames = scala.collection.mutable.Set.empty[String]
 

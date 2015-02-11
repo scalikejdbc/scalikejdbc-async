@@ -19,8 +19,8 @@ object PlayPluginSpec extends Specification {
 
   def fakeApp = FakeApplication(
     withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
-    additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
+      "play.modules.enabled" -> List("scalikejdbc.async.PlayModule"),
       "logger.root" -> "WARN",
       "logger.play" -> "WARN",
       "logger.application" -> "WARN",
@@ -43,8 +43,8 @@ object PlayPluginSpec extends Specification {
 
   def fakeAppWithoutCloseAllOnStop = FakeApplication(
     withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
-    additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
+      "play.modules.enabled" -> List("scalikejdbc.async.PlayModule"),
       "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
       "db.default.password" -> "sa",
@@ -57,8 +57,8 @@ object PlayPluginSpec extends Specification {
 
   def fakeAppWithDBPlugin = FakeApplication(
     withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
-    additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
+      "play.modules.enabled" -> List("scalikejdbc.async.PlayModule"),
       "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
       "db.default.password" -> "sa",

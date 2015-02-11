@@ -44,13 +44,13 @@ object ScalikeJDBCAsyncProject extends Build {
     )
   )
 
-  lazy val playPlugin = Project(
+  lazy val playInitializer = Project(
     id = "play-plugin",
-    base = file("play-plugin"),
+    base = file("play-initializer"),
     settings = Seq(
       sbtPlugin := false,
       organization := "org.scalikejdbc",
-      name := "scalikejdbc-async-play-plugin",
+      name := "scalikejdbc-async-play-initializer",
       version := _version,
       scalaVersion := "2.11.5",
       crossScalaVersions := Seq("2.11.5", "2.10.4"),
@@ -95,7 +95,7 @@ object ScalikeJDBCAsyncProject extends Build {
       resolvers ++= Seq(
         "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       )
-    ).dependsOn(core, playPlugin)
+    ).dependsOn(core, playInitializer)
   }
 
   def _publishTo(v: String) = {
