@@ -55,7 +55,10 @@ object ScalikeJDBCAsyncProject extends Build {
       scalaVersion := "2.11.5",
       crossScalaVersions := Seq("2.11.5", "2.10.4"),
       resolvers ++= _resolvers,
-      resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+      resolvers ++= Seq(
+        "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+        "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+      ),
       libraryDependencies <++= (scalaVersion) { scalaVersion =>
         Seq(
           "com.github.mauricio"    %% "postgresql-async" % mauricioVersion    % "provided",
