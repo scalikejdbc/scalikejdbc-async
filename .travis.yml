@@ -2,6 +2,7 @@ language: scala
 scala:
 - 2.10.4
 - 2.11.5
+sudo: false
 script: sbt clean coverage test
 after_success: sbt coveralls
 addons:
