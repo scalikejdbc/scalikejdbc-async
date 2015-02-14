@@ -3,8 +3,8 @@ scala:
 - 2.10.4
 - 2.11.5
 sudo: false
-script: sbt clean coverage test
-after_success: sbt coveralls
+script: sbt ++${TRAVIS_SCALA_VERSION} clean $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.5" ]]; then echo coverage ; else echo "" ; fi) test
+after_success: sbt $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.5" ]]; then echo coveralls ; else echo "" ; fi)
 addons:
   postgresql: '9.3'
 before_script:
