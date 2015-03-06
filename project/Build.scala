@@ -17,7 +17,7 @@ object ScalikeJDBCAsyncProject extends Build {
       name := "scalikejdbc-async",
       version := _version,
       scalaVersion := "2.11.6",
-      crossScalaVersions := Seq("2.11.6", "2.10.4"),
+      crossScalaVersions := Seq("2.11.6", "2.10.5"),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       resolvers ++= _resolvers,
@@ -54,7 +54,7 @@ object ScalikeJDBCAsyncProject extends Build {
       name := "scalikejdbc-async-play-plugin",
       version := _version,
       scalaVersion := "2.11.6",
-      crossScalaVersions := Seq("2.11.6", "2.10.4"),
+      crossScalaVersions := Seq("2.11.6", "2.10.5"),
       resolvers ++= _resolvers,
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies ++= Seq(
