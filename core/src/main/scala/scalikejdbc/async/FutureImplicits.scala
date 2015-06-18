@@ -1,6 +1,6 @@
 package scalikejdbc.async
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scala.concurrent._
 import scalikejdbc.async.ShortenedNames._
 

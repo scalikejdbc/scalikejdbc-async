@@ -30,7 +30,7 @@ trait MySQLConnectionImpl extends AsyncConnectionCommonImpl {
       val pool = this.asInstanceOf[PoolableAsyncConnection[Connection]].pool
       pool.take.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with MySQLConnectionImpl)
     } else {
-      future(new SingleNonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl)
+      Future(new SingleNonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl)
     }
   }
 

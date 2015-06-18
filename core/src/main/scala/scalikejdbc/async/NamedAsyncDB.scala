@@ -15,6 +15,8 @@
  */
 package scalikejdbc.async
 
+import scalikejdbc.async.internal.AsyncConnectionCommonImpl
+
 import scala.concurrent._
 import scala.util.{ Failure, Success }
 import scalikejdbc.async.ShortenedNames._
@@ -51,18 +53,9 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
    * @return a future value
    */
   def localTx[A](op: (TxAsyncDBSession) => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
-    AsyncConnectionPool(name).borrow().toNonSharedConnection().map { txConn =>
-      TxAsyncDBSession(txConn)
-    }.flatMap { tx =>
-      tx.begin().flatMap { _ =>
-        op.apply(tx).andThen {
-          case Success(_) => tx.commit()
-          case Failure(e) => tx.rollback()
-        }.andThen {
-          case _ => tx.release()
-        }
-      }
-    }
+    AsyncConnectionPool(name).borrow().toNonSharedConnection()
+      .map { txConn => TxAsyncDBSession(txConn) }
+      .flatMap { tx => AsyncTx.inTransaction[A](tx, op) }
   }
 
 }

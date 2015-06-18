@@ -1,9 +1,9 @@
 package programmerlist
 
-import scalikejdbc._, SQLInterpolation._, async._
+import scalikejdbc._, async._
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 
-import org.scalatest._, matchers._
+import org.scalatest._
 import unit._
 
 class ExampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
@@ -38,15 +38,14 @@ class ExampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
       val withinTx: Future[Unit] = AsyncDB.localTx { implicit tx =>
         for {
           programmers <- Programmer.findAllBy(sqls.eq(p.companyId, newCompany.id))
-          restructuring <- programmers.foldLeft(Future.successful()) {
-            (prev, programmer) =>
-              for {
-                _ <- prev
-                _ <- programmer.destroy()
-              } yield ()
+          restructuring <- programmers.foldLeft(Future.successful(())) { (prev, programmer) =>
+            for {
+              _ <- prev
+              res <- programmer.destroy()
+            } yield ()
           }
           dissolution <- newCompany.destroy()
-          _ <- sql"Just joking!".update.future
+          f <- sql"Just joking!".update.future
         } yield ()
       }
       try Await.result(withinTx, 5.seconds)

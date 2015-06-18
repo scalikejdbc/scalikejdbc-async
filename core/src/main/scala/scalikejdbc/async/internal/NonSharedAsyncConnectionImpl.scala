@@ -17,9 +17,7 @@ abstract class NonSharedAsyncConnectionImpl(
     extends AsyncConnectionCommonImpl
     with NonSharedAsyncConnection {
 
-  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
-    future(this)
-  }
+  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = Future(this)
 
   override def release(): Unit = pool.map(_.giveBack(this.underlying))
 

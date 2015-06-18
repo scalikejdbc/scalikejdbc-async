@@ -1,6 +1,6 @@
 package unit
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 object SampleDBInitializer {
 

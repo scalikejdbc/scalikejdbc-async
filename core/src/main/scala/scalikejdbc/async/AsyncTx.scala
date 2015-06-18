@@ -15,9 +15,12 @@
  */
 package scalikejdbc.async
 
-import scalikejdbc._, SQLInterpolation._
-import scala.concurrent._
+import scalikejdbc._
 import scalikejdbc.async.ShortenedNames._
+import scalikejdbc.async.internal.AsyncConnectionCommonImpl
+
+import scala.concurrent.{ Promise, Future }
+import scala.util.{ Failure, Success }
 
 /**
  * Asynchronous Transaction Provider
@@ -46,6 +49,20 @@ object AsyncTx {
    */
   def withSQLs(sqlObjects: SQL[_, _]*)(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): AsyncTxQuery = {
     new AsyncTxQuery(sqlObjects)
+  }
+
+  def inTransaction[A](tx: TxAsyncDBSession, op: (TxAsyncDBSession) => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
+    val p = Promise[A]()
+    val connection = tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
+    connection.inTransaction(_ => op.apply(tx)).onComplete {
+      case Success(result) =>
+        tx.release()
+        p.success(result)
+      case Failure(e) =>
+        tx.release()
+        p.failure(e)
+    }
+    p.future
   }
 
 }

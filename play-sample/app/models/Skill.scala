@@ -1,6 +1,6 @@
 package models
 
-import scalikejdbc._, async._, FutureImplicits._, SQLInterpolation._
+import scalikejdbc._, async._, FutureImplicits._
 import org.joda.time.DateTime
 import scala.concurrent._
 
@@ -30,7 +30,7 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
   lazy val s = Skill.syntax("s")
 
-  private val isNotDeleted = sqls.isNull(s.deletedAt)
+  private lazy val isNotDeleted = sqls.isNull(s.deletedAt)
 
   def find(id: Long)(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Option[Skill]] = withSQL {
     select.from(Skill as s).where.eq(s.id, id).and.append(isNotDeleted)

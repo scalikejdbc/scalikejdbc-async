@@ -1,13 +1,13 @@
 package scalikejdbc
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scala.concurrent.{ ExecutionContext, Future }
 import scalikejdbc.async.ShortenedNames._
 /**
  * Default package to import
  *
  * {{{
- *   import scalikejdbc._, async._, SQLInterpolation._
+ *   import scalikejdbc._, async._
  * }}}
  */
 package object async {
