@@ -85,7 +85,7 @@ object Build extends sbt.Build {
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % postgresqlVersion,
-      "org.flywaydb"         %% "flyway-play"                     % "2.0.+",
+      "org.flywaydb"         %% "flyway-play"                     % "2.1.0-SNAPSHOT",
       "mysql"                %  "mysql-connector-java"            % "5.1.+",
       "org.json4s"           %% "json4s-ext"                      % "3.2.+",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.4.+"

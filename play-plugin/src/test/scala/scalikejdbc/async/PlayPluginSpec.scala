@@ -13,7 +13,6 @@ object PlayPluginSpec extends Specification {
   // TODO [error] c.g.m.a.d.p.PostgreSQLConnection - Trying to give back a connection that is not ready for query
   sequential
 
-  //FIXME enable scalikejdbc.async.PlayModule?
   def fakeApp = FakeApplication(
     additionalConfiguration = Map(
       "logger.root" -> "WARN",
