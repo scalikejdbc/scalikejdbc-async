@@ -1,10 +1,10 @@
 import sbt._
 import Keys._
 
-object ScalikeJDBCAsyncProject extends Build {
+object Build extends sbt.Build {
 
   lazy val _version = "0.6.0-SNAPSHOT"
-  lazy val scalikejdbcVersion = "2.2.4"
+  lazy val scalikejdbcVersion = "2.2.+"
   lazy val mauricioVersion = "0.2.+" // provided
   lazy val postgresqlVersion = "9.4-1201-jdbc41"
   lazy val defaultPlayVersion = play.core.PlayVersion.current
@@ -16,12 +16,12 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "org.scalikejdbc",
       name := "scalikejdbc-async",
       version := _version,
-      scalaVersion := "2.11.6",
-      crossScalaVersions := Seq("2.11.6", "2.10.5"),
+      scalaVersion := "2.11.7",
+      crossScalaVersions := Seq("2.11.7", "2.10.5"),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       resolvers ++= _resolvers,
-      libraryDependencies <++= (scalaVersion) { scalaVersion =>
+      libraryDependencies <++= scalaVersion { scalaVersion =>
         Seq(
           "org.scalikejdbc"     %% "scalikejdbc"               % scalikejdbcVersion % "compile",
           "org.scalikejdbc"     %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
@@ -53,14 +53,15 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "org.scalikejdbc",
       name := "scalikejdbc-async-play-plugin",
       version := _version,
-      scalaVersion := "2.11.6",
-      crossScalaVersions := Seq("2.11.6", "2.10.5"),
+      scalaVersion := "2.11.7",
+      crossScalaVersions := Seq("2.11.7", "2.10.5"),
       resolvers ++= _resolvers,
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies ++= Seq(
         "com.github.mauricio"    %% "postgresql-async" % mauricioVersion    % "provided",
         "com.github.mauricio"    %% "mysql-async"      % mauricioVersion    % "provided",
         "com.typesafe.play"      %% "play"             % defaultPlayVersion % "provided",
+        "com.typesafe.play"      %% "play-specs2"      % defaultPlayVersion % "test",
         "com.typesafe.play"      %% "play-test"        % defaultPlayVersion % "test"
       ),
       testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "sequential", "true"),
@@ -73,7 +74,7 @@ object ScalikeJDBCAsyncProject extends Build {
       incOptions := incOptions.value.withNameHashing(true),
       scalacOptions ++= _scalacOptions
     )
-  ) dependsOn(core)
+  ).dependsOn(core)
 
   lazy val playSample = {
     val appName         = "play-sample"
@@ -84,16 +85,18 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.mauricio"  %% "postgresql-async"                % mauricioVersion,
       "com.github.mauricio"  %% "mysql-async"                     % mauricioVersion,
       "org.postgresql"       %  "postgresql"                      % postgresqlVersion,
-      "com.github.tototoshi" %% "play-flyway"                     % "1.2.+",
+      "org.flywaydb"         %% "flyway-play"                     % "2.1.0-SNAPSHOT",
       "mysql"                %  "mysql-connector-java"            % "5.1.+",
-      "org.json4s"           %% "json4s-ext"                      % "3.2.11",
-      "com.github.tototoshi" %% "play-json4s-native"              % "0.3.+"
+      "org.json4s"           %% "json4s-ext"                      % "3.2.+",
+      "com.github.tototoshi" %% "play-json4s-native"              % "0.4.+"
     )
-    Project(appName, file("play-sample")).enablePlugins(play.PlayScala).settings(
-      scalaVersion in ThisBuild := "2.11.6",
-      libraryDependencies ++= appDependencies,
-      resolvers ++= _resolvers
-    ).dependsOn(core, playPlugin)
+    Project(appName, file("play-sample"))
+      .enablePlugins(play.sbt.PlayScala)
+      .settings(
+        scalaVersion in ThisBuild := "2.11.7",
+        libraryDependencies ++= appDependencies,
+        resolvers ++= _resolvers
+      ).dependsOn(core, playPlugin)
   }
 
   def _publishTo(v: String) = {

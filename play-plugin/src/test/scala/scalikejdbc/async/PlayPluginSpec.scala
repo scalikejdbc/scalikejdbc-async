@@ -1,31 +1,23 @@
 package scalikejdbc.async
 
 import scalikejdbc._
-
 import org.specs2.mutable.Specification
-
 import play.api.test._
 import play.api.test.Helpers._
 import scala.concurrent._
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object PlayPluginSpec extends Specification {
 
   // TODO [error] c.g.m.a.d.p.PostgreSQLConnection - Trying to give back a connection that is not ready for query
-
-  override def intToRichLong(v: Int) = super.intToRichLong(v)
-
   sequential
 
   def fakeApp = FakeApplication(
-    withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
-    additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
       "logger.root" -> "WARN",
       "logger.play" -> "WARN",
       "logger.application" -> "WARN",
-      "dbplugin" -> "disabled",
-      "evolutionplugin" -> "disabled",
       "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
       "db.default.password" -> "sa",
@@ -42,8 +34,6 @@ object PlayPluginSpec extends Specification {
   )
 
   def fakeAppWithoutCloseAllOnStop = FakeApplication(
-    withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
-    additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
       "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
@@ -56,8 +46,6 @@ object PlayPluginSpec extends Specification {
   )
 
   def fakeAppWithDBPlugin = FakeApplication(
-    withoutPlugins = Seq("play.api.cache.EhCachePlugin"),
-    additionalPlugins = Seq("scalikejdbc.async.PlayPlugin"),
     additionalConfiguration = Map(
       "db.default.url" -> "jdbc:postgresql://localhost:5432/scalikejdbc",
       "db.default.user" -> "sa",
