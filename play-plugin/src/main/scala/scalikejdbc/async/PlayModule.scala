@@ -1,30 +1,31 @@
 package scalikejdbc.async
 
-import scalikejdbc._
-import play.api._
+import javax.inject.Inject
+import play.api.{ Logger, Configuration, Environment }
+import play.api.inject.{ ApplicationLifecycle, Module }
+import scalikejdbc.{ GlobalSettings, LoggingSQLAndTimeSettings }
 
-/**
- * The Play plugin to use ScalikeJDBC
- */
-class PlayPlugin(implicit app: Application) extends Plugin {
+import scala.concurrent.Future
 
-  import PlayPlugin._
+class PlayModule @Inject() (lifecycle: ApplicationLifecycle, configuration: Configuration) extends Module {
+
+  import PlayModule._
 
   // Play DB configuration
 
-  private[this] lazy val playDbConfig = app.configuration.getConfig("db").getOrElse(Configuration.empty)
+  private[this] lazy val playDbConfig = configuration.getConfig("db").getOrElse(Configuration.empty)
 
   // ScalikeJDBC global configuration
 
-  private[this] lazy val globalConfig = app.configuration.getConfig("scalikejdbc.global").getOrElse(Configuration.empty)
+  private[this] lazy val globalConfig = configuration.getConfig("scalikejdbc.global").getOrElse(Configuration.empty)
 
-  private[this] lazy val playConfig = app.configuration.getConfig("scalikejdbc.play").getOrElse(Configuration.empty)
+  private[this] lazy val playConfig = configuration.getConfig("scalikejdbc.play").getOrElse(Configuration.empty)
 
   private[this] val loggingSQLAndTime = "loggingSQLAndTime"
 
   private[this] var closeAllOnStop = true
 
-  override def onStart(): Unit = {
+  def onStart(): Unit = {
     playDbConfig.subKeys map {
       name =>
         def load(name: String): (String, String, String, AsyncConnectionPoolSettings) = {
@@ -42,7 +43,7 @@ class PlayPlugin(implicit app: Application) extends Plugin {
           name match {
             case "global" =>
               // because "db.global" was used as "scalikejdbc.global" previously
-              Logger(classOf[PlayPlugin]).warn("Configuration with \"db.global\" is ignored. Use \"scalikejdbc.global\" instead.")
+              Logger(classOf[PlayModule]).warn("Configuration with \"db.global\" is ignored. Use \"scalikejdbc.global\" instead.")
             case "default" =>
               if (!registeredPoolNames.contains("default")) {
                 val (url, user, password, settings) = load(name)
@@ -77,16 +78,19 @@ class PlayPlugin(implicit app: Application) extends Plugin {
 
   }
 
-  override def onStop(): Unit = {
+  def onStop(): Unit = {
     if (closeAllOnStop) {
       AsyncConnectionPool.closeAll()
       registeredPoolNames.synchronized(registeredPoolNames.clear())
     }
   }
+
+  lifecycle.addStopHook(() => Future.successful(onStop()))
+
+  def bindings(environment: Environment, configuration: Configuration) = Nil
 }
 
-object PlayPlugin {
-
+object PlayModule {
   private val registeredPoolNames = scala.collection.mutable.Set.empty[String]
 
   def opt(name: String, key: String)(implicit config: Configuration): Option[String] = {
@@ -98,5 +102,4 @@ object PlayPlugin {
       throw config.reportError(name, "Missing configuration [db." + name + "." + key + "]")
     }
   }
-
 }
