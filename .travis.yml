@@ -1,6 +1,9 @@
 language: scala
+jdk:
+# Play 2.4 supports only JDK8
+- oraclejdk8
 scala:
-- 2.10.5
+- 2.10.6
 - 2.11.7
 sudo: false
 script: sbt ++${TRAVIS_SCALA_VERSION} clean $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.7" ]]; then echo coverage ; else echo "" ; fi) test

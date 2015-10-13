@@ -4,7 +4,7 @@ import Keys._
 object ScalikeJDBCAsyncProject extends Build {
 
   lazy val _version = "0.6.0-SNAPSHOT"
-  lazy val scalikejdbcVersion = "2.2.4"
+  lazy val scalikejdbcVersion = "2.2.9"
   lazy val mauricioVersion = "0.2.+" // provided
   lazy val postgresqlVersion = "9.4-1201-jdbc41"
   lazy val defaultPlayVersion = play.core.PlayVersion.current
@@ -17,7 +17,7 @@ object ScalikeJDBCAsyncProject extends Build {
       name := "scalikejdbc-async",
       version := _version,
       scalaVersion := "2.11.7",
-      crossScalaVersions := Seq("2.11.7", "2.10.5"),
+      crossScalaVersions := Seq("2.11.7", "2.10.6"),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       resolvers ++= _resolvers,
