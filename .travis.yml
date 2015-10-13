@@ -11,7 +11,7 @@ after_success: sbt $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.7" ]]; then echo c
 addons:
   postgresql: '9.3'
 before_script:
-- rm project/pgp.sbt && rm project/sbt-updates.sbt && rm project/sonatype.sbt && rm build.sbt
+- rm project/pgp.sbt && rm project/sbt-updates.sbt && rm project/sonatype.sbt
 - psql -c "CREATE ROLE sa WITH SUPERUSER LOGIN PASSWORD 'sa';" -U postgres
 - psql -c "CREATE DATABASE scalikejdbc;" -U postgres
 - psql -c "CREATE DATABASE scalikejdbc2;" -U postgres
