@@ -119,7 +119,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
     Await.result(deletion, 5.seconds)
 
     // should be committed
-    val deleted = NamedDB('mysql).readOnly { implicit s =>
+    val deleted = DB.readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, 1004) }.map(AsyncLover(al)).single.apply()
     }
     deleted.isDefined should be(false)
