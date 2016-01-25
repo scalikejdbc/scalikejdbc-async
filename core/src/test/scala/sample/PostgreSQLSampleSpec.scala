@@ -2,7 +2,6 @@ package sample
 
 import org.joda.time._
 import org.scalatest._
-import org.slf4j.LoggerFactory
 import scala.concurrent._, duration.DurationInt, ExecutionContext.Implicits.global
 import scalikejdbc._, async._
 import unit._
