@@ -54,18 +54,18 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   }
 
   it should "read values with convenience methods" in {
-    val generatedIdFuture: Future[Long] = AsyncDB.withPool { implicit s =>
+    val generatedIdFuture: Future[Long] = NamedAsyncDB('mysql).withPool { implicit s =>
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Eric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime).returningId
+          column.createdAt -> createdTime)
       }.updateAndReturnGeneratedKey.future()
     }
     // in AsyncLover#apply we are using get with typebinders, specialized getters should work
     val generatedId = Await.result(generatedIdFuture, 5.seconds)
-    val created = DB.readOnly { implicit s =>
+    val created = NamedDB('mysql).readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map((rs: WrappedResultSet) => {
         AsyncLover(
           id = rs.long(al.resultName.id),
@@ -109,7 +109,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
 
   it should "update" in {
     // updating queries should be successful
-    DB autoCommit { implicit s =>
+    NamedDB('mysql) autoCommit { implicit s =>
       withSQL { delete.from(AsyncLover).where.eq(column.id, 1004) }.update.apply()
       withSQL {
         insert.into(AsyncLover).namedValues(
