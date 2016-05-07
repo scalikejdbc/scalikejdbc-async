@@ -4,7 +4,7 @@ import Keys._
 object ScalikeJDBCAsyncProject extends Build {
 
   lazy val _version = "0.6.0-SNAPSHOT"
-  lazy val scalikejdbcVersion = "2.2.9"
+  lazy val scalikejdbcVersion = "2.4.0"
   lazy val mauricioVersion = "0.2.18" // provided
   lazy val postgresqlVersion = "9.4-1201-jdbc41"
   lazy val defaultPlayVersion = play.core.PlayVersion.current
@@ -16,8 +16,8 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "org.scalikejdbc",
       name := "scalikejdbc-async",
       version := _version,
-      scalaVersion := "2.11.7",
-      crossScalaVersions := Seq("2.11.7", "2.10.6"),
+      scalaVersion := "2.11.8",
+      crossScalaVersions := Seq("2.11.8", "2.10.6"),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       resolvers ++= _resolvers,
@@ -53,8 +53,8 @@ object ScalikeJDBCAsyncProject extends Build {
       organization := "org.scalikejdbc",
       name := "scalikejdbc-async-play-plugin",
       version := _version,
-      scalaVersion := "2.11.7",
-      crossScalaVersions := Seq("2.11.7", "2.10.5"),
+      scalaVersion := "2.11.8",
+      crossScalaVersions := Seq("2.11.8", "2.10.6"),
       resolvers ++= _resolvers,
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies ++= Seq(
@@ -90,7 +90,7 @@ object ScalikeJDBCAsyncProject extends Build {
       "com.github.tototoshi" %% "play-json4s-native"              % "0.3.+"
     )
     Project(appName, file("play-sample")).enablePlugins(play.PlayScala).settings(
-      scalaVersion in ThisBuild := "2.11.7",
+      scalaVersion in ThisBuild := "2.11.8",
       libraryDependencies ++= appDependencies,
       resolvers ++= _resolvers
     ).dependsOn(core, playPlugin)
@@ -124,6 +124,4 @@ object ScalikeJDBCAsyncProject extends Build {
           <url>http://seratch.net/</url>
         </developer>
       </developers>
-
 }
-
