@@ -17,7 +17,7 @@ ScalikeJDBC is a tidy SQL-based DB access library for Scala developers. This lib
 
 ### Important Notice
 
-ScalikeJDBC-Async and [postgrsql-async and mysql-async](https://github.com/mauricio/postgresql-async) are still in the alpha stage. If you don't have motivation to investigate or fix issues by yourself, we recommend you waiting until stable version release someday.
+ScalikeJDBC-Async is still in the beta stage. If you don't have motivation to investigate or fix issues by yourself, we recommend you waiting until stable version release someday.
 
 ### Supported RDBMS
 
