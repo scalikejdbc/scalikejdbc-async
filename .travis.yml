@@ -4,10 +4,10 @@ jdk:
 - oraclejdk8
 scala:
 - 2.10.6
-- 2.11.7
+- 2.11.8
 sudo: false
-script: sbt ++${TRAVIS_SCALA_VERSION} clean $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.7" ]]; then echo coverage ; else echo "" ; fi) test
-after_success: sbt $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.7" ]]; then echo coveralls ; else echo "" ; fi)
+script: sbt ++${TRAVIS_SCALA_VERSION} clean $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.8" ]]; then echo coverage ; else echo "" ; fi) test
+after_success: sbt $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.8" ]]; then echo coveralls ; else echo "" ; fi)
 addons:
   postgresql: '9.3'
 before_script:
