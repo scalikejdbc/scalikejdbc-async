@@ -30,15 +30,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "select person with custom binder" in {
     val id = PersonId(12)
-    val name = "adasdasd"
-
-    NamedDB('mysql).autoCommit { implicit session =>
-      withSQL {
-        insert.into(Person).namedValues(
-          column.id -> id,
-          column.name -> name)
-      }.update.apply()
-    }
+    val name = "testperson"
 
     val resultsFuture: Future[Option[Person]] = NamedAsyncDB('mysql).withPool { implicit s =>
       withSQL {
