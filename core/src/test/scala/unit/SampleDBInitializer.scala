@@ -30,6 +30,13 @@ create table async_lover (
 );
 """
 
+  val mysqlCreateTable2 = """
+create table person (
+  id bigint primary key,
+  name varchar(64) not null
+);
+"""
+
   val insertQueries = Seq(
     """insert into async_lover (name, rating, is_reactive, lunchtime, birthday, created_at) 
         values ('Alice', 4, true, '12:30:00', '1980-01-02', '2013-05-06 01:02:03')""",
@@ -54,7 +61,11 @@ create table async_lover (
       try sql"drop table async_lover".execute.apply()
       catch { case e: Exception => }
 
+      try sql"drop table person".execute.apply()
+      catch { case e: Exception => }
+
       SQL(mysqlCreateTable).execute.apply()
+      SQL(mysqlCreateTable2).execute.apply()
       insertQueries.foreach(q => SQL(q).update.apply())
     }
   }
