@@ -51,7 +51,7 @@ val appDependencies = Seq(
 
 - [programmerlist/ExampleSpec.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/master/core/src/test/scala/programmerlist/ExampleSpec.scala)
 - [programmerlist/Company.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/master/core/src/test/scala/programmerlist/Company.scala)
-- [programmerlist/Programmer.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/mastesr/core/src/test/scala/programmerlist/Programmer.scala)
+- [programmerlist/Programmer.scala](https://github.com/scalikejdbc/scalikejdbc-async/blob/master/core/src/test/scala/programmerlist/Programmer.scala)
 
 ```scala
 import scalikejdbc._, async._
