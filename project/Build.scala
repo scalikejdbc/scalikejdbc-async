@@ -4,8 +4,8 @@ import Keys._
 object ScalikeJDBCAsyncProject extends Build {
 
   lazy val _version = "0.6.0"
-  lazy val scalikejdbcVersion = "2.4.0"
-  lazy val mauricioVersion = "0.2.19" // provided
+  lazy val scalikejdbcVersion = "2.4.2"
+  lazy val mauricioVersion = "0.2.20" // provided
   lazy val postgresqlVersion = "9.4-1201-jdbc41"
   lazy val defaultPlayVersion = play.core.PlayVersion.current
 
@@ -29,7 +29,7 @@ object ScalikeJDBCAsyncProject extends Build {
           "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
           "org.postgresql"      %  "postgresql"                % postgresqlVersion  % "test",
           "mysql"               %  "mysql-connector-java"      % "5.1.+"            % "test",
-          "org.scalatest"       %% "scalatest"                 % "2.2.+"            % "test",
+          "org.scalatest"       %% "scalatest"                 % "3.0.0"            % "test",
           "ch.qos.logback"      %  "logback-classic"           % "1.1.+"            % "test"
         )
       },
@@ -86,7 +86,7 @@ object ScalikeJDBCAsyncProject extends Build {
       "org.postgresql"       %  "postgresql"                      % postgresqlVersion,
       "com.github.tototoshi" %% "play-flyway"                     % "1.2.+",
       "mysql"                %  "mysql-connector-java"            % "5.1.+",
-      "org.json4s"           %% "json4s-ext"                      % "3.2.11",
+      "org.json4s"           %% "json4s-ext"                      % "3.4.0",
       "com.github.tototoshi" %% "play-json4s-native"              % "0.3.+"
     )
     Project(appName, file("play-sample")).enablePlugins(play.PlayScala).settings(
