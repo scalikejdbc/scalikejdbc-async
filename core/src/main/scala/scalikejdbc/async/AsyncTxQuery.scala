@@ -16,9 +16,7 @@
 package scalikejdbc.async
 
 import scalikejdbc._
-import scalikejdbc.async.internal.AsyncConnectionCommonImpl
 import scala.concurrent._
-import scala.util._
 import scalikejdbc.async.ShortenedNames._
 
 /**
@@ -36,8 +34,7 @@ class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
       }
     }
     session.connection.toNonSharedConnection
-      .map(conn => TxAsyncDBSession(conn))
-      .flatMap { tx => AsyncTx.inTransaction(tx, op) }
+      .flatMap(conn => AsyncTx.inTransaction(TxAsyncDBSession(conn), op))
   }
 
 }

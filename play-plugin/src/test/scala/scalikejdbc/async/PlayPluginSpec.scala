@@ -156,7 +156,7 @@ object PlayPluginSpec extends Specification {
       running(fakeApp) {
         simpleTest(sqls"user_4")
       }
-      simpleTest(sqls"user_5") must throwA[NullPointerException]
+      simpleTest(sqls"user_5") must throwA[IllegalStateException]
     }
 
     "skip closing connection pools after stopping Play app" in {

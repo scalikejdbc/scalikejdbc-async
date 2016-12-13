@@ -27,13 +27,11 @@ import scalikejdbc.async.ShortenedNames._
  * @param pool connection pool
  * @tparam T Connection sub type
  */
-private[scalikejdbc] abstract class PoolableAsyncConnection[T <: com.github.mauricio.async.db.Connection](val pool: ConnectionPool[T])
-    extends AsyncConnectionCommonImpl
-    with AsyncConnection {
+private[scalikejdbc] abstract class PoolableAsyncConnection[T <: Connection](val pool: ConnectionPool[T])
+    extends AsyncConnectionCommonImpl {
 
-  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
+  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] =
     Future.failed(new UnsupportedOperationException)
-  }
 
   private[scalikejdbc] val underlying: Connection = pool
 
