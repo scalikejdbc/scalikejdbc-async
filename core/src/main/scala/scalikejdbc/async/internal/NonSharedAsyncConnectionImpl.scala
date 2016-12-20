@@ -13,7 +13,8 @@ import scalikejdbc.async.ShortenedNames._
  */
 abstract class NonSharedAsyncConnectionImpl(
   val underlying: MauricioConnection,
-  val pool: Option[MauricioConnectionPool[MauricioConnection]] = None)
+  val pool: Option[MauricioConnectionPool[MauricioConnection]] = None
+)
     extends AsyncConnectionCommonImpl
     with NonSharedAsyncConnection {
 

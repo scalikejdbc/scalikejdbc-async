@@ -83,7 +83,9 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def single[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
-    implicit cxt: EC = ECGlobal): Future[Option[A]] = {
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Option[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     traversable(statement, _parameters: _*)(extractor).map { results =>
       results match {
@@ -100,7 +102,9 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToOneTraversable[A, B, Z](statement: String, parameters: Any*)(extractOne: (WrappedResultSet) => A)(extractTo: (WrappedResultSet) => Option[B])(transform: (A, B) => Z)(
-    implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -124,10 +128,15 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManyTraversable[A, B, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo: (WrappedResultSet) => Option[B])(
-        transform: (A, Seq[B]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo: (WrappedResultSet) => Option[B]
+  )(
+    transform: (A, Seq[B]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -151,11 +160,16 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManies2Traversable[A, B1, B2, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo1: (WrappedResultSet) => Option[B1],
-      extractTo2: (WrappedResultSet) => Option[B2])(
-        transform: (A, Seq[B1], Seq[B2]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2]
+  )(
+    transform: (A, Seq[B1], Seq[B2]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -186,12 +200,17 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManies3Traversable[A, B1, B2, B3, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo1: (WrappedResultSet) => Option[B1],
-      extractTo2: (WrappedResultSet) => Option[B2],
-      extractTo3: (WrappedResultSet) => Option[B3])(
-        transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -229,13 +248,18 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManies4Traversable[A, B1, B2, B3, B4, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo1: (WrappedResultSet) => Option[B1],
-      extractTo2: (WrappedResultSet) => Option[B2],
-      extractTo3: (WrappedResultSet) => Option[B3],
-      extractTo4: (WrappedResultSet) => Option[B4])(
-        transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -267,7 +291,8 @@ trait AsyncDBSession extends LogSupport {
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
           new AsyncResultSetTraversable(ars).foldLeft(
-            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])]())(processResultSet).map {
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])]()
+          )(processResultSet).map {
               case (one, (t1, t2, t3, t4)) => transform(one, t1, t2, t3, t4)
             }
         }.getOrElse(Nil)
@@ -277,22 +302,29 @@ trait AsyncDBSession extends LogSupport {
 
   def oneToManies5Traversable[A, B1, B2, B3, B4, B5, Z](
     statement: String,
-    parameters: Any*)(
-      extractOne: (WrappedResultSet) => A)(
-        extractTo1: (WrappedResultSet) => Option[B1],
-        extractTo2: (WrappedResultSet) => Option[B2],
-        extractTo3: (WrappedResultSet) => Option[B3],
-        extractTo4: (WrappedResultSet) => Option[B4],
-        extractTo5: (WrappedResultSet) => Option[B5])(
-          transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z)(
-            implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    parameters: Any*
+  )(
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4],
+    extractTo5: (WrappedResultSet) => Option[B5]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
       def processResultSet(
         result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]),
-        rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])] = {
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4, to5) = (extractTo1(rs), extractTo2(rs), extractTo3(rs), extractTo4(rs), extractTo5(rs))
         result.keys.find(_ == o).map { _ =>
@@ -321,7 +353,8 @@ trait AsyncDBSession extends LogSupport {
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
           new AsyncResultSetTraversable(ars).foldLeft(
-            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]())(processResultSet).map {
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]()
+          )(processResultSet).map {
               case (one, (t1, t2, t3, t4, t5)) => transform(one, t1, t2, t3, t4, t5)
             }
         }.getOrElse(Nil)
@@ -344,7 +377,8 @@ trait AsyncDBSession extends LogSupport {
   }
 
   protected def withListeners[A](statement: String, parameters: Seq[Any], startMillis: Long = System.currentTimeMillis)(
-    f: Future[A])(implicit cxt: EC = EC.global): Future[A] = {
+    f: Future[A]
+  )(implicit cxt: EC = EC.global): Future[A] = {
     f.onSuccess {
       case _ =>
         val millis = System.currentTimeMillis - startMillis

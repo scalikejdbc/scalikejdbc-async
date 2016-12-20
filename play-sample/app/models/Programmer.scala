@@ -11,7 +11,8 @@ case class Programmer(
     company: Option[Company] = None,
     skills: Seq[Skill] = Nil,
     createdAt: DateTime,
-    deletedAt: Option[DateTime] = None) extends ShortenedNames {
+    deletedAt: Option[DateTime] = None
+) extends ShortenedNames {
 
   def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Programmer] = Programmer.save(this)(session, cxt)
   def destroy()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = Programmer.destroy(id)(session, cxt)
@@ -108,7 +109,9 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
   }.map(rs => rs.long(1)).single.future.map(_.get)
 
   def findAllBy(where: SQLSyntax, withCompany: Boolean = true)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[List[Programmer]] = {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[List[Programmer]] = {
     withSQL {
       select
         .from[Programmer](Programmer as p)
@@ -123,18 +126,23 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
   }
 
   def countBy(where: SQLSyntax)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[Long] = withSQL {
     select(sqls.count).from(Programmer as p).where.append(isNotDeleted).and.append(sqls"${where}")
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, companyId: Option[Long] = None, createdAt: DateTime = DateTime.now)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Programmer] = {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[Programmer] = {
     for {
       id <- withSQL {
         insert.into(Programmer).namedValues(
           column.name -> name,
           column.companyId -> companyId,
-          column.createdAt -> createdAt)
+          column.createdAt -> createdAt
+        )
           .returningId // if you run this example for MySQL, please remove this line
       }.updateAndReturnGeneratedKey.future
     } yield Programmer(

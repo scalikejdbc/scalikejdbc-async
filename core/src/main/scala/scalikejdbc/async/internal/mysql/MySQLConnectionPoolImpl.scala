@@ -32,7 +32,8 @@ private[scalikejdbc] class MySQLConnectionPoolImpl(
   url: String,
   user: String,
   password: String,
-  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings())
+  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
+)
     extends AsyncConnectionPoolCommonImpl[MySQLConnection](url, user, password,
       (c: Configuration) => new MySQLConnectionFactory(c), settings) {
 

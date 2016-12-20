@@ -37,7 +37,8 @@ class AsyncSQLUpdateImpl(val underlying: SQLUpdate) extends AnyVal with AsyncSQL
 
 trait AsyncSQLUpdateAndReturnGeneratedKey extends Any {
   val underlying: SQLUpdateWithGeneratedKey
-  def future()(implicit session: AsyncDBSession,
+  def future()(implicit
+    session: AsyncDBSession,
     cxt: EC = ECGlobal): Future[Long] = {
     session.updateAndReturnGeneratedKey(underlying.statement, underlying.parameters: _*)
   }

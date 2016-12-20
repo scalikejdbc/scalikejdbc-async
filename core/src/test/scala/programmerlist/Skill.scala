@@ -8,7 +8,8 @@ case class Skill(
     id: Long,
     name: String,
     createdAt: DateTime,
-    deletedAt: Option[DateTime] = None) extends ShortenedNames {
+    deletedAt: Option[DateTime] = None
+) extends ShortenedNames {
 
   def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Skill] = Skill.save(this)(session, cxt)
   def destroy()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Unit] = Skill.destroy(id)(session, cxt)
@@ -47,7 +48,9 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
   }.map(rs => rs.long(1)).single.future.map(_.get)
 
   def findAllBy(where: SQLSyntax)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[List[Skill]] = withSQL {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[List[Skill]] = withSQL {
     select.from(Skill as s)
       .where.append(isNotDeleted).and.append(sqls"${where}")
       .orderBy(s.id)
@@ -58,7 +61,9 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, createdAt: DateTime = DateTime.now)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Skill] = {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[Skill] = {
     for {
       id <- withSQL {
         insert.into(Skill).namedValues(column.name -> name, column.createdAt -> createdAt)
