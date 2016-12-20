@@ -33,7 +33,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-        result.rowsAffected.map(_ > 0).getOrElse(false)
+        result.rowsAffected.exists(_ > 0)
       }
     }
   }
@@ -44,8 +44,8 @@ trait AsyncDBSession extends LogSupport {
       queryLogging(statement, _parameters)
       if (connection.isShared) {
         // create local transaction because postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
-        connection.toNonSharedConnection().map(c => TxAsyncDBSession(c)).flatMap { tx: TxAsyncDBSession =>
-          tx.update(statement, _parameters: _*)
+        connection.toNonSharedConnection().flatMap { conn =>
+          AsyncTx.inTransaction(TxAsyncDBSession(conn), (tx: TxAsyncDBSession) => tx.update(statement, _parameters: _*))
         }
       } else {
         connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -60,11 +60,12 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
       connection.toNonSharedConnection().flatMap { conn =>
-        conn.sendPreparedStatement(statement, _parameters: _*).map { result =>
-          result.generatedKey.getOrElse {
-            throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
-          }
-        }
+        AsyncTx.inTransaction(TxAsyncDBSession(conn), (tx: TxAsyncDBSession) =>
+          tx.connection.sendPreparedStatement(statement, _parameters: _*).flatMap { result =>
+            result.generatedKey.map(_.getOrElse {
+              throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
+            })
+          })
       }
     }
   }
@@ -88,7 +89,7 @@ trait AsyncDBSession extends LogSupport {
       results match {
         case Nil => None
         case one :: Nil => Option(one)
-        case _ => throw new TooManyRowsException(1, results.size)
+        case _ => throw TooManyRowsException(1, results.size)
       }
     }
   }
@@ -106,10 +107,9 @@ trait AsyncDBSession extends LogSupport {
 
       def processResultSet(oneToOne: (LinkedHashMap[A, Option[B]]), rs: WrappedResultSet): LinkedHashMap[A, Option[B]] = {
         val o = extractOne(rs)
-        oneToOne.keys.find(_ == o).map {
-          case Some(found) => throw new IllegalRelationshipException(ErrorMessage.INVALID_ONE_TO_ONE_RELATION)
-        }.getOrElse {
-          oneToOne += (o -> extractTo(rs))
+        oneToOne.keys.find(_ == o) match {
+          case Some(_) => throw IllegalRelationshipException(ErrorMessage.INVALID_ONE_TO_ONE_RELATION)
+          case _ => oneToOne += (o -> extractTo(rs))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -338,7 +338,7 @@ trait AsyncDBSession extends LogSupport {
   protected def ensureAndNormalizeParameters(parameters: Seq[Any]): Seq[Any] = {
     parameters.map {
       case withValue: ParameterBinderWithValue[_] => withValue.value
-      case binder: ParameterBinder => throw new IllegalArgumentException("ParameterBinder is unsupported")
+      case _: ParameterBinder => throw new IllegalArgumentException("ParameterBinder is unsupported")
       case rawValue => rawValue
     }
   }

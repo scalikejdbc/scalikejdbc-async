@@ -16,7 +16,7 @@
 package scalikejdbc.async.internal.mysql
 
 import com.github.mauricio.async.db._
-import scala.concurrent._, duration.DurationInt
+import scala.concurrent._
 import scalikejdbc.async._, ShortenedNames._, internal._
 
 /**
@@ -30,19 +30,17 @@ trait MySQLConnectionImpl extends AsyncConnectionCommonImpl {
       val pool = this.asInstanceOf[PoolableAsyncConnection[Connection]].pool
       pool.take.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with MySQLConnectionImpl)
     } else {
-      Future(new SingleNonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl)
+      Future.successful(new NonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl)
     }
   }
 
-  override protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Option[Long] = {
-    if (!this.isInstanceOf[NonSharedAsyncConnection]) {
-      throw new IllegalStateException("This asynchronous connection must be a non-shared connection.")
-    }
-    Await.result(underlying.sendQuery("SELECT LAST_INSERT_ID()").map { result =>
+  override protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
+    ensureNonShared()
+    underlying.sendQuery("SELECT LAST_INSERT_ID()").map { result =>
       result.rows.headOption.flatMap { rows =>
         rows.headOption.map { row => row(0).asInstanceOf[Long] }
       }
-    }, 10.seconds)
+    }
   }
 
 }

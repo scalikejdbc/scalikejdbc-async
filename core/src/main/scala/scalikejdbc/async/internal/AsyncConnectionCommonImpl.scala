@@ -68,6 +68,12 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
    * @param cxt  execution context
    * @return optional generated key
    */
-  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Option[Long]
+  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]]
+
+  protected def ensureNonShared(): Unit = {
+    if (!this.isInstanceOf[NonSharedAsyncConnection]) {
+      throw new IllegalStateException("This asynchronous connection must be a non-shared connection.")
+    }
+  }
 
 }

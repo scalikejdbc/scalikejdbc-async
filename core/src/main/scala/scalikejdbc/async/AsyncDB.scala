@@ -15,47 +15,7 @@
  */
 package scalikejdbc.async
 
-import scala.concurrent._
-import scala.util.{ Failure, Success }
-import scalikejdbc.async.ShortenedNames._
-import scalikejdbc.async.internal.AsyncConnectionCommonImpl
-
 /**
  * Basic Database Accessor
  */
-object AsyncDB {
-
-  /**
-   * Provides a code block which have a connection from ConnectionPool and passes it to the operation.
-   *
-   * @param op operation
-   * @tparam A return type
-   * @return a future value
-   */
-  def withPool[A](op: (SharedAsyncDBSession) => Future[A]): Future[A] = {
-    op.apply(sharedSession)
-  }
-
-  /**
-   * Provides a shared session.
-   *
-   * @return shared session
-   */
-  def sharedSession: SharedAsyncDBSession = SharedAsyncDBSession(AsyncConnectionPool().borrow())
-
-  /**
-   * Provides a future world within a transaction.
-   *
-   * @param op operation
-   * @param cxt execution context
-   * @tparam A return type
-   * @return a future value
-   */
-  def localTx[A](op: (TxAsyncDBSession) => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
-    AsyncConnectionPool().borrow().toNonSharedConnection()
-      .map { nonSharedConnection => TxAsyncDBSession(nonSharedConnection) }
-      .flatMap { tx => AsyncTx.inTransaction[A](tx, op) }
-  }
-
-}
-
+object AsyncDB extends NamedAsyncDB()
