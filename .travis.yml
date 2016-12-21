@@ -6,8 +6,7 @@ scala:
 - 2.10.6
 - 2.11.8
 sudo: false
-script: sbt ++${TRAVIS_SCALA_VERSION} clean $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.8" ]]; then echo coverage ; else echo "" ; fi) test
-after_success: sbt $(if [[ "${TRAVIS_SCALA_VERSION}" == "2.11.8" ]]; then echo coveralls ; else echo "" ; fi)
+script: sbt ++${TRAVIS_SCALA_VERSION} clean test
 addons:
   postgresql: '9.3'
 before_script:
@@ -18,6 +17,3 @@ before_script:
 - mysql -e 'GRANT ALL ON *.* TO sa@"localhost"IDENTIFIED BY "sa";FLUSH PRIVILEGES;'
   -uroot
 - mysql -e "CREATE DATABASE scalikejdbc;" -usa -psa
-env:
-  global:
-    secure: uD3eBk5OAXJPsTSLxJudTidbmxfDRiRuBm5snX/bTC4cA+22cjA8sWCi3+o5k/pwbofz3oi5CRouvm3xaaAlk9x9EDzR2PBh7m/sxyPRmWTl6NlLFQ24Xu6jUVCmwYoqvGsieJEouTXUwumL1OJxPQXjFUVLqS322hFzggYSE2U=

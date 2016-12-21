@@ -21,5 +21,6 @@ package scalikejdbc.async
 case class AsyncConnectionPoolSettings(
   maxPoolSize: Int = 8,
   maxQueueSize: Int = 8,
-  maxIdleMillis: Long = 1000L)
+  maxIdleMillis: Long = 1000L
+)
 

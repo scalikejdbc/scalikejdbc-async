@@ -32,7 +32,8 @@ private[scalikejdbc] class PostgreSQLConnectionPoolImpl(
   url: String,
   user: String,
   password: String,
-  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings())
+  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
+)
     extends AsyncConnectionPoolCommonImpl[PostgreSQLConnection](url, user, password,
       (c: Configuration) => new PostgreSQLConnectionFactory(c), settings) {
 
