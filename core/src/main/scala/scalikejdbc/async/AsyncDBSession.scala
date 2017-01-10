@@ -370,7 +370,7 @@ trait AsyncDBSession extends LogSupport {
 
   protected def ensureAndNormalizeParameters(parameters: Seq[Any]): Seq[Any] = {
     parameters.map {
-      case withValue: ParameterBinderWithValue[_] => withValue.value
+      case withValue: ParameterBinderWithValue => withValue.value
       case _: ParameterBinder => throw new IllegalArgumentException("ParameterBinder is unsupported")
       case rawValue => rawValue
     }

@@ -7,3 +7,5 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin"       % "2.3.10")
 addSbtPlugin("com.typesafe.sbt"  % "sbt-coffeescript" % "1.0.0")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+
+addSbtPlugin("com.eed3si9n" % "sbt-doge" % "0.1.5")
