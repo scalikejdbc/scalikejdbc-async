@@ -1,15 +1,20 @@
 lazy val _version = "0.7.0"
-lazy val scalikejdbcVersion = "2.4.2" // TODO: 2.5
-lazy val mauricioVersion = "0.2.20" // provided
+lazy val scalikejdbcVersion = "2.5.0"
+lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "9.4-1201-jdbc41"
 lazy val defaultPlayVersion = play.core.PlayVersion.current
+val Scala210 = "2.10.6"
+val Scala211 = "2.11.8"
+val Scala212 = "2.12.1"
+
+crossScalaVersions := Seq(Scala212, Scala211, Scala210)
 
 lazy val core = (project in file("core")).settings(
   organization := "org.scalikejdbc",
   name := "scalikejdbc-async",
   version := _version,
-  scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.11.8", "2.10.6"),
+  scalaVersion := Scala211,
+  crossScalaVersions := Seq(Scala212, Scala211, Scala210),
   publishTo := _publishTo(version.value),
   publishMavenStyle := true,
   resolvers ++= _resolvers,
@@ -41,8 +46,8 @@ lazy val playPlugin = (project in file("play-plugin")).settings(
   organization := "org.scalikejdbc",
   name := "scalikejdbc-async-play-plugin",
   version := _version,
-  scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.11.8", "2.10.6"),
+  scalaVersion := Scala211,
+  crossScalaVersions := Seq(Scala211, Scala210),
   resolvers ++= _resolvers,
   resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
   libraryDependencies ++= Seq(
@@ -63,7 +68,7 @@ lazy val playPlugin = (project in file("play-plugin")).settings(
 ) dependsOn(core)
 
 lazy val playSample = (project in file("play-sample")).enablePlugins(play.PlayScala).settings(
-  scalaVersion in ThisBuild := "2.11.8",
+  scalaVersion := Scala211,
   libraryDependencies ++= Seq(
    "org.scalikejdbc"      %% "scalikejdbc"                     % scalikejdbcVersion,
     "org.scalikejdbc"      %% "scalikejdbc-config"              % scalikejdbcVersion,
