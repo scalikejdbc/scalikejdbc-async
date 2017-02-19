@@ -13,7 +13,7 @@ abstract class AsyncConnectionPoolCommonImpl[T <: Connection](
     settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
 ) extends AsyncConnectionPool(settings) with MauricioConfiguration with LogSupport {
 
-  private[this] val factory = factoryF(configuration(url, user, password))
+  private[this] val factory = factoryF(configuration(url, user, password, settings.connectionSettings))
   private[internal] val pool = new ConnectionPool[T](
     factory = factory,
     configuration = PoolConfiguration(
