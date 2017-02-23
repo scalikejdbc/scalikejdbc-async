@@ -42,30 +42,42 @@ trait AsyncDBSession extends LogSupport {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      if (connection.isShared) {
-        // create local transaction because postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
-        connection.toNonSharedConnection().flatMap { conn =>
-          AsyncTx.inTransaction(TxAsyncDBSession(conn), (tx: TxAsyncDBSession) => tx.update(statement, _parameters: _*))
+      val statementResultF =
+        if (connection.isShared) {
+          // create local transaction if current session is not transactional
+          connection.toNonSharedConnection().flatMap { conn =>
+            AsyncTx.inTransaction(TxAsyncDBSession(conn), { tx: TxAsyncDBSession =>
+              tx.connection.sendPreparedStatement(statement, _parameters: _*)
+            })
+          }
+        } else {
+          connection.sendPreparedStatement(statement, _parameters: _*)
         }
-      } else {
-        connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-          result.rowsAffected.map(_.toInt).getOrElse(0)
-        }
+      // Process statement result
+      statementResultF.map { result =>
+        result.rowsAffected.map(_.toInt).getOrElse(0)
       }
     }
   }
 
   def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Long] = {
+    def readGeneratedKey(result: AsyncQueryResult): Future[Long] = {
+      result.generatedKey.map(_.getOrElse {
+        throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
+      })
+    }
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      connection.toNonSharedConnection().flatMap { conn =>
-        AsyncTx.inTransaction(TxAsyncDBSession(conn), (tx: TxAsyncDBSession) =>
-          tx.connection.sendPreparedStatement(statement, _parameters: _*).flatMap { result =>
-            result.generatedKey.map(_.getOrElse {
-              throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
-            })
+      if (connection.isShared) {
+        // create local transaction if current session is not transactional
+        connection.toNonSharedConnection().flatMap { conn =>
+          AsyncTx.inTransaction(TxAsyncDBSession(conn), { tx: TxAsyncDBSession =>
+            tx.connection.sendPreparedStatement(statement, _parameters: _*).flatMap(readGeneratedKey)
           })
+        }
+      } else {
+        connection.sendPreparedStatement(statement, _parameters: _*).flatMap(readGeneratedKey)
       }
     }
   }
