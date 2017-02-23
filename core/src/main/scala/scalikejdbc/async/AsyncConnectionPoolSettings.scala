@@ -15,12 +15,30 @@
  */
 package scalikejdbc.async
 
+import java.nio.charset.Charset
+
+import com.github.mauricio.async.db.SSLConfiguration
+import io.netty.buffer.ByteBufAllocator
+
+import scala.concurrent.duration.Duration
+
 /**
  * Settings for AsyncConnectionPool
  */
 case class AsyncConnectionPoolSettings(
   maxPoolSize: Int = 8,
   maxQueueSize: Int = 8,
-  maxIdleMillis: Long = 1000L
+  maxIdleMillis: Long = 1000L,
+  connectionSettings: AsyncConnectionSettings = AsyncConnectionSettings()
+)
+
+case class AsyncConnectionSettings(
+  ssl: Option[SSLConfiguration] = None,
+  charset: Option[Charset] = None,
+  maximumMessageSize: Option[Int] = None,
+  allocator: Option[ByteBufAllocator] = None,
+  connectTimeout: Option[Duration] = None,
+  testTimeout: Option[Duration] = None,
+  queryTimeout: Option[Duration] = None
 )
 
