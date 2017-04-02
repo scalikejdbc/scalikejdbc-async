@@ -38,7 +38,7 @@ trait PostgreSQLConnectionImpl extends AsyncConnectionCommonImpl {
   protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
     ensureNonShared()
     Future.successful(for {
-      rows <- queryResult.rows.headOption
+      rows <- queryResult.rows
       row <- rows.headOption
       value <- Option(row(0))
       key <- Try(value.toString.toLong).toOption
