@@ -317,7 +317,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     val ref = getObject(columnIndex)
 
     if (ref != null && `type`.isInstance(ref)) {
-      return ref.asInstanceOf[T]
+      ref.asInstanceOf[T]
     } else {
       throw new SQLException(s"Object of class ${ref.getClass} is not an instance of ${`type`}");
     }
@@ -327,7 +327,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     val ref = getObject(columnLabel)
 
     if (ref != null && `type`.isInstance(ref)) {
-      return ref.asInstanceOf[T]
+      ref.asInstanceOf[T]
     } else {
       throw new SQLException(s"Object of class ${ref.getClass} is not an instance of ${`type`}");
     }
