@@ -29,7 +29,7 @@ private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
     with AsyncResultSet {
 
   // AsyncResultSet API
-  override def next(): Boolean = rows.headOption.isDefined
+  override def next(): Boolean = rows.nonEmpty
   override def tail(): AsyncResultSet = new AsyncResultSetImpl(rows.tail)
 
 }

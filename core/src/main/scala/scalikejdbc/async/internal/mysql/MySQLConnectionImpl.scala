@@ -37,7 +37,7 @@ trait MySQLConnectionImpl extends AsyncConnectionCommonImpl {
   override protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
     ensureNonShared()
     underlying.sendQuery("SELECT LAST_INSERT_ID()").map { result =>
-      result.rows.headOption.flatMap { rows =>
+      result.rows.flatMap { rows =>
         rows.headOption.map { row => row(0).asInstanceOf[Long] }
       }
     }
