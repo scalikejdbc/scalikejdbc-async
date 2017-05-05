@@ -4,8 +4,8 @@ lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "9.4-1201-jdbc41"
 lazy val defaultPlayVersion = play.core.PlayVersion.current
 val Scala210 = "2.10.6"
-val Scala211 = "2.11.8"
-val Scala212 = "2.12.1"
+val Scala211 = "2.11.11"
+val Scala212 = "2.12.2"
 
 crossScalaVersions := Seq(Scala212, Scala211, Scala210)
 
