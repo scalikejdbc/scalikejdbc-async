@@ -33,7 +33,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-        result.rowsAffected.map(_ > 0).getOrElse(false)
+        result.rowsAffected.exists(_ > 0)
       }
     }
   }
@@ -42,29 +42,42 @@ trait AsyncDBSession extends LogSupport {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      if (connection.isShared) {
-        // create local transaction because postgresql-async 0.2.4 seems not to be stable with PostgreSQL without transaction
-        connection.toNonSharedConnection().map(c => TxAsyncDBSession(c)).flatMap { tx: TxAsyncDBSession =>
-          tx.update(statement, _parameters: _*)
+      val statementResultF =
+        if (connection.isShared) {
+          // create local transaction if current session is not transactional
+          connection.toNonSharedConnection().flatMap { conn =>
+            AsyncTx.inTransaction(TxAsyncDBSession(conn), { tx: TxAsyncDBSession =>
+              tx.connection.sendPreparedStatement(statement, _parameters: _*)
+            })
+          }
+        } else {
+          connection.sendPreparedStatement(statement, _parameters: _*)
         }
-      } else {
-        connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-          result.rowsAffected.map(_.toInt).getOrElse(0)
-        }
+      // Process statement result
+      statementResultF.map { result =>
+        result.rowsAffected.map(_.toInt).getOrElse(0)
       }
     }
   }
 
   def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Long] = {
+    def readGeneratedKey(result: AsyncQueryResult): Future[Long] = {
+      result.generatedKey.map(_.getOrElse {
+        throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
+      })
+    }
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      connection.toNonSharedConnection().flatMap { conn =>
-        conn.sendPreparedStatement(statement, _parameters: _*).map { result =>
-          result.generatedKey.getOrElse {
-            throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
-          }
+      if (connection.isShared) {
+        // create local transaction if current session is not transactional
+        connection.toNonSharedConnection().flatMap { conn =>
+          AsyncTx.inTransaction(TxAsyncDBSession(conn), { tx: TxAsyncDBSession =>
+            tx.connection.sendPreparedStatement(statement, _parameters: _*).flatMap(readGeneratedKey)
+          })
         }
+      } else {
+        connection.sendPreparedStatement(statement, _parameters: _*).flatMap(readGeneratedKey)
       }
     }
   }
@@ -82,13 +95,15 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def single[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
-    implicit cxt: EC = ECGlobal): Future[Option[A]] = {
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Option[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     traversable(statement, _parameters: _*)(extractor).map { results =>
       results match {
         case Nil => None
         case one :: Nil => Option(one)
-        case _ => throw new TooManyRowsException(1, results.size)
+        case _ => throw TooManyRowsException(1, results.size)
       }
     }
   }
@@ -99,17 +114,18 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToOneTraversable[A, B, Z](statement: String, parameters: Any*)(extractOne: (WrappedResultSet) => A)(extractTo: (WrappedResultSet) => Option[B])(transform: (A, B) => Z)(
-    implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
       def processResultSet(oneToOne: (LinkedHashMap[A, Option[B]]), rs: WrappedResultSet): LinkedHashMap[A, Option[B]] = {
         val o = extractOne(rs)
-        oneToOne.keys.find(_ == o).map {
-          case Some(found) => throw new IllegalRelationshipException(ErrorMessage.INVALID_ONE_TO_ONE_RELATION)
-        }.getOrElse {
-          oneToOne += (o -> extractTo(rs))
+        oneToOne.keys.find(_ == o) match {
+          case Some(_) => throw IllegalRelationshipException(ErrorMessage.INVALID_ONE_TO_ONE_RELATION)
+          case _ => oneToOne += (o -> extractTo(rs))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -124,10 +140,15 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManyTraversable[A, B, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo: (WrappedResultSet) => Option[B])(
-        transform: (A, Seq[B]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo: (WrappedResultSet) => Option[B]
+  )(
+    transform: (A, Seq[B]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -151,11 +172,16 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManies2Traversable[A, B1, B2, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo1: (WrappedResultSet) => Option[B1],
-      extractTo2: (WrappedResultSet) => Option[B2])(
-        transform: (A, Seq[B1], Seq[B2]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2]
+  )(
+    transform: (A, Seq[B1], Seq[B2]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -186,12 +212,17 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManies3Traversable[A, B1, B2, B3, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo1: (WrappedResultSet) => Option[B1],
-      extractTo2: (WrappedResultSet) => Option[B2],
-      extractTo3: (WrappedResultSet) => Option[B3])(
-        transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -229,13 +260,18 @@ trait AsyncDBSession extends LogSupport {
   }
 
   def oneToManies4Traversable[A, B1, B2, B3, B4, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-      extractTo1: (WrappedResultSet) => Option[B1],
-      extractTo2: (WrappedResultSet) => Option[B2],
-      extractTo3: (WrappedResultSet) => Option[B3],
-      extractTo4: (WrappedResultSet) => Option[B4])(
-        transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z)(
-          implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -267,7 +303,8 @@ trait AsyncDBSession extends LogSupport {
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
           new AsyncResultSetTraversable(ars).foldLeft(
-            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])]())(processResultSet).map {
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])]()
+          )(processResultSet).map {
               case (one, (t1, t2, t3, t4)) => transform(one, t1, t2, t3, t4)
             }
         }.getOrElse(Nil)
@@ -277,22 +314,29 @@ trait AsyncDBSession extends LogSupport {
 
   def oneToManies5Traversable[A, B1, B2, B3, B4, B5, Z](
     statement: String,
-    parameters: Any*)(
-      extractOne: (WrappedResultSet) => A)(
-        extractTo1: (WrappedResultSet) => Option[B1],
-        extractTo2: (WrappedResultSet) => Option[B2],
-        extractTo3: (WrappedResultSet) => Option[B3],
-        extractTo4: (WrappedResultSet) => Option[B4],
-        extractTo5: (WrappedResultSet) => Option[B5])(
-          transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z)(
-            implicit cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    parameters: Any*
+  )(
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4],
+    extractTo5: (WrappedResultSet) => Option[B5]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
       def processResultSet(
         result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]),
-        rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])] = {
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4, to5) = (extractTo1(rs), extractTo2(rs), extractTo3(rs), extractTo4(rs), extractTo5(rs))
         result.keys.find(_ == o).map { _ =>
@@ -321,7 +365,8 @@ trait AsyncDBSession extends LogSupport {
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
           new AsyncResultSetTraversable(ars).foldLeft(
-            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]())(processResultSet).map {
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]()
+          )(processResultSet).map {
               case (one, (t1, t2, t3, t4, t5)) => transform(one, t1, t2, t3, t4, t5)
             }
         }.getOrElse(Nil)
@@ -337,14 +382,15 @@ trait AsyncDBSession extends LogSupport {
 
   protected def ensureAndNormalizeParameters(parameters: Seq[Any]): Seq[Any] = {
     parameters.map {
-      case withValue: ParameterBinderWithValue[_] => withValue.value
-      case binder: ParameterBinder => throw new IllegalArgumentException("ParameterBinder is unsupported")
+      case withValue: ParameterBinderWithValue => withValue.value
+      case _: ParameterBinder => throw new IllegalArgumentException("ParameterBinder is unsupported")
       case rawValue => rawValue
     }
   }
 
   protected def withListeners[A](statement: String, parameters: Seq[Any], startMillis: Long = System.currentTimeMillis)(
-    f: Future[A])(implicit cxt: EC = EC.global): Future[A] = {
+    f: Future[A]
+  )(implicit cxt: EC = EC.global): Future[A] = {
     f.onSuccess {
       case _ =>
         val millis = System.currentTimeMillis - startMillis

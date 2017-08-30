@@ -15,26 +15,37 @@
  */
 package scalikejdbc.async.internal
 
+import com.github.mauricio.async.db.Configuration
 import scalikejdbc.JDBCUrl
-import scalikejdbc.async._
+import scalikejdbc.async.AsyncConnectionSettings
 
 /**
  * Configuration attribute
  */
-private[scalikejdbc] trait MauricioConfiguration { self: AsyncConnection =>
+private[scalikejdbc] trait MauricioConfiguration {
 
-  val url: String
-  val user: String
-  val password: String
+  val defaultConfiguration = Configuration("")
 
-  private[scalikejdbc] val configuration = {
+  private[scalikejdbc] def configuration(
+    url: String,
+    user: String,
+    password: String,
+    connectionSettings: AsyncConnectionSettings
+  ) = {
     val jdbcUrl = JDBCUrl(url)
-    com.github.mauricio.async.db.Configuration(
+    Configuration(
+      username = user,
       host = jdbcUrl.host,
       port = jdbcUrl.port,
-      database = Option(jdbcUrl.database),
-      username = user,
-      password = Option(password)
+      password = Option(password).filterNot(_.trim.isEmpty),
+      database = Option(jdbcUrl.database).filterNot(_.trim.isEmpty),
+      ssl = connectionSettings.ssl.getOrElse(defaultConfiguration.ssl),
+      charset = connectionSettings.charset.getOrElse(defaultConfiguration.charset),
+      maximumMessageSize = connectionSettings.maximumMessageSize.getOrElse(defaultConfiguration.maximumMessageSize),
+      allocator = connectionSettings.allocator.getOrElse(defaultConfiguration.allocator),
+      connectTimeout = connectionSettings.connectTimeout.getOrElse(defaultConfiguration.connectTimeout),
+      testTimeout = connectionSettings.testTimeout.getOrElse(defaultConfiguration.testTimeout),
+      queryTimeout = connectionSettings.queryTimeout
     )
   }
 

@@ -16,9 +16,7 @@
 package scalikejdbc.async.internal.mysql
 
 import scalikejdbc._, async._, internal._
-
-import com.github.mauricio.async.db.pool.ConnectionPool
-import com.github.mauricio.async.db.pool.PoolConfiguration
+import com.github.mauricio.async.db.Configuration
 import com.github.mauricio.async.db.mysql.MySQLConnection
 import com.github.mauricio.async.db.mysql.pool.MySQLConnectionFactory
 
@@ -31,29 +29,14 @@ import com.github.mauricio.async.db.mysql.pool.MySQLConnectionFactory
  * @param settings extra settings
  */
 private[scalikejdbc] class MySQLConnectionPoolImpl(
-  override val url: String,
-  override val user: String,
+  url: String,
+  user: String,
   password: String,
-  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings())
-    extends AsyncConnectionPool(url, user, password, settings)
-    with LogSupport {
-
-  private[this] val factory = new MySQLConnectionFactory(config)
-  private[this] val pool = new ConnectionPool[MySQLConnection](
-    factory = factory,
-    configuration = PoolConfiguration(
-      maxObjects = settings.maxPoolSize,
-      maxIdle = settings.maxIdleMillis,
-      maxQueueSize = settings.maxQueueSize)
-  )
+  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
+)
+    extends AsyncConnectionPoolCommonImpl[MySQLConnection](url, user, password,
+      (c: Configuration) => new MySQLConnectionFactory(c), settings) {
 
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool) with MySQLConnectionImpl
-
-  override def close(): Unit = pool.disconnect
-
-  override def giveBack(conn: NonSharedAsyncConnection): Unit = conn match {
-    case conn: NonSharedAsyncConnectionImpl => pool.giveBack(conn.underlying.asInstanceOf[MySQLConnection])
-    case _ => log.debug("You don't need to give back this connection to the pool.")
-  }
 
 }

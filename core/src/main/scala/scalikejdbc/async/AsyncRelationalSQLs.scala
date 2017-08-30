@@ -41,7 +41,8 @@ class AsyncOneToOneSQLToOption[A, B, Z](val underlying: OneToOneSQLToOption[A, B
 class AsyncOneToOneSQLToTraversable[A, B, Z](val underlying: OneToOneSQLToTraversable[A, B, HasExtractor, Z])
     extends AnyVal
     with AsyncSQLToTraversable[Z] {
-  override def future()(implicit session: AsyncDBSession,
+  override def future()(implicit
+    session: AsyncDBSession,
     cxt: EC = ECGlobal): Future[Traversable[Z]] = {
     val traversable = session.oneToOneTraversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     traversable.asInstanceOf[Future[Traversable[Z]]]
@@ -78,7 +79,8 @@ class AsyncOneToManySQLToOption[A, B, Z](val underlying: OneToManySQLToOption[A,
 class AsyncOneToManySQLToTraversable[A, B, Z](val underlying: OneToManySQLToTraversable[A, B, HasExtractor, Z])
     extends AnyVal
     with AsyncSQLToTraversable[Z] {
-  override def future()(implicit session: AsyncDBSession,
+  override def future()(implicit
+    session: AsyncDBSession,
     cxt: EC = ECGlobal): Future[Traversable[Z]] = {
     session.oneToManyTraversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
   }
@@ -139,14 +141,15 @@ class AsyncOneToManies3SQLToOption[A, B1, B2, B3, Z](val underlying: OneToManies
     with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies3Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
-      }
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3
+    )(underlying.transform).map {
+      results =>
+        results match {
+          case Nil => None
+          case _ if results.size == 1 => results.headOption
+          case _ => throw new TooManyRowsException(1, results.size)
+        }
+    }
   }
 }
 
@@ -155,7 +158,8 @@ class AsyncOneToManies3SQLToTraversable[A, B1, B2, B3, Z](val underlying: OneToM
     with AsyncSQLToTraversable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Traversable[Z]] = {
     session.oneToManies3Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3)(underlying.transform)
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3
+    )(underlying.transform)
   }
 }
 
@@ -164,7 +168,8 @@ class AsyncOneToManies3SQLToList[A, B1, B2, B3, Z](val underlying: OneToManies3S
     with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
     val traversable = session.oneToManies3Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3)(underlying.transform)
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3
+    )(underlying.transform)
     traversable.map(_.toList)
   }
 }
@@ -178,14 +183,15 @@ class AsyncOneToManies4SQLToOption[A, B1, B2, B3, B4, Z](val underlying: OneToMa
     with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies4Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
-      }
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4
+    )(underlying.transform).map {
+      results =>
+        results match {
+          case Nil => None
+          case _ if results.size == 1 => results.headOption
+          case _ => throw new TooManyRowsException(1, results.size)
+        }
+    }
   }
 }
 
@@ -194,7 +200,8 @@ class AsyncOneToManies4SQLToTraversable[A, B1, B2, B3, B4, Z](val underlying: On
     with AsyncSQLToTraversable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Traversable[Z]] = {
     session.oneToManies4Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4)(underlying.transform)
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4
+    )(underlying.transform)
   }
 }
 
@@ -203,7 +210,8 @@ class AsyncOneToManies4SQLToList[A, B1, B2, B3, B4, Z](val underlying: OneToMani
     with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
     val traversable = session.oneToManies4Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4)(underlying.transform)
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4
+    )(underlying.transform)
     traversable.map(_.toList)
   }
 }
@@ -217,14 +225,15 @@ class AsyncOneToManies5SQLToOption[A, B1, B2, B3, B4, B5, Z](val underlying: One
     with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies5Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
-      }
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5
+    )(underlying.transform).map {
+      results =>
+        results match {
+          case Nil => None
+          case _ if results.size == 1 => results.headOption
+          case _ => throw new TooManyRowsException(1, results.size)
+        }
+    }
   }
 }
 
@@ -233,7 +242,8 @@ class AsyncOneToManies5SQLToTraversable[A, B1, B2, B3, B4, B5, Z](val underlying
     with AsyncSQLToTraversable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Traversable[Z]] = {
     session.oneToManies5Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5)(underlying.transform)
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5
+    )(underlying.transform)
   }
 }
 
@@ -242,7 +252,8 @@ class AsyncOneToManies5SQLToList[A, B1, B2, B3, B4, B5, Z](val underlying: OneTo
     with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
     val traversable = session.oneToManies5Traversable(underlying.statement, underlying.parameters: _*)(underlying.extractOne)(
-      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5)(underlying.transform)
+      underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5
+    )(underlying.transform)
     traversable.map(_.toList)
   }
 }

@@ -35,7 +35,8 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.rowsAffected),
         statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
+        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))
+      ) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
@@ -52,7 +53,8 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.rowsAffected),
         statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
+        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))
+      ) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
@@ -68,6 +70,12 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
    * @param cxt  execution context
    * @return optional generated key
    */
-  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Option[Long]
+  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]]
+
+  protected def ensureNonShared(): Unit = {
+    if (!this.isInstanceOf[NonSharedAsyncConnection]) {
+      throw new IllegalStateException("This asynchronous connection must be a non-shared connection.")
+    }
+  }
 
 }

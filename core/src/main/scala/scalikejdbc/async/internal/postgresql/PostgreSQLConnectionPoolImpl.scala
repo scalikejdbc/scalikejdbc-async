@@ -16,8 +16,7 @@
 package scalikejdbc.async.internal.postgresql
 
 import scalikejdbc._, async._, internal._
-import com.github.mauricio.async.db.pool.ConnectionPool
-import com.github.mauricio.async.db.pool.PoolConfiguration
+import com.github.mauricio.async.db.Configuration
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
 import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 
@@ -30,29 +29,14 @@ import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
  * @param settings extra settings
  */
 private[scalikejdbc] class PostgreSQLConnectionPoolImpl(
-  override val url: String,
-  override val user: String,
+  url: String,
+  user: String,
   password: String,
-  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings())
-    extends AsyncConnectionPool(url, user, password, settings)
-    with LogSupport {
-
-  private[this] val factory = new PostgreSQLConnectionFactory(config)
-  private[this] val pool = new ConnectionPool[PostgreSQLConnection](
-    factory = factory,
-    configuration = PoolConfiguration(
-      maxObjects = settings.maxPoolSize,
-      maxIdle = settings.maxIdleMillis,
-      maxQueueSize = settings.maxQueueSize)
-  )
+  override val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
+)
+    extends AsyncConnectionPoolCommonImpl[PostgreSQLConnection](url, user, password,
+      (c: Configuration) => new PostgreSQLConnectionFactory(c), settings) {
 
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool) with PostgreSQLConnectionImpl
-
-  override def close(): Unit = pool.disconnect
-
-  override def giveBack(conn: NonSharedAsyncConnection): Unit = conn match {
-    case conn: NonSharedAsyncConnectionImpl => pool.giveBack(conn.underlying.asInstanceOf[PostgreSQLConnection])
-    case _ => log.debug("You don't need to give back this connection to the pool.")
-  }
 
 }

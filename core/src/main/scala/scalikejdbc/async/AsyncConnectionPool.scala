@@ -21,22 +21,8 @@ import scalikejdbc._
  * Asynchronous Connection Pool
  */
 abstract class AsyncConnectionPool(
-    val url: String,
-    val user: String,
-    password: String,
-    val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()) {
-
-  type MauricioConfiguration = com.github.mauricio.async.db.Configuration
-
-  private[this] val jdbcUrl = JDBCUrl(url)
-
-  protected val config = new MauricioConfiguration(
-    username = user,
-    host = jdbcUrl.host,
-    port = jdbcUrl.port,
-    password = Option(password).filterNot(_.trim.isEmpty),
-    database = Option(jdbcUrl.database).filterNot(_.trim.isEmpty)
-  )
+    val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
+) {
 
   /**
    * Borrows a connection from pool.
@@ -70,36 +56,44 @@ object AsyncConnectionPool extends LogSupport {
 
   private[this] val pools = new ConcurrentMap[Any, AsyncConnectionPool]()
 
-  private[this] def ensureInitialized(name: Any): Unit = {
-    if (!isInitialized(name)) {
+  def isInitialized(name: Any = DEFAULT_NAME): Boolean = pools.contains(name)
+
+  def get(name: Any = DEFAULT_NAME): AsyncConnectionPool = {
+    pools.getOrElse(name, {
       val message = ErrorMessage.CONNECTION_POOL_IS_NOT_YET_INITIALIZED + "(name:" + name + ")"
       throw new IllegalStateException(message)
-    }
+    })
   }
-
-  def isInitialized(name: Any = DEFAULT_NAME) = pools.get(name).isDefined
-
-  def get(name: Any = DEFAULT_NAME): AsyncConnectionPool = pools.get(name).orNull
 
   def apply(name: Any = DEFAULT_NAME): AsyncConnectionPool = get(name)
 
   def add(name: Any, url: String, user: String, password: String, settings: CPSettings = AsyncConnectionPoolSettings())(
-    implicit factory: CPFactory = AsyncConnectionPoolFactory): Unit = {
+    implicit
+    factory: CPFactory = AsyncConnectionPoolFactory
+  ): Unit = {
     val newPool: AsyncConnectionPool = factory.apply(url, user, password, settings)
     log.debug(s"Registered connection pool (url: ${url}, user: ${user}, settings: ${settings}")
-    pools.put(name, newPool)
+    val replaced = pools.put(name, newPool)
+    replaced.foreach(_.close())
   }
 
   def singleton(url: String, user: String, password: String, settings: CPSettings = AsyncConnectionPoolSettings())(
-    implicit factory: CPFactory = AsyncConnectionPoolFactory): Unit = {
+    implicit
+    factory: CPFactory = AsyncConnectionPoolFactory
+  ): Unit = {
     add(DEFAULT_NAME, url, user, password, settings)(factory)
   }
 
   def borrow(name: Any = DEFAULT_NAME): AsyncConnection = {
-    ensureInitialized(name)
     val pool = get(name)
-    log.debug("Borrowed a new connection from " + pool.toString())
+    log.debug(s"Borrowed a new connection from pool $name")
     pool.borrow()
+  }
+
+  def giveBack(connection: NonSharedAsyncConnection, name: Any = DEFAULT_NAME): Unit = {
+    val pool = get(name)
+    log.debug(s"Gave back previously borrowed connection from pool $name")
+    pool.giveBack(connection)
   }
 
   def close(name: Any = DEFAULT_NAME): Unit = pools.remove(name).foreach(_.close())

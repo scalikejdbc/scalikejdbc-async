@@ -9,7 +9,8 @@ case class Company(
     name: String,
     url: Option[String] = None,
     createdAt: DateTime,
-    deletedAt: Option[DateTime] = None) extends ShortenedNames {
+    deletedAt: Option[DateTime] = None
+) extends ShortenedNames {
 
   def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Company] = Company.save(this)(session, cxt)
   def destroy()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = Company.destroy(id)(session, cxt)
@@ -46,25 +47,32 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
   }.map(rs => rs.long(1)).single.future.map(_.get)
 
   def findAllBy(where: SQLSyntax)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[List[Company]] = withSQL {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[List[Company]] = withSQL {
     select.from(Company as c)
       .where.append(isNotDeleted).and.append(sqls"${where}")
       .orderBy(c.id)
   }.map(Company(c))
 
   def countBy(where: SQLSyntax)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[Long] = withSQL {
     select(sqls.count).from(Company as c).where.append(isNotDeleted).and.append(sqls"${where}")
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, url: Option[String] = None, createdAt: DateTime = DateTime.now)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Company] = {
+    implicit
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
+  ): Future[Company] = {
     for {
       id <- withSQL {
         insert.into(Company).namedValues(
           column.name -> name,
           column.url -> url,
-          column.createdAt -> createdAt)
+          column.createdAt -> createdAt
+        )
           .returningId // if you run this example for MySQL, please remove this line
       }.updateAndReturnGeneratedKey()
     } yield Company(id = id, name = name, url = url, createdAt = createdAt)

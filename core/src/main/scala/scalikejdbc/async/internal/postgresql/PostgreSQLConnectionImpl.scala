@@ -16,7 +16,8 @@
 package scalikejdbc.async.internal.postgresql
 
 import com.github.mauricio.async.db._
-import scala.concurrent._, duration.DurationInt
+import scala.concurrent._
+import scala.util.Try
 import scalikejdbc.async._, ShortenedNames._, internal._
 
 /**
@@ -30,20 +31,18 @@ trait PostgreSQLConnectionImpl extends AsyncConnectionCommonImpl {
       val pool = this.asInstanceOf[PoolableAsyncConnection[Connection]].pool
       pool.take.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with PostgreSQLConnectionImpl)
     } else {
-      Future(new SingleNonSharedAsyncConnectionImpl(underlying) with PostgreSQLConnectionImpl)
+      Future.successful(new NonSharedAsyncConnectionImpl(underlying) with PostgreSQLConnectionImpl)
     }
   }
 
-  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Option[Long] = {
-    if (!this.isInstanceOf[NonSharedAsyncConnection]) {
-      throw new IllegalStateException("This asynchronous connection must be a non-shared connection.")
-    }
-    queryResult.rows.headOption.flatMap { rows =>
-      rows.headOption.flatMap(row => Option(row(0)).flatMap { value =>
-        try Some(value.toString.toLong)
-        catch { case e: Exception => None }
-      })
-    }
+  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
+    ensureNonShared()
+    Future.successful(for {
+      rows <- queryResult.rows
+      row <- rows.headOption
+      value <- Option(row(0))
+      key <- Try(value.toString.toLong).toOption
+    } yield key)
   }
 
 }

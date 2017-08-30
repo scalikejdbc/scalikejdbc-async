@@ -11,7 +11,8 @@ case class AsyncLover(
   lunchtime: Option[java.sql.Time] = None,
   birthday: Option[DateTime] = None,
   createdAt: DateTime = DateTime.now,
-  deletedAt: Option[DateTime] = None)
+  deletedAt: Option[DateTime] = None
+)
 
 object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
 
@@ -28,7 +29,8 @@ object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
     isReactive = rs.get[Boolean](c.isReactive),
     lunchtime = rs.get[Option[java.sql.Time]](c.lunchtime),
     birthday = rs.get[Option[DateTime]](c.lunchtime),
-    createdAt = rs.get[DateTime](c.createdAt))
+    createdAt = rs.get[DateTime](c.createdAt)
+  )
 
 }
 

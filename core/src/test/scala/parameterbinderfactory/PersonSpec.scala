@@ -21,7 +21,8 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
       withSQL {
         insert.into(Person).namedValues(
           column.id -> PersonId(1),
-          column.name -> "test")
+          column.name -> "test"
+        )
       }.update.apply()
     }
     result should equal(1)
@@ -32,7 +33,8 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
       withSQL {
         insert.into(Person).namedValues(
           column.id -> PersonId(1),
-          column.name -> "test")
+          column.name -> "test"
+        )
       }.update.future()
     }
     val results = Await.result(resultsFuture, 5.seconds)

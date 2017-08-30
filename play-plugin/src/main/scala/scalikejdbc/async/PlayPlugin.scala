@@ -1,7 +1,11 @@
 package scalikejdbc.async
 
+import java.nio.charset.Charset
+
 import scalikejdbc._
 import play.api._
+
+import scala.concurrent.duration.Duration
 
 /**
  * The Play plugin to use ScalikeJDBC
@@ -30,10 +34,18 @@ class PlayPlugin(implicit app: Application) extends Plugin {
         def load(name: String): (String, String, String, AsyncConnectionPoolSettings) = {
           implicit val config = playDbConfig
           val default = AsyncConnectionPoolSettings()
+          val connectionSettings = AsyncConnectionSettings(
+            charset = opt(name, "charset").map(v => Charset.forName(v)),
+            maximumMessageSize = opt(name, "maximumMessageSize").map(v => v.toInt),
+            connectTimeout = opt(name, "connectTimeout").map(v => Duration(v)),
+            testTimeout = opt(name, "testTimeout").map(v => Duration(v)),
+            queryTimeout = opt(name, "queryTimeout").map(v => Duration(v))
+          )
           val settings = AsyncConnectionPoolSettings(
             maxPoolSize = opt(name, "maxPoolSize").map(v => v.toInt).getOrElse(default.maxPoolSize),
             maxIdleMillis = opt(name, "maxIdleMillis").map(v => v.toLong).getOrElse(default.maxIdleMillis),
-            maxQueueSize = opt(name, "maxQueueSize").map(v => v.toInt).getOrElse(default.maxQueueSize)
+            maxQueueSize = opt(name, "maxQueueSize").map(v => v.toInt).getOrElse(default.maxQueueSize),
+            connectionSettings = connectionSettings
           )
           (require(name, "url"), opt(name, "user").getOrElse(""), opt(name, "password").getOrElse(""), settings)
         }
@@ -43,12 +55,6 @@ class PlayPlugin(implicit app: Application) extends Plugin {
             case "global" =>
               // because "db.global" was used as "scalikejdbc.global" previously
               Logger(classOf[PlayPlugin]).warn("Configuration with \"db.global\" is ignored. Use \"scalikejdbc.global\" instead.")
-            case "default" =>
-              if (!registeredPoolNames.contains("default")) {
-                val (url, user, password, settings) = load(name)
-                AsyncConnectionPool.singleton(url, user, password, settings)
-                registeredPoolNames.add("default")
-              }
             case _ =>
               if (!registeredPoolNames.contains(name)) {
                 val (url, user, password, settings) = load(name)
