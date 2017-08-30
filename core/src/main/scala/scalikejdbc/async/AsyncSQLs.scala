@@ -48,7 +48,7 @@ class AsyncSQLUpdateAndReturnGeneratedKeyImpl(val underlying: SQLUpdateWithGener
 trait AsyncSQLToOption[A] extends Any {
   def underlying: SQLToOption[A, HasExtractor]
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[A]] = {
-    session.single(underlying.statement, underlying.parameters: _*)(underlying.extractor)
+    session.single(underlying.statement, underlying.rawParameters: _*)(underlying.extractor)
   }
 }
 class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor]) extends AnyVal with AsyncSQLToOption[A]
@@ -56,7 +56,7 @@ class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor]) exte
 trait AsyncSQLToTraversable[A] extends Any {
   def underlying: SQLToTraversable[A, HasExtractor]
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Traversable[A]] = {
-    session.traversable(underlying.statement, underlying.parameters: _*)(underlying.extractor)
+    session.traversable(underlying.statement, underlying.rawParameters: _*)(underlying.extractor)
   }
 }
 class AsyncSQLToTraversableImpl[A](val underlying: SQLToTraversable[A, HasExtractor]) extends AnyVal with AsyncSQLToTraversable[A]
@@ -64,7 +64,7 @@ class AsyncSQLToTraversableImpl[A](val underlying: SQLToTraversable[A, HasExtrac
 trait AsyncSQLToList[A] extends Any {
   def underlying: SQLToList[A, HasExtractor]
   def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[A]] = {
-    session.list(underlying.statement, underlying.parameters: _*)(underlying.extractor)
+    session.list(underlying.statement, underlying.rawParameters: _*)(underlying.extractor)
   }
 }
 class AsyncSQLToListImpl[A](val underlying: SQLToList[A, HasExtractor]) extends AnyVal with AsyncSQLToList[A]

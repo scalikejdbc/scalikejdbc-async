@@ -55,6 +55,7 @@ create table async_lover (
       catch { case e: Exception => }
 
       SQL(mysqlCreateTable).execute.apply()
+      insertQueries.foreach(q => SQL(q).update.apply())
     }
   }
 

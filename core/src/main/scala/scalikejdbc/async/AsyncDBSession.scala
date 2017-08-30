@@ -20,6 +20,8 @@ import scalikejdbc._
 import scalikejdbc.GlobalSettings._
 import scala.collection.mutable.LinkedHashMap
 import scalikejdbc.async.ShortenedNames._
+import java.sql.PreparedStatement
+import scalikejdbc.async.internal.MockPreparedStatement
 
 /**
  * Asynchronous DB Session
@@ -382,9 +384,13 @@ trait AsyncDBSession extends LogSupport {
 
   protected def ensureAndNormalizeParameters(parameters: Seq[Any]): Seq[Any] = {
     parameters.map {
-      case withValue: ParameterBinderWithValue => withValue.value
-      case _: ParameterBinder => throw new IllegalArgumentException("ParameterBinder is unsupported")
-      case rawValue => rawValue
+      case binder: ParameterBinder =>
+        // use a mock preparedstatement to resolve parameters using parameterbinders the same way it's implemented in scalikejdbc
+        val ps = new MockPreparedStatement()
+        binder(ps, 0)
+        ps.value
+      case rawValue =>
+        rawValue
     }
   }
 

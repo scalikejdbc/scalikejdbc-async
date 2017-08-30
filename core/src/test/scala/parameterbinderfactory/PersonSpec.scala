@@ -17,6 +17,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
   private val column = Person.column
 
   it should "insert person with custom binder sync" in {
+
     val result: Int = NamedDB('mysql).autoCommit { implicit s =>
       withSQL {
         insert.into(Person).namedValues(
@@ -32,7 +33,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
     val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
       withSQL {
         insert.into(Person).namedValues(
-          column.id -> PersonId(1),
+          column.id -> PersonId(2),
           column.name -> "test"
         )
       }.update.future()
@@ -64,5 +65,55 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
     }
     val result = Await.result(resultsFuture, 5.seconds)
     result should be(Some(Person(id, name)))
+  }
+
+  it should "update person with custom binder sync" in {
+
+    val result: Int = NamedDB('mysql).autoCommit { implicit s =>
+      withSQL {
+        update(Person).set(
+          column.id -> PersonId(3),
+          column.name -> "test"
+        ).where.eq(column.id, PersonId(1))
+      }.update.apply()
+    }
+    result should equal(1)
+  }
+
+  it should "update person with custom binder async" in {
+
+    val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+      withSQL {
+        update(Person).set(
+          column.id -> PersonId(4),
+          column.name -> "test"
+        ).where.eq(column.id, PersonId(2))
+      }.update.future()
+    }
+
+    val result = Await.result(resultsFuture, 5.seconds)
+    result should equal(1)
+  }
+
+  it should "delete person with custom binder sync" in {
+
+    val result: Int = NamedDB('mysql).autoCommit { implicit s =>
+      withSQL {
+        deleteFrom(Person).where.eq(column.id, PersonId(3))
+      }.update.apply()
+    }
+    result should equal(1)
+  }
+
+  it should "delete person with custom binder async" in {
+
+    val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+      withSQL {
+        deleteFrom(Person).where.eq(column.id, PersonId(4))
+      }.update.future()
+    }
+
+    val result = Await.result(resultsFuture, 5.seconds)
+    result should equal(1)
   }
 }
