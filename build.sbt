@@ -1,4 +1,4 @@
-lazy val _version = "0.8.0"
+lazy val _version = "0.8.1"
 lazy val scalikejdbcVersion = "3.0.0"
 lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "9.4-1201-jdbc41"
@@ -20,14 +20,15 @@ lazy val core = (project in file("core")).settings(
   resolvers ++= _resolvers,
   libraryDependencies := {
     Seq (
-       "org.scalikejdbc"     %% "scalikejdbc"               % scalikejdbcVersion % "compile",
-       "org.scalikejdbc"     %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
-       "com.github.mauricio" %% "postgresql-async"          % mauricioVersion    % "provided",
-       "com.github.mauricio" %% "mysql-async"               % mauricioVersion    % "provided",
-       "org.postgresql"      %  "postgresql"                % postgresqlVersion  % "test",
-       "mysql"               %  "mysql-connector-java"      % "5.1.+"            % "test",
-       "org.scalatest"       %% "scalatest"                 % "3.0.+"            % "test",
-       "ch.qos.logback"      %  "logback-classic"           % "1.1.+"            % "test"
+       "org.scalikejdbc"     %% "scalikejdbc"                       % scalikejdbcVersion % "compile",
+       "org.scalikejdbc"     %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile",
+       "org.scalikejdbc"     %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "compile",
+       "com.github.mauricio" %% "postgresql-async"                  % mauricioVersion    % "provided",
+       "com.github.mauricio" %% "mysql-async"                       % mauricioVersion    % "provided",
+       "org.postgresql"      %  "postgresql"                        % postgresqlVersion  % "test",
+       "mysql"               %  "mysql-connector-java"              % "5.1.+"            % "test",
+       "org.scalatest"       %% "scalatest"                         % "3.0.+"            % "test",
+       "ch.qos.logback"      %  "logback-classic"                   % "1.1.+"            % "test"
     )
   },
   sbtPlugin := false,
