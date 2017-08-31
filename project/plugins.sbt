@@ -1,4 +1,5 @@
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
 addSbtPlugin("org.scalariform"  % "sbt-scalariform" % "1.6.0")
 // TODO: Play 2.4 support
