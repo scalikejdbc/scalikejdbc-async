@@ -8,13 +8,14 @@ object AccountDBInitializer {
 create table account (
   id bigint primary key,
   person_id bigint not null,
-  account_details varchar(2000) not null
+  account_details varchar(2000) not null,
+  parent bigint
 );
 """
 
   val insertQueries = Seq(
-    """insert into account (id, person_id, account_details) 
-        values (13, 12, 'test account details')"""
+    """insert into account (id, person_id, account_details, parent) 
+        values (13, 12, 'test account details', null)"""
   )
 
   def initMySQL(): Unit = {

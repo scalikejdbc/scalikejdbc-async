@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 case class AccountId(id: Long)
 
-case class Account(id: AccountId, personId: PersonId, accountDetails: String)
+case class Account(id: AccountId, personId: PersonId, accountDetails: String, parent: Option[AccountId])
 
 object AccountId {
   implicit val AccountIdParameterBinderFactory: Binders[AccountId] = Binders.long.xmap(AccountId.apply, _.id)
