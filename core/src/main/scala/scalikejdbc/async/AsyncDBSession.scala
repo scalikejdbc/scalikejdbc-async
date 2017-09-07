@@ -376,6 +376,311 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  def oneToManies6Traversable[A, B1, B2, B3, B4, B5, B6, Z](
+    statement: String,
+    parameters: Any*
+  )(
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4],
+    extractTo5: (WrappedResultSet) => Option[B5],
+    extractTo6: (WrappedResultSet) => Option[B6]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
+    val _parameters = ensureAndNormalizeParameters(parameters)
+    withListeners(statement, _parameters) {
+      queryLogging(statement, _parameters)
+
+      def processResultSet(
+        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6])]),
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6])] = {
+        val o = extractOne(rs)
+        val (to1, to2, to3, to4, to5, to6) = (extractTo1(rs), extractTo2(rs), extractTo3(rs), extractTo4(rs), extractTo5(rs), extractTo6(rs))
+        result.keys.find(_ == o).map { _ =>
+          to1.orElse(to2).orElse(to3).orElse(to4).orElse(to5).orElse(to6).map { _ =>
+            val (ts1, ts2, ts3, ts4, ts5, ts6) = result.apply(o)
+            result += (o -> (
+              to1.map(t => if (ts1.contains(t)) ts1 else ts1 :+ t).getOrElse(ts1),
+              to2.map(t => if (ts2.contains(t)) ts2 else ts2 :+ t).getOrElse(ts2),
+              to3.map(t => if (ts3.contains(t)) ts3 else ts3 :+ t).getOrElse(ts3),
+              to4.map(t => if (ts4.contains(t)) ts4 else ts4 :+ t).getOrElse(ts4),
+              to5.map(t => if (ts5.contains(t)) ts5 else ts5 :+ t).getOrElse(ts5),
+              to6.map(t => if (ts6.contains(t)) ts6 else ts6 :+ t).getOrElse(ts6)
+            ))
+          }.getOrElse(result)
+        }.getOrElse {
+          result += (
+            o -> (
+              to1.map(t => Vector(t)).getOrElse(Vector()),
+              to2.map(t => Vector(t)).getOrElse(Vector()),
+              to3.map(t => Vector(t)).getOrElse(Vector()),
+              to4.map(t => Vector(t)).getOrElse(Vector()),
+              to5.map(t => Vector(t)).getOrElse(Vector()),
+              to6.map(t => Vector(t)).getOrElse(Vector())
+            )
+          )
+        }
+      }
+      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
+        result.rows.map { ars =>
+          new AsyncResultSetTraversable(ars).foldLeft(
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6])]()
+          )(processResultSet).map {
+              case (one, (t1, t2, t3, t4, t5, t6)) => transform(one, t1, t2, t3, t4, t5, t6)
+            }
+        }.getOrElse(Nil)
+      }
+    }
+  }
+
+  def oneToManies7Traversable[A, B1, B2, B3, B4, B5, B6, B7, Z](
+    statement: String,
+    parameters: Any*
+  )(
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4],
+    extractTo5: (WrappedResultSet) => Option[B5],
+    extractTo6: (WrappedResultSet) => Option[B6],
+    extractTo7: (WrappedResultSet) => Option[B7]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
+    val _parameters = ensureAndNormalizeParameters(parameters)
+    withListeners(statement, _parameters) {
+      queryLogging(statement, _parameters)
+
+      def processResultSet(
+        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7])]),
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7])] = {
+        val o = extractOne(rs)
+        val (to1, to2, to3, to4, to5, to6, to7) = (
+          extractTo1(rs),
+          extractTo2(rs),
+          extractTo3(rs),
+          extractTo4(rs),
+          extractTo5(rs),
+          extractTo6(rs),
+          extractTo7(rs)
+        )
+        result.keys.find(_ == o).map { _ =>
+          to1.orElse(to2).orElse(to3).orElse(to4).orElse(to5).orElse(to6).orElse(to7).map { _ =>
+            val (ts1, ts2, ts3, ts4, ts5, ts6, ts7) = result.apply(o)
+            result += (o -> (
+              to1.map(t => if (ts1.contains(t)) ts1 else ts1 :+ t).getOrElse(ts1),
+              to2.map(t => if (ts2.contains(t)) ts2 else ts2 :+ t).getOrElse(ts2),
+              to3.map(t => if (ts3.contains(t)) ts3 else ts3 :+ t).getOrElse(ts3),
+              to4.map(t => if (ts4.contains(t)) ts4 else ts4 :+ t).getOrElse(ts4),
+              to5.map(t => if (ts5.contains(t)) ts5 else ts5 :+ t).getOrElse(ts5),
+              to6.map(t => if (ts6.contains(t)) ts6 else ts6 :+ t).getOrElse(ts6),
+              to7.map(t => if (ts7.contains(t)) ts7 else ts7 :+ t).getOrElse(ts7)
+            ))
+          }.getOrElse(result)
+        }.getOrElse {
+          result += (
+            o -> (
+              to1.map(t => Vector(t)).getOrElse(Vector()),
+              to2.map(t => Vector(t)).getOrElse(Vector()),
+              to3.map(t => Vector(t)).getOrElse(Vector()),
+              to4.map(t => Vector(t)).getOrElse(Vector()),
+              to5.map(t => Vector(t)).getOrElse(Vector()),
+              to6.map(t => Vector(t)).getOrElse(Vector()),
+              to7.map(t => Vector(t)).getOrElse(Vector())
+            )
+          )
+        }
+      }
+      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
+        result.rows.map { ars =>
+          new AsyncResultSetTraversable(ars).foldLeft(
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7])]()
+          )(processResultSet).map {
+              case (one, (t1, t2, t3, t4, t5, t6, t7)) => transform(one, t1, t2, t3, t4, t5, t6, t7)
+            }
+        }.getOrElse(Nil)
+      }
+    }
+  }
+
+  def oneToManies8Traversable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](
+    statement: String,
+    parameters: Any*
+  )(
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4],
+    extractTo5: (WrappedResultSet) => Option[B5],
+    extractTo6: (WrappedResultSet) => Option[B6],
+    extractTo7: (WrappedResultSet) => Option[B7],
+    extractTo8: (WrappedResultSet) => Option[B8]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
+    val _parameters = ensureAndNormalizeParameters(parameters)
+    withListeners(statement, _parameters) {
+      queryLogging(statement, _parameters)
+
+      def processResultSet(
+        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8])]),
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8])] = {
+        val o = extractOne(rs)
+        val (to1, to2, to3, to4, to5, to6, to7, to8) = (
+          extractTo1(rs),
+          extractTo2(rs),
+          extractTo3(rs),
+          extractTo4(rs),
+          extractTo5(rs),
+          extractTo6(rs),
+          extractTo7(rs),
+          extractTo8(rs)
+        )
+        result.keys.find(_ == o).map { _ =>
+          to1.orElse(to2).orElse(to3).orElse(to4).orElse(to5).orElse(to6).orElse(to7).orElse(to8).map { _ =>
+            val (ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8) = result.apply(o)
+            result += (o -> (
+              to1.map(t => if (ts1.contains(t)) ts1 else ts1 :+ t).getOrElse(ts1),
+              to2.map(t => if (ts2.contains(t)) ts2 else ts2 :+ t).getOrElse(ts2),
+              to3.map(t => if (ts3.contains(t)) ts3 else ts3 :+ t).getOrElse(ts3),
+              to4.map(t => if (ts4.contains(t)) ts4 else ts4 :+ t).getOrElse(ts4),
+              to5.map(t => if (ts5.contains(t)) ts5 else ts5 :+ t).getOrElse(ts5),
+              to6.map(t => if (ts6.contains(t)) ts6 else ts6 :+ t).getOrElse(ts6),
+              to7.map(t => if (ts7.contains(t)) ts7 else ts7 :+ t).getOrElse(ts7),
+              to8.map(t => if (ts8.contains(t)) ts8 else ts8 :+ t).getOrElse(ts8)
+            ))
+          }.getOrElse(result)
+        }.getOrElse {
+          result += (
+            o -> (
+              to1.map(t => Vector(t)).getOrElse(Vector()),
+              to2.map(t => Vector(t)).getOrElse(Vector()),
+              to3.map(t => Vector(t)).getOrElse(Vector()),
+              to4.map(t => Vector(t)).getOrElse(Vector()),
+              to5.map(t => Vector(t)).getOrElse(Vector()),
+              to6.map(t => Vector(t)).getOrElse(Vector()),
+              to7.map(t => Vector(t)).getOrElse(Vector()),
+              to8.map(t => Vector(t)).getOrElse(Vector())
+            )
+          )
+        }
+      }
+      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
+        result.rows.map { ars =>
+          new AsyncResultSetTraversable(ars).foldLeft(
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8])]()
+          )(processResultSet).map {
+              case (one, (t1, t2, t3, t4, t5, t6, t7, t8)) => transform(one, t1, t2, t3, t4, t5, t6, t7, t8)
+            }
+        }.getOrElse(Nil)
+      }
+    }
+  }
+
+  def oneToManies9Traversable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](
+    statement: String,
+    parameters: Any*
+  )(
+    extractOne: (WrappedResultSet) => A
+  )(
+    extractTo1: (WrappedResultSet) => Option[B1],
+    extractTo2: (WrappedResultSet) => Option[B2],
+    extractTo3: (WrappedResultSet) => Option[B3],
+    extractTo4: (WrappedResultSet) => Option[B4],
+    extractTo5: (WrappedResultSet) => Option[B5],
+    extractTo6: (WrappedResultSet) => Option[B6],
+    extractTo7: (WrappedResultSet) => Option[B7],
+    extractTo8: (WrappedResultSet) => Option[B8],
+    extractTo9: (WrappedResultSet) => Option[B9]
+  )(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9]) => Z
+  )(
+    implicit
+    cxt: EC = ECGlobal
+  ): Future[Traversable[Z]] = {
+    val _parameters = ensureAndNormalizeParameters(parameters)
+    withListeners(statement, _parameters) {
+      queryLogging(statement, _parameters)
+
+      def processResultSet(
+        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9])]),
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9])] = {
+        val o = extractOne(rs)
+        val (to1, to2, to3, to4, to5, to6, to7, to8, to9) = (
+          extractTo1(rs),
+          extractTo2(rs),
+          extractTo3(rs),
+          extractTo4(rs),
+          extractTo5(rs),
+          extractTo6(rs),
+          extractTo7(rs),
+          extractTo8(rs),
+          extractTo9(rs)
+        )
+        result.keys.find(_ == o).map { _ =>
+          to1.orElse(to2).orElse(to3).orElse(to4).orElse(to5).orElse(to6).orElse(to7).orElse(to8).orElse(to9).map { _ =>
+            val (ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8, ts9) = result.apply(o)
+            result += (o -> (
+              to1.map(t => if (ts1.contains(t)) ts1 else ts1 :+ t).getOrElse(ts1),
+              to2.map(t => if (ts2.contains(t)) ts2 else ts2 :+ t).getOrElse(ts2),
+              to3.map(t => if (ts3.contains(t)) ts3 else ts3 :+ t).getOrElse(ts3),
+              to4.map(t => if (ts4.contains(t)) ts4 else ts4 :+ t).getOrElse(ts4),
+              to5.map(t => if (ts5.contains(t)) ts5 else ts5 :+ t).getOrElse(ts5),
+              to6.map(t => if (ts6.contains(t)) ts6 else ts6 :+ t).getOrElse(ts6),
+              to7.map(t => if (ts7.contains(t)) ts7 else ts7 :+ t).getOrElse(ts7),
+              to8.map(t => if (ts8.contains(t)) ts8 else ts8 :+ t).getOrElse(ts8),
+              to9.map(t => if (ts9.contains(t)) ts9 else ts9 :+ t).getOrElse(ts9)
+            ))
+          }.getOrElse(result)
+        }.getOrElse {
+          result += (
+            o -> (
+              to1.map(t => Vector(t)).getOrElse(Vector()),
+              to2.map(t => Vector(t)).getOrElse(Vector()),
+              to3.map(t => Vector(t)).getOrElse(Vector()),
+              to4.map(t => Vector(t)).getOrElse(Vector()),
+              to5.map(t => Vector(t)).getOrElse(Vector()),
+              to6.map(t => Vector(t)).getOrElse(Vector()),
+              to7.map(t => Vector(t)).getOrElse(Vector()),
+              to8.map(t => Vector(t)).getOrElse(Vector()),
+              to9.map(t => Vector(t)).getOrElse(Vector())
+            )
+          )
+        }
+      }
+      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
+        result.rows.map { ars =>
+          new AsyncResultSetTraversable(ars).foldLeft(
+            LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9])]()
+          )(processResultSet).map {
+              case (one, (t1, t2, t3, t4, t5, t6, t7, t8, t9)) => transform(one, t1, t2, t3, t4, t5, t6, t7, t8, t9)
+            }
+        }.getOrElse(Nil)
+      }
+    }
+  }
+
   protected def queryLogging(statement: String, parameters: Seq[Any]): Unit = {
     if (loggingSQLAndTime.enabled) {
       log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
