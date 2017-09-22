@@ -28,6 +28,7 @@ object DBSettings {
     SampleDBInitializer.initMySQL()
     PgListDBInitializer.initMySQL()
     PersonDBInitializer.initMySQL()
+    AccountDBInitializer.initMySQL()
 
     isInitialized = true
   }
