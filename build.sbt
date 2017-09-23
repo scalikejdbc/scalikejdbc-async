@@ -5,7 +5,7 @@ lazy val postgresqlVersion = "9.4-1201-jdbc41"
 lazy val defaultPlayVersion = play.core.PlayVersion.current
 val Scala210 = "2.10.6"
 val Scala211 = "2.11.11"
-val Scala212 = "2.12.2"
+val Scala212 = "2.12.3"
 
 crossScalaVersions := Seq(Scala212, Scala211, Scala210)
 
@@ -28,7 +28,7 @@ lazy val core = (project in file("core")).settings(
        "org.postgresql"      %  "postgresql"                        % postgresqlVersion  % "test",
        "mysql"               %  "mysql-connector-java"              % "5.1.+"            % "test",
        "org.scalatest"       %% "scalatest"                         % "3.0.+"            % "test",
-       "ch.qos.logback"      %  "logback-classic"                   % "1.1.+"            % "test"
+       "ch.qos.logback"      %  "logback-classic"                   % "1.2.+"            % "test"
     )
   },
   sbtPlugin := false,
