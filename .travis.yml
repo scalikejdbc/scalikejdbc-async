@@ -1,13 +1,12 @@
 language: scala
 jdk:
-# Play 2.4 supports only JDK8
 - oraclejdk8
 scala:
 - 2.10.6
 - 2.11.11
 - 2.12.2
 sudo: false
-script: sbt "plz ${TRAVIS_SCALA_VERSION} test"
+script: sbt "++ ${TRAVIS_SCALA_VERSION}" test
 addons:
   postgresql: '9.3'
 before_script:
