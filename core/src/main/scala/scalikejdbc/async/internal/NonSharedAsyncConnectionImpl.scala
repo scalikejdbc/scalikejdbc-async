@@ -13,10 +13,9 @@ import scalikejdbc.async.ShortenedNames._
  */
 abstract class NonSharedAsyncConnectionImpl(
   val underlying: MauricioConnection,
-  val pool: Option[MauricioConnectionPool[MauricioConnection]] = None
-)
-    extends AsyncConnectionCommonImpl
-    with NonSharedAsyncConnection {
+  val pool: Option[MauricioConnectionPool[MauricioConnection]] = None)
+  extends AsyncConnectionCommonImpl
+  with NonSharedAsyncConnection {
 
   override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] =
     Future.successful(this)

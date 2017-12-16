@@ -30,8 +30,7 @@ private[scalikejdbc] trait MauricioConfiguration {
     url: String,
     user: String,
     password: String,
-    connectionSettings: AsyncConnectionSettings
-  ) = {
+    connectionSettings: AsyncConnectionSettings) = {
     val jdbcUrl = JDBCUrl(url)
     Configuration(
       username = user,
@@ -45,8 +44,7 @@ private[scalikejdbc] trait MauricioConfiguration {
       allocator = connectionSettings.allocator.getOrElse(defaultConfiguration.allocator),
       connectTimeout = connectionSettings.connectTimeout.getOrElse(defaultConfiguration.connectTimeout),
       testTimeout = connectionSettings.testTimeout.getOrElse(defaultConfiguration.testTimeout),
-      queryTimeout = connectionSettings.queryTimeout
-    )
+      queryTimeout = connectionSettings.queryTimeout)
   }
 
 }

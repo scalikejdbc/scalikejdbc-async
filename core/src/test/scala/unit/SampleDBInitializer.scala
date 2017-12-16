@@ -36,8 +36,7 @@ create table async_lover (
     """insert into async_lover (name, rating, is_reactive, lunchtime, birthday, created_at) 
         values ('Bob', 3, false, '13:20:00', '1973-03-12', '2013-05-06 03:04:02')""",
     """insert into async_lover (name, rating, is_reactive, lunchtime, birthday, created_at) 
-        values ('Chris', 5, true, '11:45:00', '1984-12-31', '2013-05-06 19:32:54')"""
-  )
+        values ('Chris', 5, true, '11:45:00', '1984-12-31', '2013-05-06 19:32:54')""")
 
   def initPostgreSQL(): Unit = {
     DB autoCommit { implicit s =>

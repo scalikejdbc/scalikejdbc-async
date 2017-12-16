@@ -6,12 +6,11 @@ import scalikejdbc.LogSupport
 import scalikejdbc.async.{ AsyncConnectionPool, AsyncConnectionPoolSettings, NonSharedAsyncConnection }
 
 abstract class AsyncConnectionPoolCommonImpl[T <: Connection](
-    url: String,
-    user: String,
-    password: String,
-    factoryF: Configuration => ObjectFactory[T],
-    settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
-) extends AsyncConnectionPool(settings) with MauricioConfiguration with LogSupport {
+  url: String,
+  user: String,
+  password: String,
+  factoryF: Configuration => ObjectFactory[T],
+  settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()) extends AsyncConnectionPool(settings) with MauricioConfiguration with LogSupport {
 
   private[this] val factory = factoryF(configuration(url, user, password, settings.connectionSettings))
   private[internal] val pool = new ConnectionPool[T](
@@ -19,9 +18,7 @@ abstract class AsyncConnectionPoolCommonImpl[T <: Connection](
     configuration = PoolConfiguration(
       maxObjects = settings.maxPoolSize,
       maxIdle = settings.maxIdleMillis,
-      maxQueueSize = settings.maxQueueSize
-    )
-  )
+      maxQueueSize = settings.maxQueueSize))
 
   override def close(): Unit = pool.disconnect
 

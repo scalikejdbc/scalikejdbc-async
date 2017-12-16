@@ -32,7 +32,6 @@ lazy val core = (project in file("core")).settings(
   },
   sbtPlugin := false,
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
-  incOptions := incOptions.value.withNameHashing(true),
   scalacOptions ++= _scalacOptions,
   publishMavenStyle := true,
   publishArtifact in Test := false,

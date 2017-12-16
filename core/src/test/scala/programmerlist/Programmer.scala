@@ -5,14 +5,13 @@ import org.joda.time.DateTime
 import scala.concurrent._
 
 case class Programmer(
-    id: Long,
-    name: String,
-    companyId: Option[Long] = None,
-    company: Option[Company] = None,
-    skills: Seq[Skill] = Nil,
-    createdAt: DateTime,
-    deletedAt: Option[DateTime] = None
-) extends ShortenedNames {
+  id: Long,
+  name: String,
+  companyId: Option[Long] = None,
+  company: Option[Company] = None,
+  skills: Seq[Skill] = Nil,
+  createdAt: DateTime,
+  deletedAt: Option[DateTime] = None) extends ShortenedNames {
 
   def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Programmer] = Programmer.save(this)(session, cxt)
   def destroy()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = Programmer.destroy(id)(session, cxt)
@@ -22,8 +21,7 @@ case class Programmer(
   def addSkill(skill: Skill)(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = {
     insert.into(ProgrammerSkill).namedValues(
       column.programmerId -> id,
-      column.skillId -> skill.id
-    )
+      column.skillId -> skill.id)
   }
 
   def deleteSkill(skill: Skill)(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = {
@@ -44,8 +42,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     name = rs.string(p.name),
     companyId = rs.longOpt(p.companyId),
     createdAt = rs.jodaDateTime(p.createdAt),
-    deletedAt = rs.jodaDateTimeOpt(p.deletedAt)
-  )
+    deletedAt = rs.jodaDateTimeOpt(p.deletedAt))
 
   // join query with company table
   def apply(p: SyntaxProvider[Programmer], c: SyntaxProvider[Company])(rs: WrappedResultSet): Programmer = {
@@ -110,8 +107,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
 
   def findAllBy(where: SQLSyntax, withCompany: Boolean = true)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[List[Programmer]] = {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[List[Programmer]] = {
     withSQL {
       select
         .from[Programmer](Programmer as p)
@@ -127,38 +123,33 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
 
   def countBy(where: SQLSyntax)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[Long] = withSQL {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Programmer as p).where.append(isNotDeleted).and.append(sqls"${where}")
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, companyId: Option[Long] = None, createdAt: DateTime = DateTime.now)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[Programmer] = {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Programmer] = {
     for {
       id <- withSQL {
         insert.into(Programmer).namedValues(
           column.name -> name,
           column.companyId -> companyId,
-          column.createdAt -> createdAt
-        )
+          column.createdAt -> createdAt)
           .returningId // if you run this example for MySQL, please remove this line
       }.updateAndReturnGeneratedKey.future
     } yield Programmer(
       id = id,
       name = name,
       companyId = companyId,
-      createdAt = createdAt
-    )
+      createdAt = createdAt)
   }
 
   def save(m: Programmer)(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Programmer] = {
     withSQL {
       update(Programmer).set(
         column.name -> m.name,
-        column.companyId -> m.companyId
-      ).where.eq(column.id, m.id).and.isNull(column.deletedAt)
+        column.companyId -> m.companyId).where.eq(column.id, m.id).and.isNull(column.deletedAt)
     }.update.future.map(_ => m)
   }
 

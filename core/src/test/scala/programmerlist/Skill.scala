@@ -5,11 +5,10 @@ import org.joda.time.DateTime
 import scala.concurrent._
 
 case class Skill(
-    id: Long,
-    name: String,
-    createdAt: DateTime,
-    deletedAt: Option[DateTime] = None
-) extends ShortenedNames {
+  id: Long,
+  name: String,
+  createdAt: DateTime,
+  deletedAt: Option[DateTime] = None) extends ShortenedNames {
 
   def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Skill] = Skill.save(this)(session, cxt)
   def destroy()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Unit] = Skill.destroy(id)(session, cxt)
@@ -24,8 +23,7 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
     id = rs.long(s.id),
     name = rs.string(s.name),
     createdAt = rs.jodaDateTime(s.createdAt),
-    deletedAt = rs.jodaDateTimeOpt(s.deletedAt)
-  )
+    deletedAt = rs.jodaDateTimeOpt(s.deletedAt))
 
   def opt(s: SyntaxProvider[Skill])(rs: WrappedResultSet): Option[Skill] = rs.longOpt(s.resultName.id).map(_ => apply(s.resultName)(rs))
 
@@ -49,8 +47,7 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
   def findAllBy(where: SQLSyntax)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[List[Skill]] = withSQL {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[List[Skill]] = withSQL {
     select.from(Skill as s)
       .where.append(isNotDeleted).and.append(sqls"${where}")
       .orderBy(s.id)
@@ -62,8 +59,7 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
   def create(name: String, createdAt: DateTime = DateTime.now)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[Skill] = {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Skill] = {
     for {
       id <- withSQL {
         insert.into(Skill).namedValues(column.name -> name, column.createdAt -> createdAt)

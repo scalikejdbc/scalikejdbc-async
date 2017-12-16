@@ -35,8 +35,7 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.rowsAffected),
         statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))
-      ) {
+        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
@@ -53,8 +52,7 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.rowsAffected),
         statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))
-      ) {
+        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
