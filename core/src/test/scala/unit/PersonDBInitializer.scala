@@ -13,8 +13,7 @@ create table person (
 
   val insertQueries = Seq(
     """insert into person (id, name) 
-        values (12, 'testperson')"""
-  )
+        values (12, 'testperson')""")
 
   def initMySQL(): Unit = {
     NamedDB('mysql) autoCommit { implicit s =>

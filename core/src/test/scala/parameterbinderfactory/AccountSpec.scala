@@ -38,8 +38,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
       withSQL {
         insert.into(Person).namedValues(
           personColumn.id -> personId,
-          personColumn.name -> personName
-        )
+          personColumn.name -> personName)
       }.update.apply()
     }
     result should equal(1)
@@ -51,8 +50,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
         insert.into(Account).namedValues(
           accountColumn.id -> accountId,
           accountColumn.personId -> personId,
-          accountColumn.accountDetails -> accountDetails
-        )
+          accountColumn.accountDetails -> accountDetails)
       }.update.future()
     }
     val results = Await.result(resultsFuture, 5.seconds)
@@ -66,8 +64,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
           accountColumn.id -> accountId2,
           accountColumn.personId -> personId,
           accountColumn.accountDetails -> accountDetails,
-          accountColumn.parent -> Option(accountId)
-        )
+          accountColumn.parent -> Option(accountId))
       }.update.future()
     }
     val results = Await.result(resultsFuture, 5.seconds)
@@ -83,8 +80,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
       }
         .one(Person(p))
         .toMany(
-          rs => Account.opt(acc)(rs)
-        )
+          rs => Account.opt(acc)(rs))
         .map({ (person, accounts) => PersonWithAccounts(person, accounts) })
         .single.apply()
     }
@@ -100,8 +96,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
       }
         .one(Person(p))
         .toMany(
-          rs => Account.opt(acc)(rs)
-        )
+          rs => Account.opt(acc)(rs))
         .map({ (person, accounts) => PersonWithAccounts(person, accounts) })
         .single.future()
     }
@@ -119,8 +114,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
       }
         .one(Account(acc))
         .toMany(
-          rs => Person.opt(p)(rs)
-        )
+          rs => Person.opt(p)(rs))
         .map({ (acc, p) => AccountAndPerson(acc, p.head) })
         .single
         .apply()
@@ -138,8 +132,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
       }
         .one(Account(acc))
         .toMany(
-          rs => Person.opt(p)(rs)
-        )
+          rs => Person.opt(p)(rs))
         .map({ (acc, p) => AccountAndPerson(acc, p.head) })
         .single.future()
     }

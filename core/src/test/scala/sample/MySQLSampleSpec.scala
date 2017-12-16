@@ -19,8 +19,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.name -> "Eric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime
-        )
+          column.createdAt -> createdTime)
       }.updateAndReturnGeneratedKey.apply()
     }
     val resultFuture: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
@@ -61,8 +60,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.name -> "Eric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime
-        )
+          column.createdAt -> createdTime)
       }.updateAndReturnGeneratedKey.future()
     }
     // in AsyncLover#apply we are using get with typebinders, specialized getters should work
@@ -76,8 +74,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           isReactive = rs.boolean(al.resultName.isReactive),
           lunchtime = rs.timeOpt(al.resultName.lunchtime),
           birthday = rs.jodaDateTimeOpt(al.resultName.lunchtime),
-          createdAt = rs.jodaDateTime(al.resultName.createdAt)
-        )
+          createdAt = rs.jodaDateTime(al.resultName.createdAt))
       }).single.apply()
     }.get
     created.id should equal(generatedId)
@@ -94,8 +91,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.name -> "Eric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime
-        )
+          column.createdAt -> createdTime)
         //.returningId
       }.updateAndReturnGeneratedKey.future()
     }
@@ -121,8 +117,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.name -> "Chris",
           column.rating -> 5,
           column.isReactive -> true,
-          column.createdAt -> createdTime
-        )
+          column.createdAt -> createdTime)
       }.update.apply()
     }
     val deletion: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
@@ -145,8 +140,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.name -> "Chris",
           column.rating -> 5,
           column.isReactive -> true,
-          column.createdAt -> createdTime
-        )
+          column.createdAt -> createdTime)
       }.updateAndReturnGeneratedKey.apply()
     }
     val deletion: Future[Boolean] = NamedAsyncDB('mysql).withPool { implicit s =>
@@ -169,8 +163,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.name -> "Patric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime
-        ) //.returningId
+          column.createdAt -> createdTime) //.returningId
         ).updateAndReturnGeneratedKey.future
       }
       val generatedId = Await.result(generatedIdFuture, 5.seconds)
@@ -199,8 +192,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
             column.name -> "Patric",
             column.rating -> 2,
             column.isReactive -> false,
-            column.createdAt -> createdTime
-          )
+            column.createdAt -> createdTime)
           _ <- sql"invalid_query".execute // failure
         } yield ()
       }
@@ -232,9 +224,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
             column.name -> "Eric",
             column.rating -> 2,
             column.isReactive -> false,
-            column.createdAt -> createdTime
-          )
-        ).future()
+            column.createdAt -> createdTime)).future()
       }
       Await.result(deletionAndCreation, 5.seconds)
       deletionAndCreation.value.get.isSuccess should be(true)
@@ -265,10 +255,8 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
             column.name -> "Fred",
             column.rating -> 5,
             column.isReactive -> true,
-            column.createdAt -> new java.util.Date
-          ),
-          delete.from(AsyncLover).where.eq(column.id, 998)
-        ).future()
+            column.createdAt -> new java.util.Date),
+          delete.from(AsyncLover).where.eq(column.id, 998)).future()
       }
       Await.result(creationAndDeletion, 5.seconds)
       creationAndDeletion.value.get.isSuccess should be(true)
@@ -288,12 +276,11 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
       val failure: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
         AsyncTx.withSQLs(
           insert.into(AsyncLover).namedValues(
-          column.id -> 999,
-          column.name -> "George",
-          column.rating -> 1,
-          column.isReactive -> false,
-          column.createdAt -> DateTime.now
-        ).toSQL,
+            column.id -> 999,
+            column.name -> "George",
+            column.rating -> 1,
+            column.isReactive -> false,
+            column.createdAt -> DateTime.now).toSQL,
           sql"invalid_query" // failure
         ).future()
       }

@@ -503,8 +503,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case d: java.sql.Date => d
     case TimeInMillis(ms) => new UnixTimeInMillisConverter(ms).toSqlDate
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #date!"
-    )
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #date!")
   }
   private def date(columnIndex: Int): java.sql.Date = anyToDate(any(columnIndex))
   private def date(columnLabel: String): java.sql.Date = anyToDate(any(columnLabel))
@@ -526,8 +525,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case t: java.sql.Time => t
     case TimeInMillis(ms) => new java.sql.Time(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #time!"
-    )
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #time!")
   }
   private def time(columnIndex: Int): java.sql.Time = anyToTime(any(columnIndex))
   private def time(columnLabel: String): java.sql.Time = anyToTime(any(columnLabel))
@@ -539,8 +537,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case t: java.sql.Timestamp => t
     case TimeInMillis(ms) => new java.sql.Timestamp(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #timestamp!"
-    )
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #timestamp!")
   }
   private def timestamp(columnIndex: Int): java.sql.Timestamp = anyToTimestamp(any(columnIndex))
   private def timestamp(columnLabel: String): java.sql.Timestamp = anyToTimestamp(any(columnLabel))
@@ -552,8 +549,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case dt: DateTime => dt
     case TimeInMillis(ms) => new DateTime(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaDateTime!"
-    )
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaDateTime!")
   }
   private def jodaDateTime(columnIndex: Int): DateTime = anyToDateTime(any(columnIndex))
   private def jodaDateTime(columnLabel: String): DateTime = anyToDateTime(any(columnLabel))
@@ -565,8 +561,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case ldt: LocalDateTime => ldt
     case TimeInMillis(ms) => new LocalDateTime(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDateTime!"
-    )
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDateTime!")
   }
   private def jodaLocalDateTime(columnIndex: Int): LocalDateTime = anyToLocalDateTime(any(columnIndex))
   private def jodaLocalDateTime(columnLabel: String): LocalDateTime = anyToLocalDateTime(any(columnLabel))
@@ -578,8 +573,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case ld: LocalDate => ld
     case TimeInMillis(ms) => new LocalDate(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDate!"
-    )
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDate!")
   }
   private def jodaLocalDate(columnIndex: Int): LocalDate = anyToLocalDate(any(columnIndex))
   private def jodaLocalDate(columnLabel: String): LocalDate = anyToLocalDate(any(columnLabel))
@@ -591,8 +585,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case lt: LocalTime => lt
     case TimeInMillis(ms) => new LocalTime(ms)
     case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalTime!"
-    )
+      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalTime!")
   }
   private def jodaLocalTime(columnIndex: Int): LocalTime = anyToLocalTime(any(columnIndex))
   private def jodaLocalTime(columnLabel: String): LocalTime = anyToLocalTime(any(columnLabel))

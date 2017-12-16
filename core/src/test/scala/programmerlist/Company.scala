@@ -5,12 +5,11 @@ import scala.concurrent._
 import org.joda.time.DateTime
 
 case class Company(
-    id: Long,
-    name: String,
-    url: Option[String] = None,
-    createdAt: DateTime,
-    deletedAt: Option[DateTime] = None
-) extends ShortenedNames {
+  id: Long,
+  name: String,
+  url: Option[String] = None,
+  createdAt: DateTime,
+  deletedAt: Option[DateTime] = None) extends ShortenedNames {
 
   def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Company] = Company.save(this)(session, cxt)
   def destroy()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = Company.destroy(id)(session, cxt)
@@ -26,8 +25,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
     name = rs.string(c.name),
     url = rs.stringOpt(c.url),
     createdAt = rs.jodaDateTime(c.createdAt),
-    deletedAt = rs.jodaDateTimeOpt(c.deletedAt)
-  )
+    deletedAt = rs.jodaDateTimeOpt(c.deletedAt))
 
   lazy val c = Company.syntax("c")
   private val isNotDeleted = sqls.isNull(c.deletedAt)
@@ -48,8 +46,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
 
   def findAllBy(where: SQLSyntax)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[List[Company]] = withSQL {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[List[Company]] = withSQL {
     select.from(Company as c)
       .where.append(isNotDeleted).and.append(sqls"${where}")
       .orderBy(c.id)
@@ -57,22 +54,19 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
 
   def countBy(where: SQLSyntax)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[Long] = withSQL {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Company as c).where.append(isNotDeleted).and.append(sqls"${where}")
   }.map(_.long(1)).single.future.map(_.get)
 
   def create(name: String, url: Option[String] = None, createdAt: DateTime = DateTime.now)(
     implicit
-    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal
-  ): Future[Company] = {
+    session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Company] = {
     for {
       id <- withSQL {
         insert.into(Company).namedValues(
           column.name -> name,
           column.url -> url,
-          column.createdAt -> createdAt
-        )
+          column.createdAt -> createdAt)
           .returningId // if you run this example for MySQL, please remove this line
       }.updateAndReturnGeneratedKey()
     } yield Company(id = id, name = name, url = url, createdAt = createdAt)
@@ -82,8 +76,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
     withSQL {
       update(Company).set(
         column.name -> m.name,
-        column.url -> m.url
-      ).where.eq(column.id, m.id).and.isNull(column.deletedAt)
+        column.url -> m.url).where.eq(column.id, m.id).and.isNull(column.deletedAt)
     }.update.future.map(_ => m)
   }
 

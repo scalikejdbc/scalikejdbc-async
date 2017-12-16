@@ -21,8 +21,7 @@ import scalikejdbc._
  * Asynchronous Connection Pool
  */
 abstract class AsyncConnectionPool(
-    val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
-) {
+  val settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()) {
 
   /**
    * Borrows a connection from pool.
@@ -69,8 +68,7 @@ object AsyncConnectionPool extends LogSupport {
 
   def add(name: Any, url: String, user: String, password: String, settings: CPSettings = AsyncConnectionPoolSettings())(
     implicit
-    factory: CPFactory = AsyncConnectionPoolFactory
-  ): Unit = {
+    factory: CPFactory = AsyncConnectionPoolFactory): Unit = {
     val newPool: AsyncConnectionPool = factory.apply(url, user, password, settings)
     log.debug(s"Registered connection pool (url: ${url}, user: ${user}, settings: ${settings}")
     val replaced = pools.put(name, newPool)
@@ -79,8 +77,7 @@ object AsyncConnectionPool extends LogSupport {
 
   def singleton(url: String, user: String, password: String, settings: CPSettings = AsyncConnectionPoolSettings())(
     implicit
-    factory: CPFactory = AsyncConnectionPoolFactory
-  ): Unit = {
+    factory: CPFactory = AsyncConnectionPoolFactory): Unit = {
     add(DEFAULT_NAME, url, user, password, settings)(factory)
   }
 

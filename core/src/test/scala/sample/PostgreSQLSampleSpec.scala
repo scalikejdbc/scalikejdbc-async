@@ -52,8 +52,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
           column.name -> "Eric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime
-        ).returningId
+          column.createdAt -> createdTime).returningId
       }.updateAndReturnGeneratedKey.future()
     }
     // in AsyncLover#apply we are using get with typebinders, specialized getters should work
@@ -67,8 +66,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
           isReactive = rs.boolean(al.resultName.isReactive),
           lunchtime = rs.timeOpt(al.resultName.lunchtime),
           birthday = rs.jodaDateTimeOpt(al.resultName.lunchtime),
-          createdAt = rs.jodaDateTime(al.resultName.createdAt)
-        )
+          createdAt = rs.jodaDateTime(al.resultName.createdAt))
       }).single.apply()
     }.get
     created.id should equal(generatedId)
@@ -85,8 +83,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
           column.name -> "Eric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime
-        ).returningId
+          column.createdAt -> createdTime).returningId
       }.updateAndReturnGeneratedKey.future()
     }
     // the generated key should be found
@@ -111,8 +108,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
           column.name -> "Chris",
           column.rating -> 5,
           column.isReactive -> true,
-          column.createdAt -> createdTime
-        )
+          column.createdAt -> createdTime)
       }.update.apply()
     }
     val deletion: Future[Int] = AsyncDB.withPool { implicit s =>
@@ -135,8 +131,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
           column.name -> "Chris",
           column.rating -> 5,
           column.isReactive -> true,
-          column.createdAt -> createdTime
-        )
+          column.createdAt -> createdTime)
       }.updateAndReturnGeneratedKey.apply()
     }
     val deletion: Future[Boolean] = AsyncDB.withPool { implicit s =>
@@ -159,8 +154,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
           column.name -> "Patric",
           column.rating -> 2,
           column.isReactive -> false,
-          column.createdAt -> createdTime
-        ).returningId).updateAndReturnGeneratedKey.future
+          column.createdAt -> createdTime).returningId).updateAndReturnGeneratedKey.future
       }
       val generatedId = Await.result(generatedIdFuture, 5.seconds)
       val created = DB.readOnly { implicit s =>
@@ -188,8 +182,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
             column.name -> "Patric",
             column.rating -> 2,
             column.isReactive -> false,
-            column.createdAt -> createdTime
-          )
+            column.createdAt -> createdTime)
           _ <- sql"invalid_query".execute // failure
         } yield ()
       }
@@ -221,9 +214,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
             column.name -> "Eric",
             column.rating -> 2,
             column.isReactive -> false,
-            column.createdAt -> createdTime
-          )
-        ).future()
+            column.createdAt -> createdTime)).future()
       }
       Await.result(deletionAndCreation, 5.seconds)
       deletionAndCreation.value.get.isSuccess should be(true)
@@ -254,10 +245,8 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
             column.name -> "Fred",
             column.rating -> 5,
             column.isReactive -> true,
-            column.createdAt -> new java.util.Date
-          ),
-          delete.from(AsyncLover).where.eq(column.id, 998)
-        ).future()
+            column.createdAt -> new java.util.Date),
+          delete.from(AsyncLover).where.eq(column.id, 998)).future()
       }
       Await.result(creationAndDeletion, 5.seconds)
       creationAndDeletion.value.get.isSuccess should be(true)
@@ -277,12 +266,11 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
       val failure: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool { implicit s =>
         AsyncTx.withSQLs(
           insert.into(AsyncLover).namedValues(
-          column.id -> 999,
-          column.name -> "George",
-          column.rating -> 1,
-          column.isReactive -> false,
-          column.createdAt -> DateTime.now
-        ).toSQL,
+            column.id -> 999,
+            column.name -> "George",
+            column.rating -> 1,
+            column.isReactive -> false,
+            column.createdAt -> DateTime.now).toSQL,
           sql"invalid_query" // failure
         ).future()
       }

@@ -14,7 +14,7 @@ object AccountId {
 }
 
 object Account extends SQLSyntaxSupport[Account] {
-  //override def columnNames 
+  //override def columnNames
   def apply(s: SyntaxProvider[Account])(rs: WrappedResultSet): Account = apply(s.resultName)(rs)
 
   def opt(s: SyntaxProvider[Account])(rs: WrappedResultSet): Option[Account] = try {

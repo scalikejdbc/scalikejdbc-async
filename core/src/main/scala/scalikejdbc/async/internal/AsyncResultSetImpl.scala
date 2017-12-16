@@ -25,8 +25,8 @@ import org.joda.time.{ LocalDateTime, LocalTime, LocalDate, DateTime }
  * ResultSet Implementation
  */
 private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
-    extends WrappedResultSet(new RowDataResultSet(rows.headOption, rows.drop(1)), null, 0)
-    with AsyncResultSet {
+  extends WrappedResultSet(new RowDataResultSet(rows.headOption, rows.drop(1)), null, 0)
+  with AsyncResultSet {
 
   // AsyncResultSet API
   override def next(): Boolean = rows.nonEmpty
