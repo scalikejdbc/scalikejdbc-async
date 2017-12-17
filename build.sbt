@@ -2,9 +2,9 @@ lazy val _version = "0.9.0"
 lazy val scalikejdbcVersion = "3.1.0"
 lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "9.4-1201-jdbc41"
-val Scala210 = "2.10.6"
-val Scala211 = "2.11.11"
-val Scala212 = "2.12.3"
+val Scala210 = "2.10.7"
+val Scala211 = "2.11.12"
+val Scala212 = "2.12.4"
 
 crossScalaVersions := Seq(Scala212, Scala211, Scala210)
 
