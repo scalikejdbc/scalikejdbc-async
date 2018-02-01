@@ -1,6 +1,8 @@
 package programmerlist
 
 import scalikejdbc._, async._, FutureImplicits._
+import scalikejdbc.jodatime.JodaParameterBinderFactory._
+import scalikejdbc.jodatime.JodaTypeBinder._
 import org.joda.time.DateTime
 import scala.concurrent._
 
@@ -38,11 +40,11 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
   // simple extractor
   def apply(p: SyntaxProvider[Programmer])(rs: WrappedResultSet): Programmer = apply(p.resultName)(rs)
   def apply(p: ResultName[Programmer])(rs: WrappedResultSet): Programmer = new Programmer(
-    id = rs.long(p.id),
-    name = rs.string(p.name),
-    companyId = rs.longOpt(p.companyId),
-    createdAt = rs.jodaDateTime(p.createdAt),
-    deletedAt = rs.jodaDateTimeOpt(p.deletedAt))
+    id = rs.get[Long](p.id),
+    name = rs.get[String](p.name),
+    companyId = rs.get[Option[Long]](p.companyId),
+    createdAt = rs.get[DateTime](p.createdAt),
+    deletedAt = rs.get[Option[DateTime]](p.deletedAt))
 
   // join query with company table
   def apply(p: SyntaxProvider[Programmer], c: SyntaxProvider[Company])(rs: WrappedResultSet): Programmer = {

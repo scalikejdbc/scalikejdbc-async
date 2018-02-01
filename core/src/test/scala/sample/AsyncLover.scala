@@ -1,6 +1,7 @@
 package sample
 
 import scalikejdbc._
+import scalikejdbc.jodatime.JodaTypeBinder._
 import org.joda.time.DateTime
 
 case class AsyncLover(

@@ -1,6 +1,8 @@
 package programmerlist
 
 import scalikejdbc._, async._, FutureImplicits._
+import scalikejdbc.jodatime.JodaParameterBinderFactory._
+import scalikejdbc.jodatime.JodaTypeBinder._
 import org.joda.time.DateTime
 import scala.concurrent._
 
@@ -20,10 +22,10 @@ object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
   def apply(s: SyntaxProvider[Skill])(rs: WrappedResultSet): Skill = apply(s.resultName)(rs)
   def apply(s: ResultName[Skill])(rs: WrappedResultSet): Skill = new Skill(
-    id = rs.long(s.id),
-    name = rs.string(s.name),
-    createdAt = rs.jodaDateTime(s.createdAt),
-    deletedAt = rs.jodaDateTimeOpt(s.deletedAt))
+    id = rs.get[Long](s.id),
+    name = rs.get[String](s.name),
+    createdAt = rs.get[DateTime](s.createdAt),
+    deletedAt = rs.get[Option[DateTime]](s.deletedAt))
 
   def opt(s: SyntaxProvider[Skill])(rs: WrappedResultSet): Option[Skill] = rs.longOpt(s.resultName.id).map(_ => apply(s.resultName)(rs))
 

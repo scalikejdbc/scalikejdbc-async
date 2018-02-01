@@ -4,6 +4,8 @@ import org.joda.time._
 import org.scalatest._
 import scala.concurrent._, duration.DurationInt, ExecutionContext.Implicits.global
 import scalikejdbc._, async._
+import scalikejdbc.jodatime.JodaParameterBinderFactory._
+import scalikejdbc.jodatime.JodaTypeBinder._
 import unit._
 
 class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
@@ -60,13 +62,13 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
     val created = DB.readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map((rs: WrappedResultSet) => {
         AsyncLover(
-          id = rs.long(al.resultName.id),
-          name = rs.stringOpt(al.resultName.name).get,
-          rating = rs.int(al.resultName.rating),
-          isReactive = rs.boolean(al.resultName.isReactive),
-          lunchtime = rs.timeOpt(al.resultName.lunchtime),
-          birthday = rs.jodaDateTimeOpt(al.resultName.lunchtime),
-          createdAt = rs.jodaDateTime(al.resultName.createdAt))
+          id = rs.get[Long](al.resultName.id),
+          name = rs.get[String](al.resultName.name),
+          rating = rs.get[Int](al.resultName.rating),
+          isReactive = rs.get[Boolean](al.resultName.isReactive),
+          lunchtime = rs.get[Option[java.sql.Time]](al.resultName.lunchtime),
+          birthday = rs.get[Option[DateTime]](al.resultName.lunchtime),
+          createdAt = rs.get[DateTime](al.resultName.createdAt))
       }).single.apply()
     }.get
     created.id should equal(generatedId)

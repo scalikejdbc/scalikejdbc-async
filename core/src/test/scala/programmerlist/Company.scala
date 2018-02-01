@@ -1,6 +1,8 @@
 package programmerlist
 
 import scalikejdbc._, async._, FutureImplicits._
+import scalikejdbc.jodatime.JodaParameterBinderFactory._
+import scalikejdbc.jodatime.JodaTypeBinder._
 import scala.concurrent._
 import org.joda.time.DateTime
 
@@ -21,11 +23,11 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
 
   def apply(c: SyntaxProvider[Company])(rs: WrappedResultSet): Company = apply(c.resultName)(rs)
   def apply(c: ResultName[Company])(rs: WrappedResultSet): Company = new Company(
-    id = rs.long(c.id),
-    name = rs.string(c.name),
-    url = rs.stringOpt(c.url),
-    createdAt = rs.jodaDateTime(c.createdAt),
-    deletedAt = rs.jodaDateTimeOpt(c.deletedAt))
+    id = rs.get[Long](c.id),
+    name = rs.get[String](c.name),
+    url = rs.get[Option[String]](c.url),
+    createdAt = rs.get[DateTime](c.createdAt),
+    deletedAt = rs.get[Option[DateTime]](c.deletedAt))
 
   lazy val c = Company.syntax("c")
   private val isNotDeleted = sqls.isNull(c.deletedAt)

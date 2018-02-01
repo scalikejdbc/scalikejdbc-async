@@ -1,5 +1,5 @@
-lazy val _version = "0.9.0"
-lazy val scalikejdbcVersion = "3.1.0"
+lazy val _version = "0.10.0"
+lazy val scalikejdbcVersion = "3.2.0"
 lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "9.4-1201-jdbc41"
 val Scala210 = "2.10.7"
@@ -22,6 +22,7 @@ lazy val core = (project in file("core")).settings(
        "org.scalikejdbc"     %% "scalikejdbc"                       % scalikejdbcVersion % "compile",
        "org.scalikejdbc"     %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile",
        "org.scalikejdbc"     %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "compile",
+       "org.scalikejdbc"     %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test",
        "com.github.mauricio" %% "postgresql-async"                  % mauricioVersion    % "provided",
        "com.github.mauricio" %% "mysql-async"                       % mauricioVersion    % "provided",
        "org.postgresql"      %  "postgresql"                        % postgresqlVersion  % "test",
