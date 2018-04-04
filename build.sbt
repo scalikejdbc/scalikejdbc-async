@@ -49,7 +49,7 @@ def _publishTo(v: String) = {
 val _resolvers = Seq(
   "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
 )
-val _scalacOptions = Seq("-deprecation", "-unchecked")
+val _scalacOptions = Seq("-deprecation", "-unchecked", "-Xfuture")
 val _pomExtra = <url>http://scalikejdbc.org/</url>
       <licenses>
         <license>
