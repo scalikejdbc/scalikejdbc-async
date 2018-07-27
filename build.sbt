@@ -1,19 +1,18 @@
-lazy val _version = "0.10.1-SNAPSHOT"
-lazy val scalikejdbcVersion = "3.2.0"
+lazy val _version = "0.11.0"
+lazy val scalikejdbcVersion = "3.3.0"
 lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "42.2.2"
-val Scala210 = "2.10.7"
 val Scala211 = "2.11.12"
-val Scala212 = "2.12.4"
+val Scala212 = "2.12.6"
 
-crossScalaVersions := Seq(Scala212, Scala211, Scala210)
+crossScalaVersions := Seq(Scala212, Scala211)
 
 lazy val core = (project in file("core")).settings(
   organization := "org.scalikejdbc",
   name := "scalikejdbc-async",
   version := _version,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq(Scala212, Scala211, Scala210),
+  crossScalaVersions := Seq(Scala212, Scala211),
   publishTo := _publishTo(version.value),
   publishMavenStyle := true,
   resolvers ++= _resolvers,
