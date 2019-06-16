@@ -16,9 +16,9 @@
 package scalikejdbc.async.internal.mysql
 
 import scalikejdbc._, async._, internal._
-import com.github.mauricio.async.db.Configuration
-import com.github.mauricio.async.db.mysql.MySQLConnection
-import com.github.mauricio.async.db.mysql.pool.MySQLConnectionFactory
+import com.github.jasync.sql.db.Configuration
+import com.github.jasync.sql.db.mysql.MySQLConnection
+import com.github.jasync.sql.db.mysql.pool.MySQLConnectionFactory
 
 /**
  * MySQL Connection Pool

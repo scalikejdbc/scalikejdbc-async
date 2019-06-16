@@ -23,10 +23,10 @@ import scalikejdbc.async._, internal._
 private[scalikejdbc] case class SingleAsyncMySQLConnection(url: String, user: String, private val password: String, connectionSettings: AsyncConnectionSettings)
   extends AsyncConnectionCommonImpl
   with MySQLConnectionImpl
-  with MauricioConfiguration {
+  with JasyncConfiguration {
 
-  private[scalikejdbc] val underlying: com.github.mauricio.async.db.Connection = {
-    new com.github.mauricio.async.db.mysql.MySQLConnection(configuration(url, user, password, connectionSettings))
+  private[scalikejdbc] val underlying = {
+    new com.github.jasync.sql.db.mysql.MySQLConnection(configuration(url, user, password, connectionSettings))
   }
 
 }

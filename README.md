@@ -4,7 +4,7 @@
 
 ScalikeJDBC-Async provides non-blocking APIs to talk with PostgreSQL and MySQL in the JDBC way. 
 
-This library is built with [postgrsql-async and mysql-async,incredible works by @mauricio](https://github.com/mauricio/postgresql-async).
+This library is built with [jasync-sql](https://github.com/jasync-sql/jasync-sql).
 
 ![ScalikeJDBC Logo](http://scalikejdbc.org/img/logo.png)
 
@@ -30,10 +30,10 @@ Add `scalikejdbc-async` to your dependencies.
 
 ```scala
 libraryDependencies ++= Seq(
-  "org.scalikejdbc"     %% "scalikejdbc-async" % "0.11.+",
-  "com.github.mauricio" %% "postgresql-async"  % "0.2.+",
-  "com.github.mauricio" %% "mysql-async"       % "0.2.+",
-  "org.slf4j"           %  "slf4j-simple"      % "1.7.+" // slf4j implementation
+  "org.scalikejdbc"       %% "scalikejdbc-async" % "0.12.+",
+  "com.github.jasync-sql" %  "jasync-postgresql" % "1.0.+",
+  "com.github.jasync-sql" %  "jasync-mysql"      % "1.0.+",
+  "org.slf4j"             %  "slf4j-simple"      % "1.7.+" // slf4j implementation
 )
 ```
 
@@ -94,7 +94,7 @@ Transactional queries should be executed in series. You cannot use `Future.trave
 
 #### Is it production-ready?
 
-ScalikeJDBC-Async and [postgrsql-async and mysql-async](https://github.com/mauricio/postgresql-async) basically works fine. However, to be honest, ScalikeJBDC-Async doesn't have much of a record of production applications.
+ScalikeJDBC-Async and [jasync-sql](https://github.com/jasync-sql/jasync-sql) basically works fine. However, to be honest, ScalikeJBDC-Async doesn't have much of a record of production applications.
 
 #### Is it possible to combine scalikejdbc-async with normal scalikejdbc?
 

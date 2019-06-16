@@ -15,12 +15,16 @@
  */
 package scalikejdbc.async
 
+import java.util.concurrent.CompletableFuture
+
+import com.github.jasync.sql.db.Connection
 import scalikejdbc._
 import scalikejdbc.async.ShortenedNames._
 import scalikejdbc.async.internal.AsyncConnectionCommonImpl
 
 import scala.concurrent.{ Promise, Future }
 import scala.util.{ Failure, Success }
+import scala.compat.java8.FutureConverters._
 
 /**
  * Asynchronous Transaction Provider
@@ -54,14 +58,17 @@ object AsyncTx {
   def inTransaction[A](tx: TxAsyncDBSession, op: TxAsyncDBSession => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
     val p = Promise[A]()
     val connection = tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
-    connection.inTransaction(_ => op.apply(tx)).onComplete {
-      case Success(result) =>
-        tx.release()
-        p.success(result)
-      case Failure(e) =>
-        tx.release()
-        p.failure(e)
-    }
+    connection
+      .inTransaction((_: Connection) => op.apply(tx).toJava.toCompletableFuture)
+      .toScala
+      .onComplete {
+        case Success(result) =>
+          tx.release()
+          p.success(result)
+        case Failure(e) =>
+          tx.release()
+          p.failure(e)
+      }
     p.future
   }
 

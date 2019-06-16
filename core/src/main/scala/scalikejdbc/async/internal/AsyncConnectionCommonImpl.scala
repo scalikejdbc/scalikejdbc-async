@@ -15,27 +15,33 @@
  */
 package scalikejdbc.async.internal
 
-import scalikejdbc.async._, ShortenedNames._
-import scala.concurrent._, duration.DurationInt
-import com.github.mauricio.async.db._
+import scalikejdbc.async._
+import ShortenedNames._
+
+import scala.concurrent._
+import duration.DurationInt
+import com.github.jasync.sql.db._
+
+import scala.compat.java8.FutureConverters._
+import scala.collection.JavaConverters._
 
 /**
  * Basic Implementation of Asynchronous Connection
  */
 private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
 
-  private[scalikejdbc] val underlying: Connection
+  private[scalikejdbc] def underlying: ConcreteConnection
   private[scalikejdbc] val defaultTimeout = 10.seconds
 
   override def isActive: Boolean = underlying.isConnected
 
   override def sendQuery(statement: String)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult] = {
 
-    underlying.sendQuery(statement).map { queryResult =>
+    underlying.sendQuery(statement).toScala.map { queryResult =>
       new AsyncQueryResult(
-        rowsAffected = Option(queryResult.rowsAffected),
-        statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
+        rowsAffected = Option(queryResult.getRowsAffected),
+        statusMessage = Option(queryResult.getStatusMessage),
+        rows = Some(new internal.AsyncResultSetImpl(queryResult.getRows.asScala.toIndexedSeq))) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
@@ -46,13 +52,13 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
 
     val queryResultFuture: Future[QueryResult] = {
       if (parameters.isEmpty) underlying.sendQuery(statement)
-      else underlying.sendPreparedStatement(statement, parameters)
-    }
+      else underlying.sendPreparedStatement(statement, parameters.asJava)
+    }.toScala
     queryResultFuture.map { queryResult =>
       new AsyncQueryResult(
-        rowsAffected = Option(queryResult.rowsAffected),
-        statusMessage = Option(queryResult.statusMessage),
-        rows = queryResult.rows.map(rows => new internal.AsyncResultSetImpl(rows))) {
+        rowsAffected = Option(queryResult.getRowsAffected),
+        statusMessage = Option(queryResult.getStatusMessage),
+        rows = Some(new internal.AsyncResultSetImpl(queryResult.getRows.asScala.toIndexedSeq))) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }

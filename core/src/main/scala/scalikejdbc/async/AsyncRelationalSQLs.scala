@@ -27,7 +27,7 @@ class AsyncOneToOneSQLToOption[A, B, Z](val underlying: OneToOneSQLToOption[A, B
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToOneIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
+    session.oneToOneIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
       case Nil => None
       case results if results.size == 1 => results.headOption
       case results => throw new TooManyRowsException(1, results.size)
@@ -41,7 +41,7 @@ class AsyncOneToOneSQLToIterable[A, B, Z](val underlying: OneToOneSQLToIterable[
   override def future()(implicit
     session: AsyncDBSession,
     cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    val iterable = session.oneToOneIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+    val iterable = session.oneToOneIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.asInstanceOf[Future[Iterable[Z]]]
   }
 }
@@ -50,7 +50,7 @@ class AsyncOneToOneSQLToList[A, B, Z](val underlying: OneToOneSQLToList[A, B, Ha
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToOneIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+    val iterable = session.oneToOneIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.map(_.toList)
   }
 }
@@ -62,7 +62,7 @@ class AsyncOneToManySQLToOption[A, B, Z](val underlying: OneToManySQLToOption[A,
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManyIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
+    session.oneToManyIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
       case Nil => None
       case results if results.size == 1 => results.headOption
       case results => throw new TooManyRowsException(1, results.size)
@@ -76,7 +76,7 @@ class AsyncOneToManySQLToIterable[A, B, Z](val underlying: OneToManySQLToIterabl
   override def future()(implicit
     session: AsyncDBSession,
     cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManyIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+    session.oneToManyIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
   }
 }
 
@@ -84,7 +84,7 @@ class AsyncOneToManySQLToList[A, B, Z](val underlying: OneToManySQLToList[A, B, 
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManyIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+    val iterable = session.oneToManyIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.map(_.toList)
   }
 }
@@ -97,7 +97,7 @@ class AsyncOneToManies2SQLToOption[A, B1, B2, Z](val underlying: OneToManies2SQL
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies2Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo1, underlying.extractTo2)(underlying.transform).map {
+    session.oneToManies2Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo1, underlying.extractTo2)(underlying.transform).map {
       case Nil => None
       case results if results.size == 1 => results.headOption
       case results => throw new TooManyRowsException(1, results.size)
@@ -109,7 +109,7 @@ class AsyncOneToManies2SQLToIterable[A, B1, B2, Z](val underlying: OneToManies2S
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    val iterable = session.oneToManies2Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo1, underlying.extractTo2)(underlying.transform)
+    val iterable = session.oneToManies2Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo1, underlying.extractTo2)(underlying.transform)
     iterable
   }
 }
@@ -118,7 +118,7 @@ class AsyncOneToManies2SQLToList[A, B1, B2, Z](val underlying: OneToManies2SQLTo
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies2Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo1, underlying.extractTo2)(underlying.transform)
+    val iterable = session.oneToManies2Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo1, underlying.extractTo2)(underlying.transform)
     iterable.map(_.toList)
   }
 }
@@ -131,7 +131,7 @@ class AsyncOneToManies3SQLToOption[A, B1, B2, B3, Z](val underlying: OneToManies
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies3Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies3Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3)(underlying.transform).map {
         case Nil => None
         case results if results.size == 1 => results.headOption
@@ -144,7 +144,7 @@ class AsyncOneToManies3SQLToIterable[A, B1, B2, B3, Z](val underlying: OneToMani
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies3Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies3Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3)(underlying.transform)
   }
 }
@@ -153,7 +153,7 @@ class AsyncOneToManies3SQLToList[A, B1, B2, B3, Z](val underlying: OneToManies3S
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies3Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies3Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3)(underlying.transform)
     iterable.map(_.toList)
   }
@@ -167,7 +167,7 @@ class AsyncOneToManies4SQLToOption[A, B1, B2, B3, B4, Z](val underlying: OneToMa
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies4Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies4Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4)(underlying.transform).map {
         case Nil => None
         case results if results.size == 1 => results.headOption
@@ -180,7 +180,7 @@ class AsyncOneToManies4SQLToIterable[A, B1, B2, B3, B4, Z](val underlying: OneTo
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies4Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies4Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4)(underlying.transform)
   }
 }
@@ -189,7 +189,7 @@ class AsyncOneToManies4SQLToList[A, B1, B2, B3, B4, Z](val underlying: OneToMani
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies4Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies4Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4)(underlying.transform)
     iterable.map(_.toList)
   }
@@ -203,7 +203,7 @@ class AsyncOneToManies5SQLToOption[A, B1, B2, B3, B4, B5, Z](val underlying: One
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies5Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies5Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5)(underlying.transform).map {
         case Nil => None
         case results if results.size == 1 => results.headOption
@@ -216,7 +216,7 @@ class AsyncOneToManies5SQLToIterable[A, B1, B2, B3, B4, B5, Z](val underlying: O
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies5Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies5Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5)(underlying.transform)
   }
 }
@@ -225,7 +225,7 @@ class AsyncOneToManies5SQLToList[A, B1, B2, B3, B4, B5, Z](val underlying: OneTo
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies5Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies5Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5)(underlying.transform)
     iterable.map(_.toList)
   }
@@ -239,7 +239,7 @@ class AsyncOneToManies6SQLToOption[A, B1, B2, B3, B4, B5, B6, Z](val underlying:
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies6Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies6Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6)(underlying.transform).map {
         case Nil => None
         case results if results.size == 1 => results.headOption
@@ -252,7 +252,7 @@ class AsyncOneToManies6SQLToIterable[A, B1, B2, B3, B4, B5, B6, Z](val underlyin
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies6Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies6Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6)(underlying.transform)
   }
 }
@@ -261,7 +261,7 @@ class AsyncOneToManies6SQLToList[A, B1, B2, B3, B4, B5, B6, Z](val underlying: O
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies6Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies6Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6)(underlying.transform)
     iterable.map(_.toList)
   }
@@ -275,7 +275,7 @@ class AsyncOneToManies7SQLToOption[A, B1, B2, B3, B4, B5, B6, B7, Z](val underly
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies7Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies7Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7)(underlying.transform).map {
         case Nil => None
         case results if results.size == 1 => results.headOption
@@ -288,7 +288,7 @@ class AsyncOneToManies7SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, Z](val under
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies7Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies7Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7)(underlying.transform)
   }
 }
@@ -297,7 +297,7 @@ class AsyncOneToManies7SQLToList[A, B1, B2, B3, B4, B5, B6, B7, Z](val underlyin
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies7Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies7Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7)(underlying.transform)
     iterable.map(_.toList)
   }
@@ -311,7 +311,7 @@ class AsyncOneToManies8SQLToOption[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](val und
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies8Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies8Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8)(underlying.transform).map {
         case Nil => None
         case results if results.size == 1 => results.headOption
@@ -324,7 +324,7 @@ class AsyncOneToManies8SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](val u
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies8Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies8Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8)(underlying.transform)
   }
 }
@@ -333,7 +333,7 @@ class AsyncOneToManies8SQLToList[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](val under
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies8Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies8Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8)(underlying.transform)
     iterable.map(_.toList)
   }
@@ -347,7 +347,7 @@ class AsyncOneToManies9SQLToOption[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](val
   extends AnyVal
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies9Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies9Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8, underlying.extractTo9)(underlying.transform).map {
         case Nil => None
         case results if results.size == 1 => results.headOption
@@ -360,7 +360,7 @@ class AsyncOneToManies9SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](v
   extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies9Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    session.oneToManies9Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8, underlying.extractTo9)(underlying.transform)
   }
 }
@@ -369,7 +369,7 @@ class AsyncOneToManies9SQLToList[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](val u
   extends AnyVal
   with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies9Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies9Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8, underlying.extractTo9)(underlying.transform)
     iterable.map(_.toList)
   }

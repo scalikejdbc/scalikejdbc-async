@@ -17,7 +17,7 @@ package scalikejdbc.async
 
 import java.nio.charset.Charset
 
-import com.github.mauricio.async.db.SSLConfiguration
+import com.github.jasync.sql.db.SSLConfiguration
 import io.netty.buffer.ByteBufAllocator
 
 import scala.concurrent.duration.Duration

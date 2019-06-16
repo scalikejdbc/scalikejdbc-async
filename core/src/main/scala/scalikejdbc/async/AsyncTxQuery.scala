@@ -29,7 +29,7 @@ class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
       sqls.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (resultsFuture, sql) =>
         for {
           results <- resultsFuture
-          current <- tx.connection.sendPreparedStatement(sql.statement, sql.parameters: _*)
+          current <- tx.connection.sendPreparedStatement(sql.statement, sql.parameters.toSeq: _*)
         } yield results :+ current
       }
     }

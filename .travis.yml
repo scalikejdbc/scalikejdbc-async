@@ -3,7 +3,7 @@ dist: xenial
 jdk:
 - openjdk8
 scala:
-- 2.11.12
+- 2.13.0
 - 2.12.8
 sudo: false
 script:

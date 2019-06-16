@@ -15,9 +15,11 @@
  */
 package scalikejdbc.async.internal.mysql
 
-import com.github.mauricio.async.db._
+import com.github.jasync.sql.db._
 import scala.concurrent._
 import scalikejdbc.async._, ShortenedNames._, internal._
+import scala.compat.java8.FutureConverters._
+import scala.collection.JavaConverters._
 
 /**
  * MySQL Connection Implementation
@@ -25,21 +27,19 @@ import scalikejdbc.async._, ShortenedNames._, internal._
 trait MySQLConnectionImpl extends AsyncConnectionCommonImpl {
 
   override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
-
-    if (this.isInstanceOf[PoolableAsyncConnection[_]]) {
-      val pool = this.asInstanceOf[PoolableAsyncConnection[Connection]].pool
-      pool.take.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with MySQLConnectionImpl)
-    } else {
-      Future.successful(new NonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl)
+    this match {
+      case c: PoolableAsyncConnection[ConcreteConnection @unchecked] =>
+        val pool = c.pool
+        pool.take.toScala.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with MySQLConnectionImpl)
+      case _ =>
+        Future.successful(new NonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl)
     }
   }
 
   override protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
     ensureNonShared()
-    underlying.sendQuery("SELECT LAST_INSERT_ID()").map { result =>
-      result.rows.flatMap { rows =>
-        rows.headOption.map { row => row(0).asInstanceOf[Long] }
-      }
+    underlying.sendQuery("SELECT LAST_INSERT_ID()").toScala.map { result =>
+      result.getRows.asScala.headOption.map { row => row.get(0).asInstanceOf[Long] }
     }
   }
 
