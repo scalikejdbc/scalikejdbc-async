@@ -1,5 +1,5 @@
 lazy val _version = "0.11.1-SNAPSHOT"
-lazy val scalikejdbcVersion = "3.3.4"
+lazy val scalikejdbcVersion = "3.3.5"
 lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "42.2.2"
 val Scala211 = "2.11.12"
