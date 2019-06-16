@@ -16,9 +16,9 @@
 package scalikejdbc.async.internal.postgresql
 
 import scalikejdbc._, async._, internal._
-import com.github.mauricio.async.db.Configuration
-import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
-import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
+import com.github.jasync.sql.db.Configuration
+import com.github.jasync.sql.db.postgresql.PostgreSQLConnection
+import com.github.jasync.sql.db.postgresql.pool.PostgreSQLConnectionFactory
 
 /**
  * PostgreSQL Connection Pool

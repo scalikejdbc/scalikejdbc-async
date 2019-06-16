@@ -16,7 +16,7 @@
 package scalikejdbc.async.internal
 
 import scalikejdbc._
-import com.github.mauricio.async.db.RowData
+import com.github.jasync.sql.db.RowData
 import scalikejdbc.WrappedResultSet
 import scalikejdbc.async.AsyncResultSet
 import org.joda.time.{ LocalDateTime, LocalTime, LocalDate, DateTime }

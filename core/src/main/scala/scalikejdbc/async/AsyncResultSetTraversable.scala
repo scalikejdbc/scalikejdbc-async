@@ -23,10 +23,10 @@ import scalikejdbc._
 @deprecated("will be removed. use AsyncResultSetIterator", "0.12.0")
 class AsyncResultSetTraversable(var rs: AsyncResultSet) extends Traversable[WrappedResultSet] {
 
-  def foreach[U](f: WrappedResultSet => U): Unit = while (rs.next()) {
-    f.apply(rs)
-    rs = rs.tail()
-  }
+  override def foreach[U](f: WrappedResultSet => U): Unit =
+    iterator.foreach(f)
+
+  def iterator: Iterator[WrappedResultSet] = new AsyncResultSetIterator(rs)
 
 }
 

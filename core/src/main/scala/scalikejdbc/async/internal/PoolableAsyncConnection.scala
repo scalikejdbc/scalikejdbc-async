@@ -15,31 +15,35 @@
  */
 package scalikejdbc.async.internal
 
-import com.github.mauricio.async.db.pool.ConnectionPool
-import scalikejdbc.async.{ NonSharedAsyncConnection, AsyncConnection }
-import com.github.mauricio.async.db.Connection
+import java.util.concurrent.TimeUnit
+
+import com.github.jasync.sql.db.pool.ConnectionPool
+import scalikejdbc.async.{ AsyncConnection, NonSharedAsyncConnection }
+import com.github.jasync.sql.db.{ ConcreteConnection, Connection }
+
 import scala.concurrent._
 import scalikejdbc.async.ShortenedNames._
 
 /**
- * AsyncConnection implementation which is based on Mauricio's Connection
+ * AsyncConnection implementation which is based on jasync's Connection
  *
  * @param pool connection pool
  * @tparam T Connection sub type
  */
-private[scalikejdbc] abstract class PoolableAsyncConnection[T <: Connection](val pool: ConnectionPool[T])
+private[scalikejdbc] abstract class PoolableAsyncConnection[T <: ConcreteConnection](val pool: ConnectionPool[T])
   extends AsyncConnectionCommonImpl {
 
   override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] =
     Future.failed(new UnsupportedOperationException)
 
-  private[scalikejdbc] val underlying: Connection = pool
+  // TODO make configurable timeout or avoid Future#get
+  private[scalikejdbc] lazy val underlying = pool.take().get(5, TimeUnit.SECONDS)
 
   /**
    * Close or release this connection.
    */
   override def close(): Unit = {
-    pool.asInstanceOf[ConnectionPool[Connection]].giveBack(underlying)
+    pool.giveBack(underlying)
   }
 
 }

@@ -20,7 +20,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
   private val accountColumn = Account.column
 
   case class AccountAndPerson(account: Account, person: Person)
-  case class PersonWithAccounts(person: Person, accounts: Seq[Account])
+  case class PersonWithAccounts(person: Person, accounts: collection.Seq[Account])
 
   val personId = PersonId(23)
   val personName = "with account"

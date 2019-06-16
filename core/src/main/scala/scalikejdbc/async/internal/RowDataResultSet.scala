@@ -4,10 +4,11 @@ import java.io.{ StringReader, ByteArrayInputStream, Reader, InputStream }
 import java.math.BigDecimal
 import java.net.URL
 import java.sql._
+import java.time.Duration
 import java.util
 import java.util.Calendar
 
-import com.github.mauricio.async.db.RowData
+import com.github.jasync.sql.db.RowData
 import org.joda.time.{ LocalTime, LocalDate, LocalDateTime, DateTime }
 import scalikejdbc._
 
@@ -469,12 +470,12 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   private def any(columnIndex: Int): Any = {
     // To be compatible with JDBC, index should be 1-origin
-    // But postgresql-async/mysql-async is 0-origin
+    // But jasync-sql is 0-origin?
     val index0origin = columnIndex - 1
-    currentRow.map(_.apply(index0origin)).orNull[Any]
+    currentRow.map(_.get(index0origin)).orNull[Any]
   }
 
-  private def any(columnLabel: String): Any = currentRow.map(_.apply(columnLabel)).orNull[Any]
+  private def any(columnLabel: String): Any = currentRow.map(_.get(columnLabel)).orNull[Any]
 
   private def anyOpt(columnIndex: Int): Option[Any] = Option(any(columnIndex))
 
@@ -524,6 +525,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case null => null
     case t: java.sql.Time => t
     case TimeInMillis(ms) => new java.sql.Time(ms)
+    case d: Duration => new java.sql.Time(d.toMillis)
     case other => throw new UnsupportedOperationException(
       s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #time!")
   }
@@ -536,6 +538,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case null => null
     case t: java.sql.Timestamp => t
     case TimeInMillis(ms) => new java.sql.Timestamp(ms)
+    case d: Duration => new java.sql.Timestamp(d.toMillis)
     case other => throw new UnsupportedOperationException(
       s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #timestamp!")
   }

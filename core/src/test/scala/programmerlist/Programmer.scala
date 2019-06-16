@@ -11,7 +11,7 @@ case class Programmer(
   name: String,
   companyId: Option[Long] = None,
   company: Option[Company] = None,
-  skills: Seq[Skill] = Nil,
+  skills: collection.Seq[Skill] = Nil,
   createdAt: DateTime,
   deletedAt: Option[DateTime] = None) extends ShortenedNames {
 
