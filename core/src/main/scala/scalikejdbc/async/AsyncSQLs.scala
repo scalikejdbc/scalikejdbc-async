@@ -53,13 +53,13 @@ trait AsyncSQLToOption[A] extends Any {
 }
 class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor]) extends AnyVal with AsyncSQLToOption[A]
 
-trait AsyncSQLToTraversable[A] extends Any {
-  def underlying: SQLToTraversable[A, HasExtractor]
-  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Traversable[A]] = {
-    session.traversable(underlying.statement, underlying.rawParameters: _*)(underlying.extractor)
+trait AsyncSQLToIterable[A] extends Any {
+  def underlying: SQLToIterable[A, HasExtractor]
+  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[A]] = {
+    session.iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractor)
   }
 }
-class AsyncSQLToTraversableImpl[A](val underlying: SQLToTraversable[A, HasExtractor]) extends AnyVal with AsyncSQLToTraversable[A]
+class AsyncSQLToIterableImpl[A](val underlying: SQLToIterable[A, HasExtractor]) extends AnyVal with AsyncSQLToIterable[A]
 
 trait AsyncSQLToList[A] extends Any {
   def underlying: SQLToList[A, HasExtractor]

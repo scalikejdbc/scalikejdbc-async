@@ -84,13 +84,17 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
-  def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[Traversable[A]] = {
+  @deprecated("will be removed. use iterable", "0.12.0")
+  def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[Iterable[A]] =
+    iterable[A](statement, parameters: _*)(extractor)
+
+  def iterable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[Iterable[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).map(rs => extractor(rs))
+          new AsyncResultSetIterator(ars).map(rs => extractor(rs)).toList
         }.getOrElse(Nil)
       }
     }
@@ -100,7 +104,7 @@ trait AsyncDBSession extends LogSupport {
     implicit
     cxt: EC = ECGlobal): Future[Option[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
-    traversable(statement, _parameters: _*)(extractor).map { results =>
+    iterable(statement, _parameters: _*)(extractor).map { results =>
       results match {
         case Nil => None
         case one :: Nil => Option(one)
@@ -111,12 +115,18 @@ trait AsyncDBSession extends LogSupport {
 
   def list[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[List[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
-    (traversable[A](statement, _parameters: _*)(extractor)).map(_.toList)
+    (iterable[A](statement, _parameters: _*)(extractor)).map(_.toList)
   }
 
-  def oneToOneTraversable[A, B, Z](statement: String, parameters: Any*)(extractOne: (WrappedResultSet) => A)(extractTo: (WrappedResultSet) => Option[B])(transform: (A, B) => Z)(
+  @deprecated("will be removed. use oneToOneIterable", "0.12.0")
+  def oneToOneTraversable[A, B, Z](statement: String, parameters: Any*)(extractOne: WrappedResultSet => A)(extractTo: WrappedResultSet => Option[B])(transform: (A, B) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToOneIterable[A, B, Z](statement, parameters: _*)(extractOne)(extractTo)(transform)
+
+  def oneToOneIterable[A, B, Z](statement: String, parameters: Any*)(extractOne: WrappedResultSet => A)(extractTo: WrappedResultSet => Option[B])(transform: (A, B) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -130,7 +140,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(LinkedHashMap[A, Option[B]]())(processResultSet).map {
+          new AsyncResultSetIterator(ars).foldLeft(LinkedHashMap[A, Option[B]]())(processResultSet).map {
             case (one, Some(to)) => transform(one, to)
             case (one, None) => one.asInstanceOf[Z]
           }
@@ -139,12 +149,21 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManyIterable", "0.12.0")
   def oneToManyTraversable[A, B, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo: (WrappedResultSet) => Option[B])(
+    extractOne: WrappedResultSet => A)(
+    extractTo: WrappedResultSet => Option[B])(
     transform: (A, Seq[B]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManyIterable[A, B, Z](statement, parameters: _*)(extractOne)(extractTo)(transform)
+
+  def oneToManyIterable[A, B, Z](statement: String, parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo: WrappedResultSet => Option[B])(
+    transform: (A, Seq[B]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -159,7 +178,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(LinkedHashMap[A, Seq[B]]())(processResultSet).map {
+          new AsyncResultSetIterator(ars).foldLeft(LinkedHashMap[A, Seq[B]]())(processResultSet).map {
             case (one, to) => transform(one, to)
           }
         }.getOrElse(Nil)
@@ -167,13 +186,23 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies2Iterable", "0.12.0")
   def oneToManies2Traversable[A, B1, B2, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2])(
     transform: (A, Seq[B1], Seq[B2]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies2Iterable[A, B1, B2, Z](statement, parameters: _*)(extractOne)(extractTo1, extractTo2)(transform)
+
+  def oneToManies2Iterable[A, B1, B2, Z](statement: String, parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2])(
+    transform: (A, Seq[B1], Seq[B2]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -194,7 +223,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(LinkedHashMap[A, (Seq[B1], Seq[B2])]())(processResultSet).map {
+          new AsyncResultSetIterator(ars).foldLeft(LinkedHashMap[A, (Seq[B1], Seq[B2])]())(processResultSet).map {
             case (one, (t1, t2)) => transform(one, t1, t2)
           }
         }.getOrElse(Nil)
@@ -202,14 +231,25 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies3Iterable", "0.12.0")
   def oneToManies3Traversable[A, B1, B2, B3, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2],
-    extractTo3: (WrappedResultSet) => Option[B3])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3])(
     transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies3Iterable[A, B1, B2, B3, Z](statement, parameters: _*)(extractOne)(extractTo1, extractTo2, extractTo3)(transform)
+
+  def oneToManies3Iterable[A, B1, B2, B3, Z](statement: String, parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3])(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -235,7 +275,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])]())(processResultSet).map {
+          new AsyncResultSetIterator(ars).foldLeft(LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])]())(processResultSet).map {
             case (one, (t1, t2, t3)) => transform(one, t1, t2, t3)
           }
         }.getOrElse(Nil)
@@ -243,15 +283,27 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies4Iterable", "0.12.0")
   def oneToManies4Traversable[A, B1, B2, B3, B4, Z](statement: String, parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2],
-    extractTo3: (WrappedResultSet) => Option[B3],
-    extractTo4: (WrappedResultSet) => Option[B4])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4])(
     transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies4Iterable[A, B1, B2, B3, B4, Z](statement, parameters: _*)(extractOne)(extractTo1, extractTo2, extractTo3, extractTo4)(transform)
+
+  def oneToManies4Iterable[A, B1, B2, B3, B4, Z](statement: String, parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4])(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -279,7 +331,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(
+          new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])]())(processResultSet).map {
               case (one, (t1, t2, t3, t4)) => transform(one, t1, t2, t3, t4)
             }
@@ -288,18 +340,38 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies5Iterable", "0.12.0")
   def oneToManies5Traversable[A, B1, B2, B3, B4, B5, Z](
     statement: String,
     parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2],
-    extractTo3: (WrappedResultSet) => Option[B3],
-    extractTo4: (WrappedResultSet) => Option[B4],
-    extractTo5: (WrappedResultSet) => Option[B5])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5])(
     transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies5Iterable[A, B1, B2, B3, B4, B5, Z](statement, parameters: _*)(extractOne)(
+      extractTo1,
+      extractTo2,
+      extractTo3,
+      extractTo4,
+      extractTo5)(transform)
+
+  def oneToManies5Iterable[A, B1, B2, B3, B4, B5, Z](
+    statement: String,
+    parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5])(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -331,7 +403,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(
+          new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]())(processResultSet).map {
               case (one, (t1, t2, t3, t4, t5)) => transform(one, t1, t2, t3, t4, t5)
             }
@@ -340,19 +412,41 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies6Iterable", "0.12.0")
   def oneToManies6Traversable[A, B1, B2, B3, B4, B5, B6, Z](
     statement: String,
     parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2],
-    extractTo3: (WrappedResultSet) => Option[B3],
-    extractTo4: (WrappedResultSet) => Option[B4],
-    extractTo5: (WrappedResultSet) => Option[B5],
-    extractTo6: (WrappedResultSet) => Option[B6])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6])(
     transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies6Iterable[A, B1, B2, B3, B4, B5, B6, Z](statement, parameters: _*)(extractOne)(
+      extractTo1,
+      extractTo2,
+      extractTo3,
+      extractTo4,
+      extractTo5,
+      extractTo6)(transform)
+
+  def oneToManies6Iterable[A, B1, B2, B3, B4, B5, B6, Z](
+    statement: String,
+    parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6])(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -386,7 +480,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(
+          new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6])]())(processResultSet).map {
               case (one, (t1, t2, t3, t4, t5, t6)) => transform(one, t1, t2, t3, t4, t5, t6)
             }
@@ -395,20 +489,44 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies7Iterable", "0.12.0")
   def oneToManies7Traversable[A, B1, B2, B3, B4, B5, B6, B7, Z](
     statement: String,
     parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2],
-    extractTo3: (WrappedResultSet) => Option[B3],
-    extractTo4: (WrappedResultSet) => Option[B4],
-    extractTo5: (WrappedResultSet) => Option[B5],
-    extractTo6: (WrappedResultSet) => Option[B6],
-    extractTo7: (WrappedResultSet) => Option[B7])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6],
+    extractTo7: WrappedResultSet => Option[B7])(
     transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies7Iterable[A, B1, B2, B3, B4, B5, B6, B7, Z](statement, parameters: _*)(extractOne)(
+      extractTo1,
+      extractTo2,
+      extractTo3,
+      extractTo4,
+      extractTo5,
+      extractTo6,
+      extractTo7)(transform)
+
+  def oneToManies7Iterable[A, B1, B2, B3, B4, B5, B6, B7, Z](
+    statement: String,
+    parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6],
+    extractTo7: WrappedResultSet => Option[B7])(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -451,7 +569,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(
+          new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7])]())(processResultSet).map {
               case (one, (t1, t2, t3, t4, t5, t6, t7)) => transform(one, t1, t2, t3, t4, t5, t6, t7)
             }
@@ -460,21 +578,47 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies8Iterable", "0.12.0")
   def oneToManies8Traversable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](
     statement: String,
     parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2],
-    extractTo3: (WrappedResultSet) => Option[B3],
-    extractTo4: (WrappedResultSet) => Option[B4],
-    extractTo5: (WrappedResultSet) => Option[B5],
-    extractTo6: (WrappedResultSet) => Option[B6],
-    extractTo7: (WrappedResultSet) => Option[B7],
-    extractTo8: (WrappedResultSet) => Option[B8])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6],
+    extractTo7: WrappedResultSet => Option[B7],
+    extractTo8: WrappedResultSet => Option[B8])(
     transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies8Iterable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](statement, parameters: _*)(extractOne)(
+      extractTo1,
+      extractTo2,
+      extractTo3,
+      extractTo4,
+      extractTo5,
+      extractTo6,
+      extractTo7,
+      extractTo8)(transform)
+
+  def oneToManies8Iterable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](
+    statement: String,
+    parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6],
+    extractTo7: WrappedResultSet => Option[B7],
+    extractTo8: WrappedResultSet => Option[B8])(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -520,7 +664,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(
+          new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8])]())(processResultSet).map {
               case (one, (t1, t2, t3, t4, t5, t6, t7, t8)) => transform(one, t1, t2, t3, t4, t5, t6, t7, t8)
             }
@@ -529,22 +673,50 @@ trait AsyncDBSession extends LogSupport {
     }
   }
 
+  @deprecated("will be removed. use oneToManies9Iterable", "0.12.0")
   def oneToManies9Traversable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](
     statement: String,
     parameters: Any*)(
-    extractOne: (WrappedResultSet) => A)(
-    extractTo1: (WrappedResultSet) => Option[B1],
-    extractTo2: (WrappedResultSet) => Option[B2],
-    extractTo3: (WrappedResultSet) => Option[B3],
-    extractTo4: (WrappedResultSet) => Option[B4],
-    extractTo5: (WrappedResultSet) => Option[B5],
-    extractTo6: (WrappedResultSet) => Option[B6],
-    extractTo7: (WrappedResultSet) => Option[B7],
-    extractTo8: (WrappedResultSet) => Option[B8],
-    extractTo9: (WrappedResultSet) => Option[B9])(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6],
+    extractTo7: WrappedResultSet => Option[B7],
+    extractTo8: WrappedResultSet => Option[B8],
+    extractTo9: WrappedResultSet => Option[B9])(
     transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9]) => Z)(
     implicit
-    cxt: EC = ECGlobal): Future[Traversable[Z]] = {
+    cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManies9Iterable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](statement, parameters: _*)(extractOne)(
+      extractTo1,
+      extractTo2,
+      extractTo3,
+      extractTo4,
+      extractTo5,
+      extractTo6,
+      extractTo7,
+      extractTo8,
+      extractTo9)(transform)
+
+  def oneToManies9Iterable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](
+    statement: String,
+    parameters: Any*)(
+    extractOne: WrappedResultSet => A)(
+    extractTo1: WrappedResultSet => Option[B1],
+    extractTo2: WrappedResultSet => Option[B2],
+    extractTo3: WrappedResultSet => Option[B3],
+    extractTo4: WrappedResultSet => Option[B4],
+    extractTo5: WrappedResultSet => Option[B5],
+    extractTo6: WrappedResultSet => Option[B6],
+    extractTo7: WrappedResultSet => Option[B7],
+    extractTo8: WrappedResultSet => Option[B8],
+    extractTo9: WrappedResultSet => Option[B9])(
+    transform: (A, Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9]) => Z)(
+    implicit
+    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -593,7 +765,7 @@ trait AsyncDBSession extends LogSupport {
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetTraversable(ars).foldLeft(
+          new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9])]())(processResultSet).map {
               case (one, (t1, t2, t3, t4, t5, t6, t7, t8, t9)) => transform(one, t1, t2, t3, t4, t5, t6, t7, t8, t9)
             }

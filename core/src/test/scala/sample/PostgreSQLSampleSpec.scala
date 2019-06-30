@@ -30,9 +30,9 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
     result.isDefined should be(true)
   }
 
-  it should "select values as a Traversable" in {
-    val resultsFuture: Future[Traversable[AsyncLover]] = AsyncDB.withPool { implicit s =>
-      withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).traversable.future()
+  it should "select values as a Iterable" in {
+    val resultsFuture: Future[Iterable[AsyncLover]] = AsyncDB.withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).iterable.future()
     }
     Await.result(resultsFuture, 5.seconds)
     val results = resultsFuture.value.get.get

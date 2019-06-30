@@ -31,13 +31,13 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
     result.isDefined should be(true)
   }
 
-  it should "select values as a Traversable" in {
-    val resultsFuture: Future[Traversable[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+  it should "select values as a Iterable" in {
+    val resultsFuture: Future[Iterable[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
       withSQL {
         select.from(AsyncLover as al)
           .where.isNotNull(al.birthday) // mysql-async 0.2.4 cannot parse nullable date value.
           .limit(2)
-      }.map(AsyncLover(al)).traversable.future()
+      }.map(AsyncLover(al)).iterable.future()
     }
     val results = Await.result(resultsFuture, 5.seconds)
     results.size should equal(2)
