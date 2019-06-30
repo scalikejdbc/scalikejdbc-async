@@ -22,9 +22,9 @@ import scalikejdbc.async.ShortenedNames._
  */
 object FutureImplicits {
 
-  implicit def fromSQLToTraversableFuture[A](sql: SQL[A, HasExtractor])(
+  implicit def fromSQLToIterableFuture[A](sql: SQL[A, HasExtractor])(
     implicit
-    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Traversable[A]] = sql.traversable.future
+    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Iterable[A]] = sql.iterable.future
 
   implicit def fromSQLToListFuture[A](sql: SQL[A, HasExtractor])(
     implicit

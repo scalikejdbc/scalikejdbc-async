@@ -70,44 +70,44 @@ package object async {
   }
 
   // --------------
-  // one-to-x -> Traversable
+  // one-to-x -> Iterable
   // --------------
 
-  implicit def makeSQLToTraversableAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToTraversable[A, HasExtractor]): AsyncSQLToTraversable[A] = {
-    new AsyncSQLToTraversableImpl[A](sql)
+  implicit def makeSQLToIterableAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToIterable[A, HasExtractor]): AsyncSQLToIterable[A] = {
+    new AsyncSQLToIterableImpl[A](sql)
   }
-  implicit def makeSQLToTraversableAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToTraversableImpl[A, HasExtractor]): AsyncSQLToTraversable[A] = {
-    new AsyncSQLToTraversableImpl[A](sql)
+  implicit def makeSQLToIterableAsync[A, B1, B2, B3, B4, B5, Z](sql: SQLToIterableImpl[A, HasExtractor]): AsyncSQLToIterable[A] = {
+    new AsyncSQLToIterableImpl[A](sql)
   }
-  implicit def makeOneToOneSQLToTraversableAsync[A, B, Z](sql: OneToOneSQLToTraversable[A, B, HasExtractor, Z]): AsyncOneToOneSQLToTraversable[A, B, Z] = {
-    new AsyncOneToOneSQLToTraversable[A, B, Z](sql)
+  implicit def makeOneToOneSQLToIterableAsync[A, B, Z](sql: OneToOneSQLToIterable[A, B, HasExtractor, Z]): AsyncOneToOneSQLToIterable[A, B, Z] = {
+    new AsyncOneToOneSQLToIterable[A, B, Z](sql)
   }
-  implicit def makeOneToManySQLToTraversableAsync[A, B, Z](sql: OneToManySQLToTraversable[A, B, HasExtractor, Z]): AsyncOneToManySQLToTraversable[A, B, Z] = {
-    new AsyncOneToManySQLToTraversable[A, B, Z](sql)
+  implicit def makeOneToManySQLToIterableAsync[A, B, Z](sql: OneToManySQLToIterable[A, B, HasExtractor, Z]): AsyncOneToManySQLToIterable[A, B, Z] = {
+    new AsyncOneToManySQLToIterable[A, B, Z](sql)
   }
-  implicit def makeOneToManies2SQLToTraversableAsync[A, B1, B2, Z](sql: OneToManies2SQLToTraversable[A, B1, B2, HasExtractor, Z]): AsyncOneToManies2SQLToTraversable[A, B1, B2, Z] = {
-    new AsyncOneToManies2SQLToTraversable[A, B1, B2, Z](sql)
+  implicit def makeOneToManies2SQLToIterableAsync[A, B1, B2, Z](sql: OneToManies2SQLToIterable[A, B1, B2, HasExtractor, Z]): AsyncOneToManies2SQLToIterable[A, B1, B2, Z] = {
+    new AsyncOneToManies2SQLToIterable[A, B1, B2, Z](sql)
   }
-  implicit def makeOneToManies3SQLToTraversableAsync[A, B1, B2, B3, Z](sql: OneToManies3SQLToTraversable[A, B1, B2, B3, HasExtractor, Z]): AsyncOneToManies3SQLToTraversable[A, B1, B2, B3, Z] = {
-    new AsyncOneToManies3SQLToTraversable[A, B1, B2, B3, Z](sql)
+  implicit def makeOneToManies3SQLToIterableAsync[A, B1, B2, B3, Z](sql: OneToManies3SQLToIterable[A, B1, B2, B3, HasExtractor, Z]): AsyncOneToManies3SQLToIterable[A, B1, B2, B3, Z] = {
+    new AsyncOneToManies3SQLToIterable[A, B1, B2, B3, Z](sql)
   }
-  implicit def makeOneToManies4SQLToTraversableAsync[A, B1, B2, B3, B4, Z](sql: OneToManies4SQLToTraversable[A, B1, B2, B3, B4, HasExtractor, Z]): AsyncOneToManies4SQLToTraversable[A, B1, B2, B3, B4, Z] = {
-    new AsyncOneToManies4SQLToTraversable[A, B1, B2, B3, B4, Z](sql)
+  implicit def makeOneToManies4SQLToIterableAsync[A, B1, B2, B3, B4, Z](sql: OneToManies4SQLToIterable[A, B1, B2, B3, B4, HasExtractor, Z]): AsyncOneToManies4SQLToIterable[A, B1, B2, B3, B4, Z] = {
+    new AsyncOneToManies4SQLToIterable[A, B1, B2, B3, B4, Z](sql)
   }
-  implicit def makeOneToManies5SQLToTraversableAsync[A, B1, B2, B3, B4, B5, Z](sql: OneToManies5SQLToTraversable[A, B1, B2, B3, B4, B5, HasExtractor, Z]): AsyncOneToManies5SQLToTraversable[A, B1, B2, B3, B4, B5, Z] = {
-    new AsyncOneToManies5SQLToTraversable[A, B1, B2, B3, B4, B5, Z](sql)
+  implicit def makeOneToManies5SQLToIterableAsync[A, B1, B2, B3, B4, B5, Z](sql: OneToManies5SQLToIterable[A, B1, B2, B3, B4, B5, HasExtractor, Z]): AsyncOneToManies5SQLToIterable[A, B1, B2, B3, B4, B5, Z] = {
+    new AsyncOneToManies5SQLToIterable[A, B1, B2, B3, B4, B5, Z](sql)
   }
-  implicit def makeOneToManies6SQLToTraversableAsync[A, B1, B2, B3, B4, B5, B6, Z](sql: OneToManies6SQLToTraversable[A, B1, B2, B3, B4, B5, B6, HasExtractor, Z]): AsyncOneToManies6SQLToTraversable[A, B1, B2, B3, B4, B5, B6, Z] = {
-    new AsyncOneToManies6SQLToTraversable[A, B1, B2, B3, B4, B5, B6, Z](sql)
+  implicit def makeOneToManies6SQLToIterableAsync[A, B1, B2, B3, B4, B5, B6, Z](sql: OneToManies6SQLToIterable[A, B1, B2, B3, B4, B5, B6, HasExtractor, Z]): AsyncOneToManies6SQLToIterable[A, B1, B2, B3, B4, B5, B6, Z] = {
+    new AsyncOneToManies6SQLToIterable[A, B1, B2, B3, B4, B5, B6, Z](sql)
   }
-  implicit def makeOneToManies7SQLToTraversableAsync[A, B1, B2, B3, B4, B5, B6, B7, Z](sql: OneToManies7SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, HasExtractor, Z]): AsyncOneToManies7SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, Z] = {
-    new AsyncOneToManies7SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, Z](sql)
+  implicit def makeOneToManies7SQLToIterableAsync[A, B1, B2, B3, B4, B5, B6, B7, Z](sql: OneToManies7SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, HasExtractor, Z]): AsyncOneToManies7SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, Z] = {
+    new AsyncOneToManies7SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, Z](sql)
   }
-  implicit def makeOneToManies8SQLToTraversableAsync[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](sql: OneToManies8SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, B8, HasExtractor, Z]): AsyncOneToManies8SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z] = {
-    new AsyncOneToManies8SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](sql)
+  implicit def makeOneToManies8SQLToIterableAsync[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](sql: OneToManies8SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, HasExtractor, Z]): AsyncOneToManies8SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z] = {
+    new AsyncOneToManies8SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](sql)
   }
-  implicit def makeOneToManies9SQLToTraversableAsync[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](sql: OneToManies9SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, HasExtractor, Z]): AsyncOneToManies9SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z] = {
-    new AsyncOneToManies9SQLToTraversable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](sql)
+  implicit def makeOneToManies9SQLToIterableAsync[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](sql: OneToManies9SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, HasExtractor, Z]): AsyncOneToManies9SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z] = {
+    new AsyncOneToManies9SQLToIterable[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](sql)
   }
 
   // --------------

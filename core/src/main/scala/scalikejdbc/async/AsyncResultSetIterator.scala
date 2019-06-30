@@ -18,15 +18,16 @@ package scalikejdbc.async
 import scalikejdbc._
 
 /**
- * AsyncResultSet Traversable
+ * AsyncResultSet Iterator
  */
-@deprecated("will be removed. use AsyncResultSetIterator", "0.12.0")
-class AsyncResultSetTraversable(var rs: AsyncResultSet) extends Traversable[WrappedResultSet] {
+class AsyncResultSetIterator(var rs: AsyncResultSet) extends Iterator[WrappedResultSet] {
 
-  def foreach[U](f: (WrappedResultSet) => U): Unit = while (rs.next()) {
-    f.apply(rs)
+  override def hasNext: Boolean = rs.next()
+
+  override def next: WrappedResultSet = {
+    val value = rs
     rs = rs.tail()
+    value
   }
 
 }
-
