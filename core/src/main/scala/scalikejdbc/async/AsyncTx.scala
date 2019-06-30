@@ -51,7 +51,7 @@ object AsyncTx {
     new AsyncTxQuery(sqlObjects)
   }
 
-  def inTransaction[A](tx: TxAsyncDBSession, op: (TxAsyncDBSession) => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
+  def inTransaction[A](tx: TxAsyncDBSession, op: TxAsyncDBSession => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
     val p = Promise[A]()
     val connection = tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
     connection.inTransaction(_ => op.apply(tx)).onComplete {

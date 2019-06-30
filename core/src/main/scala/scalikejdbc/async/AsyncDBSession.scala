@@ -114,7 +114,7 @@ trait AsyncDBSession extends LogSupport {
 
   def list[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[List[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
-    (iterable[A](statement, _parameters: _*)(extractor)).map(_.toList)
+    iterable[A](statement, _parameters: _*)(extractor).map(_.toList)
   }
 
   @deprecated("will be removed. use oneToOneIterable", "0.12.0")
@@ -130,7 +130,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
-      def processResultSet(oneToOne: (LinkedHashMap[A, Option[B]]), rs: WrappedResultSet): LinkedHashMap[A, Option[B]] = {
+      def processResultSet(oneToOne: LinkedHashMap[A, Option[B]], rs: WrappedResultSet): LinkedHashMap[A, Option[B]] = {
         val o = extractOne(rs)
         oneToOne.keys.find(_ == o) match {
           case Some(_) => throw IllegalRelationshipException(ErrorMessage.INVALID_ONE_TO_ONE_RELATION)
@@ -167,7 +167,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
-      def processResultSet(oneToMany: (LinkedHashMap[A, Seq[B]]), rs: WrappedResultSet): LinkedHashMap[A, Seq[B]] = {
+      def processResultSet(oneToMany: LinkedHashMap[A, Seq[B]], rs: WrappedResultSet): LinkedHashMap[A, Seq[B]] = {
         val o = extractOne(rs)
         oneToMany.keys.find(_ == o).map { _ =>
           extractTo(rs).map(many => oneToMany += (o -> (oneToMany.apply(o) :+ many))).getOrElse(oneToMany)
@@ -206,7 +206,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
-      def processResultSet(result: (LinkedHashMap[A, (Seq[B1], Seq[B2])]), rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2])] = {
+      def processResultSet(result: LinkedHashMap[A, (Seq[B1], Seq[B2])], rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2])] = {
         val o = extractOne(rs)
         val (to1, to2) = (extractTo1(rs), extractTo2(rs))
         result.keys.find(_ == o).map { _ =>
@@ -253,7 +253,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
-      def processResultSet(result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])]), rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])] = {
+      def processResultSet(result: LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])], rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3])] = {
         val o = extractOne(rs)
         val (to1, to2, to3) = (extractTo1(rs), extractTo2(rs), extractTo3(rs))
         result.keys.find(_ == o).map { _ =>
@@ -307,7 +307,7 @@ trait AsyncDBSession extends LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
-      def processResultSet(result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])]), rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])] = {
+      def processResultSet(result: LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])], rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4) = (extractTo1(rs), extractTo2(rs), extractTo3(rs), extractTo4(rs))
         result.keys.find(_ == o).map { _ =>
@@ -376,7 +376,7 @@ trait AsyncDBSession extends LogSupport {
       queryLogging(statement, _parameters)
 
       def processResultSet(
-        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])]),
+        result: LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])],
         rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4, to5) = (extractTo1(rs), extractTo2(rs), extractTo3(rs), extractTo4(rs), extractTo5(rs))
@@ -451,7 +451,7 @@ trait AsyncDBSession extends LogSupport {
       queryLogging(statement, _parameters)
 
       def processResultSet(
-        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6])]),
+        result: LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6])],
         rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4, to5, to6) = (extractTo1(rs), extractTo2(rs), extractTo3(rs), extractTo4(rs), extractTo5(rs), extractTo6(rs))
@@ -531,7 +531,7 @@ trait AsyncDBSession extends LogSupport {
       queryLogging(statement, _parameters)
 
       def processResultSet(
-        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7])]),
+        result: LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7])],
         rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4, to5, to6, to7) = (
@@ -623,7 +623,7 @@ trait AsyncDBSession extends LogSupport {
       queryLogging(statement, _parameters)
 
       def processResultSet(
-        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8])]),
+        result: LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8])],
         rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4, to5, to6, to7, to8) = (
@@ -721,7 +721,7 @@ trait AsyncDBSession extends LogSupport {
       queryLogging(statement, _parameters)
 
       def processResultSet(
-        result: (LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9])]),
+        result: LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9])],
         rs: WrappedResultSet): LinkedHashMap[A, (Seq[B1], Seq[B2], Seq[B3], Seq[B4], Seq[B5], Seq[B6], Seq[B7], Seq[B8], Seq[B9])] = {
         val o = extractOne(rs)
         val (to1, to2, to3, to4, to5, to6, to7, to8, to9) = (
