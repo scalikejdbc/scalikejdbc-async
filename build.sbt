@@ -22,7 +22,7 @@ lazy val core = (project in file("core")).settings(
       "org.scala-lang.modules" %% "scala-java8-compat"                % "0.9.0",
       "org.scalikejdbc"        %% "scalikejdbc"                       % scalikejdbcVersion % "compile",
       "org.scalikejdbc"        %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile",
-      "org.scalikejdbc"        %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "compile",
+      "org.scalikejdbc"        %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "test",
       "org.scalikejdbc"        %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test",
       "com.github.jasync-sql"  %  "jasync-postgresql"                 % jasyncVersion      % "provided",
       "com.github.jasync-sql"  %  "jasync-mysql"                      % jasyncVersion      % "provided",
