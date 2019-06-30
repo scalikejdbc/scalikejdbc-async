@@ -64,10 +64,11 @@ class ExampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
   it should "work for more than pool size items" in {
 
     val MaxPoolSize = 2
-    AsyncConnectionPool.add('test, "jdbc:postgresql://localhost:5432/scalikejdbc", "sa", "sa",
+    val name = Symbol("test")
+    AsyncConnectionPool.add(name, postgres.jdbcUrl, postgres.username, postgres.password,
       AsyncConnectionPoolSettings(maxPoolSize = MaxPoolSize))
 
-    implicit val session = NamedAsyncDB('test).sharedSession
+    implicit val session = NamedAsyncDB(name).sharedSession
 
     val futureProgrammers = Future.sequence((1 to MaxPoolSize * 2) map { i => Programmer.create(s"p$i", Some(1)) })
     val programmers = Await.result(futureProgrammers, 5.seconds)
