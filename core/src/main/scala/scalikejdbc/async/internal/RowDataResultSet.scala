@@ -319,7 +319,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     if (ref != null && `type`.isInstance(ref)) {
       ref.asInstanceOf[T]
     } else {
-      throw new SQLException(s"Object of class ${ref.getClass} is not an instance of ${`type`}");
+      throw new SQLException(s"Object of class ${ref.getClass} is not an instance of ${`type`}")
     }
   }
 
@@ -329,7 +329,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     if (ref != null && `type`.isInstance(ref)) {
       ref.asInstanceOf[T]
     } else {
-      throw new SQLException(s"Object of class ${ref.getClass} is not an instance of ${`type`}");
+      throw new SQLException(s"Object of class ${ref.getClass} is not an instance of ${`type`}")
     }
   }
 
@@ -342,7 +342,7 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   override def getNCharacterStream(columnLabel: String): Reader = notsupported
 
   override def close(): Unit = {
-    closed = true;
+    closed = true
   }
 
   override def relative(rows: Int): Boolean = notvalid
