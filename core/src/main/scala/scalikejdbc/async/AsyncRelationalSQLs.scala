@@ -28,12 +28,9 @@ class AsyncOneToOneSQLToOption[A, B, Z](val underlying: OneToOneSQLToOption[A, B
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToOneIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
-      results =>
-        results match {
-          case Nil => None
-          case _ if results.size == 1 => results.headOption
-          case _ => throw new TooManyRowsException(1, results.size)
-        }
+      case Nil => None
+      case results if results.size == 1 => results.headOption
+      case results => throw new TooManyRowsException(1, results.size)
     }
   }
 }
@@ -66,12 +63,9 @@ class AsyncOneToManySQLToOption[A, B, Z](val underlying: OneToManySQLToOption[A,
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManyIterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
-      results =>
-        results match {
-          case Nil => None
-          case _ if results.size == 1 => results.headOption
-          case _ => throw new TooManyRowsException(1, results.size)
-        }
+      case Nil => None
+      case results if results.size == 1 => results.headOption
+      case results => throw new TooManyRowsException(1, results.size)
     }
   }
 }
@@ -104,12 +98,9 @@ class AsyncOneToManies2SQLToOption[A, B1, B2, Z](val underlying: OneToManies2SQL
   with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies2Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(underlying.extractTo1, underlying.extractTo2)(underlying.transform).map {
-      results =>
-        results match {
-          case Nil => None
-          case _ if results.size == 1 => results.headOption
-          case _ => throw new TooManyRowsException(1, results.size)
-        }
+      case Nil => None
+      case results if results.size == 1 => results.headOption
+      case results => throw new TooManyRowsException(1, results.size)
     }
   }
 }
@@ -142,12 +133,9 @@ class AsyncOneToManies3SQLToOption[A, B1, B2, B3, Z](val underlying: OneToManies
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies3Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
       }
   }
 }
@@ -181,12 +169,9 @@ class AsyncOneToManies4SQLToOption[A, B1, B2, B3, B4, Z](val underlying: OneToMa
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies4Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
       }
   }
 }
@@ -220,12 +205,9 @@ class AsyncOneToManies5SQLToOption[A, B1, B2, B3, B4, B5, Z](val underlying: One
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies5Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
       }
   }
 }
@@ -259,12 +241,9 @@ class AsyncOneToManies6SQLToOption[A, B1, B2, B3, B4, B5, B6, Z](val underlying:
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies6Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
       }
   }
 }
@@ -298,12 +277,9 @@ class AsyncOneToManies7SQLToOption[A, B1, B2, B3, B4, B5, B6, B7, Z](val underly
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies7Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
       }
   }
 }
@@ -337,12 +313,9 @@ class AsyncOneToManies8SQLToOption[A, B1, B2, B3, B4, B5, B6, B7, B8, Z](val und
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies8Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
       }
   }
 }
@@ -376,12 +349,9 @@ class AsyncOneToManies9SQLToOption[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, Z](val
   override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
     session.oneToManies9Iterable(underlying.statement, underlying.rawParameters: _*)(underlying.extractOne)(
       underlying.extractTo1, underlying.extractTo2, underlying.extractTo3, underlying.extractTo4, underlying.extractTo5, underlying.extractTo6, underlying.extractTo7, underlying.extractTo8, underlying.extractTo9)(underlying.transform).map {
-        results =>
-          results match {
-            case Nil => None
-            case _ if results.size == 1 => results.headOption
-            case _ => throw new TooManyRowsException(1, results.size)
-          }
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
       }
   }
 }

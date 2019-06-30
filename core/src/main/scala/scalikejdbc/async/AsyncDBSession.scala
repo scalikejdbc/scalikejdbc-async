@@ -105,12 +105,10 @@ trait AsyncDBSession extends LogSupport {
     implicit
     cxt: EC = ECGlobal): Future[Option[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
-    iterable(statement, _parameters: _*)(extractor).map { results =>
-      results match {
-        case Nil => None
-        case one :: Nil => Option(one)
-        case _ => throw TooManyRowsException(1, results.size)
-      }
+    iterable(statement, _parameters: _*)(extractor).map {
+      case Nil => None
+      case one :: Nil => Option(one)
+      case results => throw TooManyRowsException(1, results.size)
     }
   }
 
