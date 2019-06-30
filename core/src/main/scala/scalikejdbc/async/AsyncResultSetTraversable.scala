@@ -18,7 +18,7 @@ package scalikejdbc.async
 import scalikejdbc._
 
 /**
- * AysncResultSet Traversable
+ * AsyncResultSet Traversable
  */
 class AsyncResultSetTraversable(var rs: AsyncResultSet) extends Traversable[WrappedResultSet] {
 
