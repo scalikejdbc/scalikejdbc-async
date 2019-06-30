@@ -19,6 +19,7 @@ import scala.concurrent._
 import scalikejdbc._
 import scalikejdbc.GlobalSettings._
 import scala.collection.mutable.LinkedHashMap
+import scala.util.{ Failure, Success }
 import scalikejdbc.async.ShortenedNames._
 import java.sql.PreparedStatement
 import scalikejdbc.async.internal.MockPreparedStatement
@@ -622,12 +623,13 @@ trait AsyncDBSession extends LogSupport {
 
   protected def withListeners[A](statement: String, parameters: Seq[Any], startMillis: Long = System.currentTimeMillis)(
     f: Future[A])(implicit cxt: EC = EC.global): Future[A] = {
-    f.onSuccess {
-      case _ =>
+    f.onComplete {
+      case Success(_) =>
         val millis = System.currentTimeMillis - startMillis
         GlobalSettings.queryCompletionListener.apply(statement, parameters, millis)
+      case Failure(e) =>
+        GlobalSettings.queryFailureListener.apply(statement, parameters, e)
     }
-    f.onFailure { case e: Throwable => GlobalSettings.queryFailureListener.apply(statement, parameters, e) }
     f
   }
 
