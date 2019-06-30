@@ -1,36 +1,34 @@
 package unit
 
-import scalikejdbc._, async._
+import scalikejdbc._
+import async._
+import com.dimafeng.testcontainers.{ ForAllTestContainer, MultipleContainers, MySQLContainer, PostgreSQLContainer }
+import org.scalatest.Suite
 
-trait DBSettings {
-  DBSettings.initialize()
-}
+trait DBSettings extends ForAllTestContainer { self: Suite =>
+  // TODO update mysql version
+  protected[this] final val mysql = MySQLContainer(mysqlImageVersion = "mysql:5.6.44")
+  protected[this] final val postgres = PostgreSQLContainer("postgres:11.4")
+  override val container = MultipleContainers(mysql, postgres)
 
-object DBSettings {
-
-  private var isInitialized = false
-
-  def initialize(): Unit = this.synchronized {
-    if (isInitialized) return
+  override def afterStart(): Unit = {
     GlobalSettings.loggingSQLErrors = false
 
     // default: PostgreSQL
-    ConnectionPool.singleton("jdbc:postgresql://localhost:5432/scalikejdbc", "sa", "sa")
-    AsyncConnectionPool.singleton("jdbc:postgresql://localhost:5432/scalikejdbc", "sa", "sa")
+    ConnectionPool.singleton(url = postgres.jdbcUrl, user = postgres.username, password = postgres.password)
+    AsyncConnectionPool.singleton(url = postgres.jdbcUrl, user = postgres.username, password = postgres.password)
 
     SampleDBInitializer.initPostgreSQL()
     PgListDBInitializer.initPostgreSQL()
 
     // MySQL
-    ConnectionPool.add('mysql, "jdbc:mysql://localhost:3306/scalikejdbc", "sa", "sa")
-    AsyncConnectionPool.add('mysql, "jdbc:mysql://localhost:3306/scalikejdbc", "sa", "sa")
+    ConnectionPool.add(Symbol("mysql"), url = mysql.jdbcUrl, user = mysql.username, password = mysql.password)
+    AsyncConnectionPool.add(Symbol("mysql"), url = mysql.jdbcUrl, user = mysql.username, password = mysql.password)
 
     SampleDBInitializer.initMySQL()
     PgListDBInitializer.initMySQL()
     PersonDBInitializer.initMySQL()
     AccountDBInitializer.initMySQL()
-
-    isInitialized = true
   }
 
 }

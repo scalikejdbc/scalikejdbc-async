@@ -2,6 +2,7 @@ lazy val _version = "0.11.1-SNAPSHOT"
 lazy val scalikejdbcVersion = "3.3.5"
 lazy val mauricioVersion = "0.2.21" // provided
 lazy val postgresqlVersion = "42.2.2"
+lazy val testContainer = "1.11.3"
 val Scala211 = "2.11.12"
 val Scala212 = "2.12.8"
 
@@ -24,6 +25,9 @@ lazy val core = (project in file("core")).settings(
        "org.scalikejdbc"     %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test",
        "com.github.mauricio" %% "postgresql-async"                  % mauricioVersion    % "provided",
        "com.github.mauricio" %% "mysql-async"                       % mauricioVersion    % "provided",
+       "com.dimafeng"        %% "testcontainers-scala"              % "0.27.0"           % "test",
+       "org.testcontainers"  %  "mysql"                             % testContainer      % "test",
+       "org.testcontainers"  %  "postgresql"                        % testContainer      % "test",
        "org.postgresql"      %  "postgresql"                        % postgresqlVersion  % "test",
        "mysql"               %  "mysql-connector-java"              % "5.1.+"            % "test",
        "org.scalatest"       %% "scalatest"                         % "3.0.+"            % "test",
