@@ -106,29 +106,7 @@ This library is still in alpha stage. If this library becomes stable enough, it 
 
 #### How to contribute?
 
-Before sending pull requests, please prepare the following DB settings and write tests to ensure that your fixes work as expected. 
-
-- PostgreSQL
-
-```
-url: jdbc:postgresql://localhost:5432/scalikejdbc
-username: sa
-password: sa
-```
-
-```
-url: jdbc:postgresql://localhost:5432/scalikejdbc2
-username: sa
-password: sa
-```
-
-- MySQL
-
-```
-url: jdbc:mysql://localhost:3306/scalikejdbc
-username: sa
-password: sa
-```
+Before sending pull requests, please install docker and run `sbt +test`
 
 ### License
 
