@@ -49,7 +49,7 @@ create table async_lover (
   }
 
   def initMySQL(): Unit = {
-    NamedDB('mysql) autoCommit { implicit s =>
+    NamedDB("mysql") autoCommit { implicit s =>
       try sql"drop table async_lover".execute.apply()
       catch { case e: Exception => }
 

@@ -18,7 +18,7 @@ create table account (
         values (13, 12, 'test account details', null)""")
 
   def initMySQL(): Unit = {
-    NamedDB('mysql) autoCommit { implicit s =>
+    NamedDB("mysql") autoCommit { implicit s =>
       try sql"drop table account".execute.apply()
       catch { case e: Exception => }
 

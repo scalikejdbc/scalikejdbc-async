@@ -22,8 +22,8 @@ trait DBSettings extends ForAllTestContainer { self: Suite =>
     PgListDBInitializer.initPostgreSQL()
 
     // MySQL
-    ConnectionPool.add(Symbol("mysql"), url = mysql.jdbcUrl, user = mysql.username, password = mysql.password)
-    AsyncConnectionPool.add(Symbol("mysql"), url = mysql.jdbcUrl, user = mysql.username, password = mysql.password)
+    ConnectionPool.add("mysql", url = mysql.jdbcUrl, user = mysql.username, password = mysql.password)
+    AsyncConnectionPool.add("mysql", url = mysql.jdbcUrl, user = mysql.username, password = mysql.password)
 
     SampleDBInitializer.initMySQL()
     PgListDBInitializer.initMySQL()

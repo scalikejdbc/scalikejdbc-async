@@ -16,7 +16,7 @@ create table person (
         values (12, 'testperson')""")
 
   def initMySQL(): Unit = {
-    NamedDB('mysql) autoCommit { implicit s =>
+    NamedDB("mysql") autoCommit { implicit s =>
       try sql"drop table person".execute.apply()
       catch { case e: Exception => }
 

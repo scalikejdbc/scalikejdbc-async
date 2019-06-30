@@ -15,7 +15,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   val al = AsyncLover.syntax("al")
 
   it should "select a single value" in {
-    val id = NamedDB('mysql).autoCommit { implicit s =>
+    val id = NamedDB("mysql").autoCommit { implicit s =>
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Eric",
@@ -24,7 +24,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.createdAt -> createdTime)
       }.updateAndReturnGeneratedKey.apply()
     }
-    val resultFuture: Future[Option[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultFuture: Future[Option[AsyncLover]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.future()
     }
     val result = Await.result(resultFuture, 5.seconds)
@@ -32,7 +32,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   }
 
   it should "select values as a Iterable" in {
-    val resultsFuture: Future[Iterable[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Iterable[AsyncLover]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         select.from(AsyncLover as al)
           .where.isNotNull(al.birthday) // mysql-async 0.2.4 cannot parse nullable date value.
@@ -44,7 +44,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   }
 
   it should "select values as a List" in {
-    val resultsFuture: Future[List[AsyncLover]] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[List[AsyncLover]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         select.from(AsyncLover as al)
           .where.isNotNull(al.birthday) // mysql-async 0.2.4 cannot parse nullable date value.
@@ -56,7 +56,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   }
 
   it should "read values with convenience methods" in {
-    val generatedIdFuture: Future[Long] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val generatedIdFuture: Future[Long] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Eric",
@@ -67,7 +67,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
     }
     // in AsyncLover#apply we are using get with typebinders, specialized getters should work
     val generatedId = Await.result(generatedIdFuture, 5.seconds)
-    val created = NamedDB('mysql).readOnly { implicit s =>
+    val created = NamedDB("mysql").readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map((rs: WrappedResultSet) => {
         AsyncLover(
           id = rs.get[Long](al.resultName.id),
@@ -87,7 +87,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   }
 
   it should "return generated key" in {
-    val generatedIdFuture: Future[Long] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val generatedIdFuture: Future[Long] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Eric",
@@ -99,7 +99,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
     }
     // the generated key should be found
     val generatedId = Await.result(generatedIdFuture, 5.seconds)
-    val created = NamedDB('mysql).readOnly { implicit s =>
+    val created = NamedDB("mysql").readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
     }.get
     created.id should equal(generatedId)
@@ -111,7 +111,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
 
   it should "update" in {
     // updating queries should be successful
-    NamedDB('mysql) autoCommit { implicit s =>
+    NamedDB("mysql") autoCommit { implicit s =>
       withSQL { delete.from(AsyncLover).where.eq(column.id, 1004) }.update.apply()
       withSQL {
         insert.into(AsyncLover).namedValues(
@@ -122,13 +122,13 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.createdAt -> createdTime)
       }.update.apply()
     }
-    val deletion: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val deletion: Future[Int] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL { delete.from(AsyncLover).where.eq(column.id, 1004) }.update.future()
     }
     Await.result(deletion, 5.seconds)
 
     // should be committed
-    val deleted = NamedDB('mysql).readOnly { implicit s =>
+    val deleted = NamedDB("mysql").readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, 1004) }.map(AsyncLover(al)).single.apply()
     }
     deleted.isDefined should be(false)
@@ -136,7 +136,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
 
   it should "execute" in {
     // execution should be successful
-    val id = NamedDB('mysql).autoCommit { implicit s =>
+    val id = NamedDB("mysql").autoCommit { implicit s =>
       withSQL {
         insert.into(AsyncLover).namedValues(
           column.name -> "Chris",
@@ -145,13 +145,13 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
           column.createdAt -> createdTime)
       }.updateAndReturnGeneratedKey.apply()
     }
-    val deletion: Future[Boolean] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val deletion: Future[Boolean] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL { delete.from(AsyncLover).where.eq(column.id, id) }.execute.future()
     }
     Await.result(deletion, 5.seconds)
 
     // should be committed
-    val deleted = NamedDB('mysql).readOnly { implicit s =>
+    val deleted = NamedDB("mysql").readOnly { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.apply()
     }
     deleted.isDefined should be(false)
@@ -160,7 +160,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   it should "update in a local transaction" in {
     (1 to 10).foreach { _ =>
 
-      val generatedIdFuture: Future[Long] = NamedAsyncDB('mysql).localTx { implicit tx =>
+      val generatedIdFuture: Future[Long] = NamedAsyncDB("mysql").localTx { implicit tx =>
         withSQL(insert.into(AsyncLover).namedValues(
           column.name -> "Patric",
           column.rating -> 2,
@@ -169,7 +169,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
         ).updateAndReturnGeneratedKey.future
       }
       val generatedId = Await.result(generatedIdFuture, 5.seconds)
-      val created = NamedDB('mysql).readOnly { implicit s =>
+      val created = NamedDB("mysql").readOnly { implicit s =>
         withSQL { select.from(AsyncLover as al).where.eq(al.id, generatedId) }.map(AsyncLover(al)).single.apply()
       }.get
       created.id should equal(generatedId)
@@ -183,10 +183,10 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   it should "rollback in a local transaction" in {
     (1 to 10).foreach { _ =>
 
-      NamedDB('mysql).autoCommit { implicit s =>
+      NamedDB("mysql").autoCommit { implicit s =>
         withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update.apply()
       }
-      val failureFuture: Future[Unit] = NamedAsyncDB('mysql).localTx { implicit tx =>
+      val failureFuture: Future[Unit] = NamedAsyncDB("mysql").localTx { implicit tx =>
         import FutureImplicits._
         for {
           _ <- insert.into(AsyncLover).namedValues(
@@ -208,7 +208,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
       failureFuture.value.get.isFailure should be(true)
 
       // should be rolled back
-      val notCreated = NamedDB('mysql).readOnly { implicit s =>
+      val notCreated = NamedDB("mysql").readOnly { implicit s =>
         withSQL { select.from(AsyncLover as al).where.eq(al.id, 1003) }.map(AsyncLover(al)).single.apply()
       }
       notCreated.isDefined should be(false)
@@ -218,7 +218,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   it should "provide transaction by AsyncTx.withSQLBuilders" in {
     (1 to 10).foreach { _ =>
 
-      val deletionAndCreation: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
+      val deletionAndCreation: Future[Seq[AsyncQueryResult]] = NamedAsyncDB("mysql").withPool { implicit s =>
         AsyncTx.withSQLBuilders(
           delete.from(AsyncLover).where.eq(column.id, 997),
           insert.into(AsyncLover).namedValues(
@@ -233,7 +233,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
       deletionAndCreation.value.get.get.size should be(2)
 
       // should be found
-      val created = NamedDB('mysql).readOnly { implicit s =>
+      val created = NamedDB("mysql").readOnly { implicit s =>
         withSQL { select.from(AsyncLover as al).where.eq(al.id, 997) }.map(AsyncLover(al)).single.apply()
       }.get
       created.id should equal(997)
@@ -247,10 +247,10 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   it should "provide transactional deletion by AsyncTx.withSQLBuilders" in {
     (1 to 10).foreach { _ =>
 
-      NamedDB('mysql).autoCommit { implicit s =>
+      NamedDB("mysql").autoCommit { implicit s =>
         withSQL { delete.from(AsyncLover).where.eq(column.id, 998) }.update.apply()
       }
-      val creationAndDeletion: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
+      val creationAndDeletion: Future[Seq[AsyncQueryResult]] = NamedAsyncDB("mysql").withPool { implicit s =>
         AsyncTx.withSQLBuilders(
           insert.into(AsyncLover).namedValues(
             column.id -> 998,
@@ -265,7 +265,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
       creationAndDeletion.value.get.get.size should be(2)
 
       // should be committed
-      val deleted = NamedDB('mysql).readOnly { implicit s =>
+      val deleted = NamedDB("mysql").readOnly { implicit s =>
         withSQL { select.from(AsyncLover as al).where.eq(al.id, 998) }.map(AsyncLover(al)).single.apply()
       }
       deleted.isDefined should be(false)
@@ -275,7 +275,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   it should "rollback in a transaction when using AsyncTx.withSQLs" in {
     (1 to 10).foreach { _ =>
 
-      val failure: Future[Seq[AsyncQueryResult]] = NamedAsyncDB('mysql).withPool { implicit s =>
+      val failure: Future[Seq[AsyncQueryResult]] = NamedAsyncDB("mysql").withPool { implicit s =>
         AsyncTx.withSQLs(
           insert.into(AsyncLover).namedValues(
             column.id -> 999,
@@ -294,7 +294,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
       }
       failure.value.get.isSuccess should be(false)
 
-      val notFound = NamedDB('mysql).readOnly { implicit s =>
+      val notFound = NamedDB("mysql").readOnly { implicit s =>
         withSQL { select.from(AsyncLover as al).where.eq(al.id, 999) }.map(AsyncLover(al)).single.apply()
       }
       notFound.isDefined should be(false)

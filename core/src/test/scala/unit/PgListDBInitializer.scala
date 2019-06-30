@@ -88,7 +88,7 @@ insert into programmer_skill values (2, 2);
   }
 
   def initMySQL(): Unit = {
-    NamedDB('mysql) autoCommit { implicit s =>
+    NamedDB("mysql") autoCommit { implicit s =>
 
       try sql"drop table programmer_skill".execute.apply()
       catch { case e: Exception => log.debug(e.getMessage, e) }

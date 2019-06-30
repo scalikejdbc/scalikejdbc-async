@@ -34,7 +34,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "insert person with custom binder sync" in {
 
-    val result: Int = NamedDB('mysql).autoCommit { implicit s =>
+    val result: Int = NamedDB("mysql").autoCommit { implicit s =>
       withSQL {
         insert.into(Person).namedValues(
           personColumn.id -> personId,
@@ -45,7 +45,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
   }
 
   it should "insert account with custom binder async" in {
-    val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Int] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         insert.into(Account).namedValues(
           accountColumn.id -> accountId,
@@ -58,7 +58,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
   }
 
   it should "insert account with custom binder with parent set to Some async" in {
-    val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Int] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         insert.into(Account).namedValues(
           accountColumn.id -> accountId2,
@@ -73,7 +73,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "select person joining account with custom binder sync" in {
 
-    val result: Option[PersonWithAccounts] = NamedDB('mysql).readOnly { implicit s =>
+    val result: Option[PersonWithAccounts] = NamedDB("mysql").readOnly { implicit s =>
       withSQL {
         selectFrom(Person as p).join(Account as acc).on(p.id, acc.personId)
           .where.eq(p.id, personId)
@@ -89,7 +89,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "select person joining account with custom binder async" in {
 
-    val resultFuture: Future[Option[PersonWithAccounts]] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultFuture: Future[Option[PersonWithAccounts]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         selectFrom(Person as p).join(Account as acc).on(p.id, acc.personId)
           .where.eq(p.id, personId)
@@ -105,7 +105,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
   }
 
   it should "select account joining person with custom binder sync" in {
-    val result: Option[AccountAndPerson] = NamedDB('mysql).readOnly { implicit s =>
+    val result: Option[AccountAndPerson] = NamedDB("mysql").readOnly { implicit s =>
       withSQL {
         selectFrom(Account as acc)
           .join(Person as p)
@@ -123,7 +123,7 @@ class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
   }
 
   it should "select account joining person with custom binder async" in {
-    val resultsFuture: Future[Option[AccountAndPerson]] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Option[AccountAndPerson]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         selectFrom(Account as acc)
           .join(Person as p)

@@ -18,7 +18,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "insert person with custom binder sync" in {
 
-    val result: Int = NamedDB('mysql).autoCommit { implicit s =>
+    val result: Int = NamedDB("mysql").autoCommit { implicit s =>
       withSQL {
         insert.into(Person).namedValues(
           column.id -> PersonId(1),
@@ -29,7 +29,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
   }
 
   it should "insert person with custom binder async" in {
-    val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Int] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         insert.into(Person).namedValues(
           column.id -> PersonId(2),
@@ -44,7 +44,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
     val id = PersonId(12)
     val name = "testperson"
 
-    val result: Option[Person] = NamedDB('mysql).readOnly { implicit s =>
+    val result: Option[Person] = NamedDB("mysql").readOnly { implicit s =>
       withSQL {
         selectFrom(Person as p).where.eq(p.id, id)
       }.map(Person(p)).single.apply()
@@ -56,7 +56,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
     val id = PersonId(12)
     val name = "testperson"
 
-    val resultsFuture: Future[Option[Person]] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Option[Person]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         selectFrom(Person as p).where.eq(p.id, id)
       }.map(Person(p)).single.future()
@@ -67,7 +67,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "update person with custom binder sync" in {
 
-    val result: Int = NamedDB('mysql).autoCommit { implicit s =>
+    val result: Int = NamedDB("mysql").autoCommit { implicit s =>
       withSQL {
         update(Person).set(
           column.id -> PersonId(3),
@@ -79,7 +79,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "update person with custom binder async" in {
 
-    val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Int] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         update(Person).set(
           column.id -> PersonId(4),
@@ -93,7 +93,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "delete person with custom binder sync" in {
 
-    val result: Int = NamedDB('mysql).autoCommit { implicit s =>
+    val result: Int = NamedDB("mysql").autoCommit { implicit s =>
       withSQL {
         deleteFrom(Person).where.eq(column.id, PersonId(3))
       }.update.apply()
@@ -103,7 +103,7 @@ class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   it should "delete person with custom binder async" in {
 
-    val resultsFuture: Future[Int] = NamedAsyncDB('mysql).withPool { implicit s =>
+    val resultsFuture: Future[Int] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
         deleteFrom(Person).where.eq(column.id, PersonId(4))
       }.update.future()
