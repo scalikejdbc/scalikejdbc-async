@@ -94,7 +94,7 @@ trait AsyncDBSession extends LogSupport {
       queryLogging(statement, _parameters)
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
         result.rows.map { ars =>
-          new AsyncResultSetIterator(ars).map(rs => extractor(rs)).toList
+          new AsyncResultSetIterator(ars).map(extractor).toList
         }.getOrElse(Nil)
       }
     }
