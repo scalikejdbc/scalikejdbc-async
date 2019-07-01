@@ -216,7 +216,7 @@ trait AsyncDBSession extends LogSupport {
               to2.map(t => if (ts2.contains(t)) ts2 else ts2 :+ t).getOrElse(ts2)))
           }.getOrElse(result)
         }.getOrElse {
-          result += (o -> (to1.map(t => Vector(t)).getOrElse(Vector()), to2.map(t => Vector(t)).getOrElse(Vector())))
+          result += (o -> (to1.map(t => Vector(t)).getOrElse(Vector.empty), to2.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -266,9 +266,9 @@ trait AsyncDBSession extends LogSupport {
         }.getOrElse {
           result += (
             o -> (
-              to1.map(t => Vector(t)).getOrElse(Vector()),
-              to2.map(t => Vector(t)).getOrElse(Vector()),
-              to3.map(t => Vector(t)).getOrElse(Vector())))
+              to1.map(t => Vector(t)).getOrElse(Vector.empty),
+              to2.map(t => Vector(t)).getOrElse(Vector.empty),
+              to3.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -321,10 +321,10 @@ trait AsyncDBSession extends LogSupport {
         }.getOrElse {
           result += (
             o -> (
-              to1.map(t => Vector(t)).getOrElse(Vector()),
-              to2.map(t => Vector(t)).getOrElse(Vector()),
-              to3.map(t => Vector(t)).getOrElse(Vector()),
-              to4.map(t => Vector(t)).getOrElse(Vector())))
+              to1.map(t => Vector(t)).getOrElse(Vector.empty),
+              to2.map(t => Vector(t)).getOrElse(Vector.empty),
+              to3.map(t => Vector(t)).getOrElse(Vector.empty),
+              to4.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -392,11 +392,11 @@ trait AsyncDBSession extends LogSupport {
         }.getOrElse {
           result += (
             o -> (
-              to1.map(t => Vector(t)).getOrElse(Vector()),
-              to2.map(t => Vector(t)).getOrElse(Vector()),
-              to3.map(t => Vector(t)).getOrElse(Vector()),
-              to4.map(t => Vector(t)).getOrElse(Vector()),
-              to5.map(t => Vector(t)).getOrElse(Vector())))
+              to1.map(t => Vector(t)).getOrElse(Vector.empty),
+              to2.map(t => Vector(t)).getOrElse(Vector.empty),
+              to3.map(t => Vector(t)).getOrElse(Vector.empty),
+              to4.map(t => Vector(t)).getOrElse(Vector.empty),
+              to5.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -468,12 +468,12 @@ trait AsyncDBSession extends LogSupport {
         }.getOrElse {
           result += (
             o -> (
-              to1.map(t => Vector(t)).getOrElse(Vector()),
-              to2.map(t => Vector(t)).getOrElse(Vector()),
-              to3.map(t => Vector(t)).getOrElse(Vector()),
-              to4.map(t => Vector(t)).getOrElse(Vector()),
-              to5.map(t => Vector(t)).getOrElse(Vector()),
-              to6.map(t => Vector(t)).getOrElse(Vector())))
+              to1.map(t => Vector(t)).getOrElse(Vector.empty),
+              to2.map(t => Vector(t)).getOrElse(Vector.empty),
+              to3.map(t => Vector(t)).getOrElse(Vector.empty),
+              to4.map(t => Vector(t)).getOrElse(Vector.empty),
+              to5.map(t => Vector(t)).getOrElse(Vector.empty),
+              to6.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -556,13 +556,13 @@ trait AsyncDBSession extends LogSupport {
         }.getOrElse {
           result += (
             o -> (
-              to1.map(t => Vector(t)).getOrElse(Vector()),
-              to2.map(t => Vector(t)).getOrElse(Vector()),
-              to3.map(t => Vector(t)).getOrElse(Vector()),
-              to4.map(t => Vector(t)).getOrElse(Vector()),
-              to5.map(t => Vector(t)).getOrElse(Vector()),
-              to6.map(t => Vector(t)).getOrElse(Vector()),
-              to7.map(t => Vector(t)).getOrElse(Vector())))
+              to1.map(t => Vector(t)).getOrElse(Vector.empty),
+              to2.map(t => Vector(t)).getOrElse(Vector.empty),
+              to3.map(t => Vector(t)).getOrElse(Vector.empty),
+              to4.map(t => Vector(t)).getOrElse(Vector.empty),
+              to5.map(t => Vector(t)).getOrElse(Vector.empty),
+              to6.map(t => Vector(t)).getOrElse(Vector.empty),
+              to7.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -650,14 +650,14 @@ trait AsyncDBSession extends LogSupport {
         }.getOrElse {
           result += (
             o -> (
-              to1.map(t => Vector(t)).getOrElse(Vector()),
-              to2.map(t => Vector(t)).getOrElse(Vector()),
-              to3.map(t => Vector(t)).getOrElse(Vector()),
-              to4.map(t => Vector(t)).getOrElse(Vector()),
-              to5.map(t => Vector(t)).getOrElse(Vector()),
-              to6.map(t => Vector(t)).getOrElse(Vector()),
-              to7.map(t => Vector(t)).getOrElse(Vector()),
-              to8.map(t => Vector(t)).getOrElse(Vector())))
+              to1.map(t => Vector(t)).getOrElse(Vector.empty),
+              to2.map(t => Vector(t)).getOrElse(Vector.empty),
+              to3.map(t => Vector(t)).getOrElse(Vector.empty),
+              to4.map(t => Vector(t)).getOrElse(Vector.empty),
+              to5.map(t => Vector(t)).getOrElse(Vector.empty),
+              to6.map(t => Vector(t)).getOrElse(Vector.empty),
+              to7.map(t => Vector(t)).getOrElse(Vector.empty),
+              to8.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
@@ -750,15 +750,15 @@ trait AsyncDBSession extends LogSupport {
         }.getOrElse {
           result += (
             o -> (
-              to1.map(t => Vector(t)).getOrElse(Vector()),
-              to2.map(t => Vector(t)).getOrElse(Vector()),
-              to3.map(t => Vector(t)).getOrElse(Vector()),
-              to4.map(t => Vector(t)).getOrElse(Vector()),
-              to5.map(t => Vector(t)).getOrElse(Vector()),
-              to6.map(t => Vector(t)).getOrElse(Vector()),
-              to7.map(t => Vector(t)).getOrElse(Vector()),
-              to8.map(t => Vector(t)).getOrElse(Vector()),
-              to9.map(t => Vector(t)).getOrElse(Vector())))
+              to1.map(t => Vector(t)).getOrElse(Vector.empty),
+              to2.map(t => Vector(t)).getOrElse(Vector.empty),
+              to3.map(t => Vector(t)).getOrElse(Vector.empty),
+              to4.map(t => Vector(t)).getOrElse(Vector.empty),
+              to5.map(t => Vector(t)).getOrElse(Vector.empty),
+              to6.map(t => Vector(t)).getOrElse(Vector.empty),
+              to7.map(t => Vector(t)).getOrElse(Vector.empty),
+              to8.map(t => Vector(t)).getOrElse(Vector.empty),
+              to9.map(t => Vector(t)).getOrElse(Vector.empty)))
         }
       }
       connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
