@@ -5,7 +5,7 @@ import scala.concurrent._
 import scalikejdbc.async.ShortenedNames._
 
 /**
- * Provides power mode by implicit converions.
+ * Provides power mode by implicit conversions.
  *
  * {{{
  *   import scalikejdbc._, async._, FutureImplicits._
