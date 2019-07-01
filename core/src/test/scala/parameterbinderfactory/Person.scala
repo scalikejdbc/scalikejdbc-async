@@ -2,8 +2,6 @@ package parameterbinderfactory
 
 import scalikejdbc._
 import scalikejdbc.TypeBinder._
-import scalikejdbc.async._
-import scala.concurrent.Future
 
 case class PersonId(id: Long)
 

@@ -1,7 +1,6 @@
 package scalikejdbc
 
-import scalikejdbc._
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.Future
 import scalikejdbc.async.ShortenedNames._
 /**
  * Default package to import

@@ -12,8 +12,6 @@ import com.github.jasync.sql.db.RowData
 import org.joda.time.{ LocalTime, LocalDate, LocalDateTime, DateTime }
 import scalikejdbc._
 
-import scala.collection.mutable
-
 private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var other: Iterable[RowData]) extends ResultSet {
 
   var closed = false

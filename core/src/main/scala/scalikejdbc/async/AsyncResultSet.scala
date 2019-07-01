@@ -16,7 +16,6 @@
 package scalikejdbc.async
 
 import scalikejdbc._
-import org.joda.time.{ LocalDateTime, DateTime, LocalDate, LocalTime }
 
 /**
  * WrappedResultSet for Asynchronous DB Session

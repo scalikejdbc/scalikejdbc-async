@@ -15,7 +15,6 @@
  */
 package scalikejdbc.async
 
-import scalikejdbc._
 import scalikejdbc.JDBCUrl._
 import scalikejdbc.async.internal.mysql.MySQLConnectionPoolImpl
 import scalikejdbc.async.internal.postgresql.PostgreSQLConnectionPoolImpl

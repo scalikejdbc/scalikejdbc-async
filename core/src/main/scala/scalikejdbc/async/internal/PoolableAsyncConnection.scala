@@ -18,8 +18,8 @@ package scalikejdbc.async.internal
 import java.util.concurrent.TimeUnit
 
 import com.github.jasync.sql.db.pool.ConnectionPool
-import scalikejdbc.async.{ AsyncConnection, NonSharedAsyncConnection }
-import com.github.jasync.sql.db.{ ConcreteConnection, Connection }
+import scalikejdbc.async.NonSharedAsyncConnection
+import com.github.jasync.sql.db.ConcreteConnection
 
 import scala.concurrent._
 import scalikejdbc.async.ShortenedNames._

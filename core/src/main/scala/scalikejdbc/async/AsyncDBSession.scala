@@ -21,7 +21,6 @@ import scalikejdbc.GlobalSettings._
 import scala.collection.mutable.LinkedHashMap
 import scala.util.{ Failure, Success }
 import scalikejdbc.async.ShortenedNames._
-import java.sql.PreparedStatement
 import scalikejdbc.async.internal.MockPreparedStatement
 
 /**

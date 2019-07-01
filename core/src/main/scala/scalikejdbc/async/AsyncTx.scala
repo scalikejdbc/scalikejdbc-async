@@ -15,8 +15,6 @@
  */
 package scalikejdbc.async
 
-import java.util.concurrent.CompletableFuture
-
 import com.github.jasync.sql.db.Connection
 import scalikejdbc._
 import scalikejdbc.async.ShortenedNames._

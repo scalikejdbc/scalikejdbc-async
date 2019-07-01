@@ -8,6 +8,10 @@ val Scala213 = "2.13.0"
 
 crossScalaVersions := Seq(Scala213, Scala212)
 
+lazy val unusedWarnings = Seq(
+  "-Ywarn-unused:imports"
+)
+
 lazy val core = (project in file("core")).settings(
   organization := "org.scalikejdbc",
   name := "scalikejdbc-async",
@@ -37,7 +41,10 @@ lazy val core = (project in file("core")).settings(
   },
   sbtPlugin := false,
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
-  scalacOptions ++= Seq("-deprecation", "-unchecked"),
+  scalacOptions ++= Seq("-deprecation", "-unchecked") ++ unusedWarnings,
+  Seq(Compile, Test).flatMap(
+    c => scalacOptions in (c, console) --= unusedWarnings
+  ),
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, v)) if v <= 12 =>

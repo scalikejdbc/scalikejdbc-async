@@ -7,8 +7,6 @@ import duration._
 import ExecutionContext.Implicits.global
 import org.scalatest._
 import unit._
-import programmerlist.Company
-import programmerlist.Programmer
 import scalikejdbc.async.NamedAsyncDB
 
 class AccountSpec extends FlatSpec with Matchers with DBSettings with Logging {
