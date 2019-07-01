@@ -9,7 +9,6 @@ import java.util
 import java.util.Calendar
 
 import com.github.jasync.sql.db.RowData
-import org.joda.time.{ LocalTime, LocalDate, LocalDateTime, DateTime }
 import scalikejdbc._
 
 private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var other: Iterable[RowData]) extends ResultSet {
@@ -475,10 +474,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
 
   private def any(columnLabel: String): Any = currentRow.map(_.get(columnLabel)).orNull[Any]
 
-  private def anyOpt(columnIndex: Int): Option[Any] = Option(any(columnIndex))
-
-  private def anyOpt(columnLabel: String): Option[Any] = Option(any(columnLabel))
-
   private def anyToBigDecimal(any: Any): java.math.BigDecimal = any match {
     case null => null
     case bd: java.math.BigDecimal => bd
@@ -488,14 +483,10 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   }
   private def bigDecimal(columnIndex: Int): java.math.BigDecimal = anyToBigDecimal(any(columnIndex))
   private def bigDecimal(columnLabel: String): java.math.BigDecimal = anyToBigDecimal(any(columnLabel))
-  private def bigDecimalOpt(columnIndex: Int): Option[java.math.BigDecimal] = Option(bigDecimal(columnIndex))
-  private def bigDecimalOpt(columnLabel: String): Option[java.math.BigDecimal] = Option(bigDecimal(columnLabel))
 
   private def anyToBytes(any: Any): scala.Array[Byte] = any.asInstanceOf[scala.Array[Byte]]
   private def bytes(columnIndex: Int): scala.Array[Byte] = anyToBytes(any(columnIndex))
   private def bytes(columnLabel: String): scala.Array[Byte] = anyToBytes(any(columnLabel))
-  private def bytesOpt(columnIndex: Int): Option[scala.Array[Byte]] = Option(bytes(columnIndex))
-  private def bytesOpt(columnLabel: String): Option[scala.Array[Byte]] = Option(bytes(columnLabel))
 
   private def anyToDate(any: Any): java.sql.Date = any match {
     case null => null
@@ -506,8 +497,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   }
   private def date(columnIndex: Int): java.sql.Date = anyToDate(any(columnIndex))
   private def date(columnLabel: String): java.sql.Date = anyToDate(any(columnLabel))
-  private def dateOpt(columnIndex: Int): Option[java.sql.Date] = Option(date(columnIndex))
-  private def dateOpt(columnLabel: String): Option[java.sql.Date] = Option(date(columnLabel))
 
   private def anyToString(any: Any): String = any match {
     case null => null
@@ -516,8 +505,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   }
   private def string(columnIndex: Int): String = anyToString(any(columnIndex))
   private def string(columnLabel: String): String = anyToString(any(columnLabel))
-  private def stringOpt(columnIndex: Int): Option[String] = Option(string(columnIndex))
-  private def stringOpt(columnLabel: String): Option[String] = Option(string(columnLabel))
 
   private def anyToTime(any: Any): java.sql.Time = any match {
     case null => null
@@ -529,8 +516,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   }
   private def time(columnIndex: Int): java.sql.Time = anyToTime(any(columnIndex))
   private def time(columnLabel: String): java.sql.Time = anyToTime(any(columnLabel))
-  private def timeOpt(columnIndex: Int): Option[java.sql.Time] = Option(time(columnIndex))
-  private def timeOpt(columnLabel: String): Option[java.sql.Time] = Option(time(columnLabel))
 
   private def anyToTimestamp(any: Any): java.sql.Timestamp = any match {
     case null => null
@@ -542,56 +527,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   }
   private def timestamp(columnIndex: Int): java.sql.Timestamp = anyToTimestamp(any(columnIndex))
   private def timestamp(columnLabel: String): java.sql.Timestamp = anyToTimestamp(any(columnLabel))
-  private def timestampOpt(columnIndex: Int): Option[java.sql.Timestamp] = Option(timestamp(columnIndex))
-  private def timestampOpt(columnLabel: String): Option[java.sql.Timestamp] = Option(timestamp(columnLabel))
-
-  private def anyToDateTime(any: Any): DateTime = any match {
-    case null => null
-    case dt: DateTime => dt
-    case TimeInMillis(ms) => new DateTime(ms)
-    case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaDateTime!")
-  }
-  private def jodaDateTime(columnIndex: Int): DateTime = anyToDateTime(any(columnIndex))
-  private def jodaDateTime(columnLabel: String): DateTime = anyToDateTime(any(columnLabel))
-  private def jodaDateTimeOpt(columnIndex: Int): Option[DateTime] = Option(jodaDateTime(columnIndex))
-  private def jodaDateTimeOpt(columnLabel: String): Option[DateTime] = Option(jodaDateTime(columnLabel))
-
-  private def anyToLocalDateTime(any: Any): LocalDateTime = any match {
-    case null => null
-    case ldt: LocalDateTime => ldt
-    case TimeInMillis(ms) => new LocalDateTime(ms)
-    case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDateTime!")
-  }
-  private def jodaLocalDateTime(columnIndex: Int): LocalDateTime = anyToLocalDateTime(any(columnIndex))
-  private def jodaLocalDateTime(columnLabel: String): LocalDateTime = anyToLocalDateTime(any(columnLabel))
-  private def jodaLocalDateTimeOpt(columnIndex: Int): Option[LocalDateTime] = Option(jodaLocalDateTime(columnIndex))
-  private def jodaLocalDateTimeOpt(columnLabel: String): Option[LocalDateTime] = Option(jodaLocalDateTime(columnLabel))
-
-  private def anyToLocalDate(any: Any): LocalDate = any match {
-    case null => null
-    case ld: LocalDate => ld
-    case TimeInMillis(ms) => new LocalDate(ms)
-    case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalDate!")
-  }
-  private def jodaLocalDate(columnIndex: Int): LocalDate = anyToLocalDate(any(columnIndex))
-  private def jodaLocalDate(columnLabel: String): LocalDate = anyToLocalDate(any(columnLabel))
-  private def jodaLocalDateOpt(columnIndex: Int): Option[LocalDate] = Option(jodaLocalDate(columnIndex))
-  private def jodaLocalDateOpt(columnLabel: String): Option[LocalDate] = Option(jodaLocalDate(columnLabel))
-
-  private def anyToLocalTime(any: Any): LocalTime = any match {
-    case null => null
-    case lt: LocalTime => lt
-    case TimeInMillis(ms) => new LocalTime(ms)
-    case other => throw new UnsupportedOperationException(
-      s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #jodaLocalTime!")
-  }
-  private def jodaLocalTime(columnIndex: Int): LocalTime = anyToLocalTime(any(columnIndex))
-  private def jodaLocalTime(columnLabel: String): LocalTime = anyToLocalTime(any(columnLabel))
-  private def jodaLocalTimeOpt(columnIndex: Int): Option[LocalTime] = Option(jodaLocalTime(columnIndex))
-  private def jodaLocalTimeOpt(columnLabel: String): Option[LocalTime] = Option(jodaLocalTime(columnLabel))
 
   private def anyToUrl(any: Any): java.net.URL = any match {
     case null => null
@@ -601,8 +536,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   }
   private def url(columnIndex: Int): java.net.URL = anyToUrl(any(columnIndex))
   private def url(columnLabel: String): java.net.URL = anyToUrl(any(columnLabel))
-  private def urlOpt(columnIndex: Int): Option[java.net.URL] = Option(url(columnIndex))
-  private def urlOpt(columnLabel: String): Option[java.net.URL] = Option(url(columnLabel))
 
   private def anyToNullableBoolean(any: Any): java.lang.Boolean = any match {
     case null => null
@@ -618,8 +551,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def nullableBoolean(columnLabel: String): java.lang.Boolean = anyToNullableBoolean(any(columnLabel))
   private def boolean(columnIndex: Int): Boolean = nullableBoolean(columnIndex).asInstanceOf[Boolean]
   private def boolean(columnLabel: String): Boolean = nullableBoolean(columnLabel).asInstanceOf[Boolean]
-  private def booleanOpt(columnIndex: Int): Option[Boolean] = opt[Boolean](nullableBoolean(columnIndex))
-  private def booleanOpt(columnLabel: String): Option[Boolean] = opt[Boolean](nullableBoolean(columnLabel))
 
   private def anyToNullableByte(any: Any): java.lang.Byte = any match {
     case null => null
@@ -629,8 +560,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def nullableByte(columnLabel: String): java.lang.Byte = anyToNullableByte(any(columnLabel))
   private def byte(columnIndex: Int): Byte = nullableByte(columnIndex).asInstanceOf[Byte]
   private def byte(columnLabel: String): Byte = nullableByte(columnLabel).asInstanceOf[Byte]
-  private def byteOpt(columnIndex: Int): Option[Byte] = opt[Byte](nullableByte(columnIndex))
-  private def byteOpt(columnLabel: String): Option[Byte] = opt[Byte](nullableByte(columnLabel))
 
   private def anyToNullableDouble(any: Any): java.lang.Double = any match {
     case null => null
@@ -640,8 +569,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def nullableDouble(columnLabel: String): java.lang.Double = anyToNullableDouble(any(columnLabel))
   private def double(columnIndex: Int): Double = nullableDouble(columnIndex).asInstanceOf[Double]
   private def double(columnLabel: String): Double = nullableDouble(columnLabel).asInstanceOf[Double]
-  private def doubleOpt(columnIndex: Int): Option[Double] = opt[Double](nullableDouble(columnIndex))
-  private def doubleOpt(columnLabel: String): Option[Double] = opt[Double](nullableDouble(columnLabel))
 
   private def anyToNullableFloat(any: Any): java.lang.Float = any match {
     case null => null
@@ -651,8 +578,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def nullableFloat(columnLabel: String): java.lang.Float = anyToNullableFloat(any(columnLabel))
   private def float(columnIndex: Int): Float = nullableFloat(columnIndex).asInstanceOf[Float]
   private def float(columnLabel: String): Float = nullableFloat(columnLabel).asInstanceOf[Float]
-  private def floatOpt(columnIndex: Int): Option[Float] = opt[Float](nullableFloat(columnIndex))
-  private def floatOpt(columnLabel: String): Option[Float] = opt[Float](nullableFloat(columnLabel))
 
   private def anyToNullableInt(any: Any): java.lang.Integer = any match {
     case null => null
@@ -664,8 +589,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def nullableInt(columnLabel: String): java.lang.Integer = anyToNullableInt(any(columnLabel))
   private def int(columnIndex: Int): Int = nullableInt(columnIndex).asInstanceOf[Int]
   private def int(columnLabel: String): Int = nullableInt(columnLabel).asInstanceOf[Int]
-  private def intOpt(columnIndex: Int): Option[Int] = opt[Int](nullableInt(columnIndex))
-  private def intOpt(columnLabel: String): Option[Int] = opt[Int](nullableInt(columnLabel))
 
   private def anyToNullableLong(any: Any): java.lang.Long = any match {
     case null => null
@@ -677,8 +600,6 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def nullableLong(columnLabel: String): java.lang.Long = anyToNullableLong(any(columnLabel))
   private def long(columnIndex: Int): Long = nullableLong(columnIndex).asInstanceOf[Long]
   private def long(columnLabel: String): Long = nullableLong(columnLabel).asInstanceOf[Long]
-  private def longOpt(columnIndex: Int): Option[Long] = opt[Long](nullableLong(columnIndex))
-  private def longOpt(columnLabel: String): Option[Long] = opt[Long](nullableLong(columnLabel))
 
   private def anyToNullableShort(any: Any): java.lang.Short = any match {
     case null => null
@@ -690,7 +611,5 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def nullableShort(columnLabel: String): java.lang.Short = anyToNullableShort(any(columnLabel))
   private def short(columnIndex: Int): Short = nullableShort(columnIndex).asInstanceOf[Short]
   private def short(columnLabel: String): Short = nullableShort(columnLabel).asInstanceOf[Short]
-  private def shortOpt(columnIndex: Int): Option[Short] = opt[Short](nullableShort(columnIndex))
-  private def shortOpt(columnLabel: String): Option[Short] = opt[Short](nullableShort(columnLabel))
 
 }
