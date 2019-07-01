@@ -51,7 +51,7 @@ object AsyncConnectionPool extends LogSupport {
   type CPSettings = AsyncConnectionPoolSettings
   type CPFactory = AsyncConnectionPoolFactory
 
-  val DEFAULT_NAME: Symbol = 'default
+  val DEFAULT_NAME: Symbol = Symbol("default")
 
   private[this] val pools = new ConcurrentMap[Any, AsyncConnectionPool]()
 
