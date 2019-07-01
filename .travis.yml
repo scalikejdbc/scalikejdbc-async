@@ -2,6 +2,7 @@ language: scala
 dist: xenial
 jdk:
 - openjdk8
+- openjdk11
 scala:
 - 2.13.0
 - 2.12.8
