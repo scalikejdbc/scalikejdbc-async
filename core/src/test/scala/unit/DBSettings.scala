@@ -6,8 +6,7 @@ import com.dimafeng.testcontainers.{ ForAllTestContainer, MultipleContainers, My
 import org.scalatest.Suite
 
 trait DBSettings extends ForAllTestContainer { self: Suite =>
-  // TODO update mysql version
-  protected[this] final val mysql = MySQLContainer(mysqlImageVersion = "mysql:5.6.44")
+  protected[this] final val mysql = MySQLContainer(mysqlImageVersion = "mysql:5.7.26")
   protected[this] final val postgres = PostgreSQLContainer("postgres:11.4")
   override val container = MultipleContainers(mysql, postgres)
 

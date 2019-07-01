@@ -26,7 +26,7 @@ create table async_lover (
   lunchtime time,
   birthday date default '1980-01-02', -- mysql-async 0.2.4 cannot parse nullable date values
   created_at timestamp not null,
-  deleted_at timestamp
+  deleted_at timestamp default CURRENT_TIMESTAMP
 );
 """
 
