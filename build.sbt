@@ -41,7 +41,7 @@ lazy val core = (project in file("core")).settings(
   },
   sbtPlugin := false,
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
-  scalacOptions ++= Seq("-deprecation", "-unchecked") ++ unusedWarnings,
+  scalacOptions ++= Seq("-deprecation", "-unchecked", "-language:implicitConversions", "-feature") ++ unusedWarnings,
   Seq(Compile, Test).flatMap(
     c => scalacOptions in (c, console) --= unusedWarnings
   ),
