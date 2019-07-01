@@ -536,7 +536,10 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
     case null => null
     case t: java.sql.Timestamp => t
     case TimeInMillis(ms) => new java.sql.Timestamp(ms)
-    case d: Duration => new java.sql.Timestamp(d.toMillis)
+    case d: Duration =>
+      val t = new java.sql.Timestamp(d.toMillis)
+      t.setNanos(d.getNano)
+      t
     case other => throw new UnsupportedOperationException(
       s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #timestamp!")
   }

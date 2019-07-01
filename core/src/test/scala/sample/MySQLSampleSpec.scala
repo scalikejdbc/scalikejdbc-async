@@ -1,5 +1,7 @@
 package sample
 
+import java.sql.Timestamp
+
 import org.joda.time._
 import org.scalatest._
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
@@ -13,6 +15,26 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
   val column = AsyncLover.column
   val createdTime = DateTime.now.withMillisOfSecond(123)
   val al = AsyncLover.syntax("al")
+
+  it should "get nano seconds" in {
+    val nano = Timestamp.valueOf(java.time.LocalDateTime.now().withNano(789000))
+    val id = NamedDB("mysql").autoCommit { implicit s =>
+      withSQL {
+        insert.into(AsyncLover).namedValues(
+          column.name -> "Eric",
+          column.rating -> 2,
+          column.isReactive -> false,
+          column.nanotime -> nano,
+          column.createdAt -> createdTime)
+      }.updateAndReturnGeneratedKey.apply()
+    }
+    val resultFuture = NamedAsyncDB("mysql").withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(
+        _.get[Option[java.sql.Timestamp]](al.resultName.nanotime)).single.future()
+    }
+    val result = Await.result(resultFuture, 5.seconds)
+    result.flatten.map(_.getNanos) should be(Some(nano.getNanos))
+  }
 
   it should "select a single value" in {
     val id = NamedDB("mysql").autoCommit { implicit s =>
