@@ -11,7 +11,7 @@ import unit._
 class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
 
   val column = AsyncLover.column
-  val createdTime = DateTime.now.withMillisOfSecond(0)
+  val createdTime = DateTime.now.withMillisOfSecond(123)
   val al = AsyncLover.syntax("al")
 
   it should "count" in {

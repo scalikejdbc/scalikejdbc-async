@@ -23,10 +23,10 @@ create table async_lover (
   name varchar(64) not null,
   rating integer not null,
   is_reactive boolean default true,
-  lunchtime time,
+  lunchtime time(6),
   birthday date default '1980-01-02', -- mysql-async 0.2.4 cannot parse nullable date values
-  created_at timestamp not null,
-  deleted_at timestamp default CURRENT_TIMESTAMP
+  created_at timestamp(6) not null,
+  deleted_at timestamp(6) default CURRENT_TIMESTAMP(6)
 );
 """
 
