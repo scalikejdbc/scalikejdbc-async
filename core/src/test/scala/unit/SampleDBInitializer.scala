@@ -11,6 +11,7 @@ create table async_lover (
   rating integer not null,
   is_reactive boolean default true, 
   lunchtime time, 
+  nanotime time(6),
   birthday date,
   created_at timestamp with time zone not null,
   deleted_at timestamp with time zone
@@ -24,6 +25,7 @@ create table async_lover (
   rating integer not null,
   is_reactive boolean default true,
   lunchtime time(6),
+  nanotime time(6),
   birthday date default '1980-01-02', -- mysql-async 0.2.4 cannot parse nullable date values
   created_at timestamp(6) not null,
   deleted_at timestamp(6) default CURRENT_TIMESTAMP(6)

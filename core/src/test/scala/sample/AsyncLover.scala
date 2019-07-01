@@ -1,5 +1,7 @@
 package sample
 
+import java.sql.Timestamp
+
 import scalikejdbc._
 import scalikejdbc.jodatime.JodaTypeBinder._
 import org.joda.time.DateTime
@@ -11,13 +13,14 @@ case class AsyncLover(
   isReactive: Boolean,
   lunchtime: Option[java.sql.Time] = None,
   birthday: Option[DateTime] = None,
+  nanotime: Option[Timestamp] = None,
   createdAt: DateTime = DateTime.now,
   deletedAt: Option[DateTime] = None)
 
 object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
 
   override val columns = Seq(
-    "id", "name", "rating", "is_reactive", "lunchtime", "birthday", "created_at")
+    "id", "name", "rating", "is_reactive", "lunchtime", "birthday", "created_at", "nanotime")
 
   def apply(c: SyntaxProvider[AsyncLover])(rs: WrappedResultSet): AsyncLover = apply(c.resultName)(rs)
 
@@ -28,6 +31,7 @@ object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
     isReactive = rs.get[Boolean](c.isReactive),
     lunchtime = rs.get[Option[java.sql.Time]](c.lunchtime),
     birthday = rs.get[Option[DateTime]](c.lunchtime),
+    nanotime = rs.get[Option[Timestamp]](c.nanotime),
     createdAt = rs.get[DateTime](c.createdAt))
 
 }
