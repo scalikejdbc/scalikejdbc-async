@@ -21,6 +21,18 @@ lazy val core = (project in file("core")).settings(
   publishTo := _publishTo(version.value),
   publishMavenStyle := true,
   resolvers ++= _resolvers,
+  mappings in (Compile, packageSrc) ++= (managedSources in Compile).value.map{ f =>
+    // to merge generated sources into sources.jar as well
+    (f, f.relativeTo((sourceManaged in Compile).value).get.getPath)
+  },
+  sourceGenerators in Compile += task{
+    val dir = (sourceManaged in Compile).value / "scalikejdbc" / "async"
+    CodeGenerator.generate.map { s =>
+      val f = dir / s.name
+      IO.write(f, s.code)
+      f
+    }
+  },
   libraryDependencies := {
     Seq (
       "org.scala-lang.modules" %% "scala-java8-compat"                % "0.9.0",
