@@ -20,6 +20,10 @@ lazy val core = (project in file("core")).settings(
   crossScalaVersions := Seq(Scala213, Scala212),
   publishTo := _publishTo(version.value),
   publishMavenStyle := true,
+  // avoid NoClassDefFoundError
+  // https://github.com/testcontainers/testcontainers-java/blob/22030eace3f4bafc735ccb0e402c1202329a95d1/core/src/main/java/org/testcontainers/utility/MountableFile.java#L284
+  // https://github.com/sbt/sbt/issues/4794
+  fork in Test := true,
   resolvers ++= _resolvers,
   mappings in (Compile, packageSrc) ++= (managedSources in Compile).value.map{ f =>
     // to merge generated sources into sources.jar as well
