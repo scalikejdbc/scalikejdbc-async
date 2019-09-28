@@ -219,7 +219,10 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
 /**
  * Shared Asynchronous DB session
  */
-case class SharedAsyncDBSession(connection: AsyncConnection) extends AsyncDBSession
+case class SharedAsyncDBSession(pool: AsyncConnectionPool) extends AsyncDBSession {
+  override val connection: AsyncConnection = pool.borrow()
+  def close(): Unit = connection.close()
+}
 
 /**
  * Asynchronous Transactional DB Session

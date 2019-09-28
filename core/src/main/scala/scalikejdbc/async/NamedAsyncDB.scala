@@ -30,8 +30,11 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
    * @tparam A return type
    * @return a Future value
    */
-  def withPool[A](op: SharedAsyncDBSession => Future[A]): Future[A] = {
-    op.apply(sharedSession)
+  def withPool[A](op: SharedAsyncDBSession => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
+    val session = sharedSession
+    val future = op.apply(session)
+    future.onComplete(_ => session.close())
+    future
   }
 
   /**
@@ -39,7 +42,7 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
    *
    * @return shared session
    */
-  def sharedSession: SharedAsyncDBSession = SharedAsyncDBSession(AsyncConnectionPool(name).borrow())
+  def sharedSession: SharedAsyncDBSession = SharedAsyncDBSession(AsyncConnectionPool(name))
 
   /**
    * Provides a future world within a transaction.

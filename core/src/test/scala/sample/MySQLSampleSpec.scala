@@ -53,6 +53,24 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
     result.isDefined should be(true)
   }
 
+  it should "repeat selecting a single value" in {
+    val id = NamedDB("mysql").autoCommit { implicit s =>
+      withSQL {
+        insert.into(AsyncLover).namedValues(
+          column.name -> "Eric",
+          column.rating -> 2,
+          column.isReactive -> false,
+          column.createdAt -> createdTime)
+      }.updateAndReturnGeneratedKey.apply()
+    }
+    def resultFuture: Future[Option[AsyncLover]] = NamedAsyncDB("mysql").withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.future()
+    }
+    val futures = Future.sequence((1 to 9).map(_ => resultFuture))
+    val results = Await.result(futures, 5.seconds)
+    results.foreach(result => result.isDefined should be(true))
+  }
+
   it should "select values as a Iterable" in {
     val resultsFuture: Future[Iterable[AsyncLover]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL {
