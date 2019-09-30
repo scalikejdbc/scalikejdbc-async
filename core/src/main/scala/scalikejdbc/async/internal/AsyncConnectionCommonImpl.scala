@@ -15,22 +15,21 @@
  */
 package scalikejdbc.async.internal
 
-import scalikejdbc.async._
-import ShortenedNames._
-
-import scala.concurrent._
-import duration.DurationInt
 import com.github.jasync.sql.db._
+import scalikejdbc.async.ShortenedNames._
+import scalikejdbc.async._
 
-import scala.compat.java8.FutureConverters._
 import scala.collection.JavaConverters._
+import scala.compat.java8.FutureConverters._
+import scala.concurrent._
+import scala.concurrent.duration.DurationInt
 
 /**
  * Basic Implementation of Asynchronous Connection
  */
 private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
 
-  private[scalikejdbc] def underlying: ConcreteConnection
+  private[scalikejdbc] def underlying: Connection
   private[scalikejdbc] val defaultTimeout = 10.seconds
 
   override def isActive: Boolean = underlying.isConnected
