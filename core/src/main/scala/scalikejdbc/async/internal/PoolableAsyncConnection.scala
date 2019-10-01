@@ -15,14 +15,12 @@
  */
 package scalikejdbc.async.internal
 
-import java.util.concurrent.TimeUnit
-
+import com.github.jasync.sql.db.ConcreteConnection
 import com.github.jasync.sql.db.pool.ConnectionPool
 import scalikejdbc.async.NonSharedAsyncConnection
-import com.github.jasync.sql.db.ConcreteConnection
+import scalikejdbc.async.ShortenedNames._
 
 import scala.concurrent._
-import scalikejdbc.async.ShortenedNames._
 
 /**
  * AsyncConnection implementation which is based on jasync's Connection
@@ -36,14 +34,11 @@ private[scalikejdbc] abstract class PoolableAsyncConnection[T <: ConcreteConnect
   override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] =
     Future.failed(new UnsupportedOperationException)
 
-  // TODO make configurable timeout or avoid Future#get
-  private[scalikejdbc] lazy val underlying = pool.take().get(5, TimeUnit.SECONDS)
+  private[scalikejdbc] lazy val underlying = pool
 
   /**
    * Close or release this connection.
    */
-  override def close(): Unit = {
-    pool.giveBack(underlying)
-  }
+  override def close(): Unit = ()
 
 }

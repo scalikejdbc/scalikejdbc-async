@@ -1,10 +1,11 @@
 package scalikejdbc.async.internal
 
-import com.github.jasync.sql.db.ConcreteConnection
 import com.github.jasync.sql.db.pool.ConnectionPool
+import com.github.jasync.sql.db.{ ConcreteConnection, Connection }
 import scalikejdbc.async.NonSharedAsyncConnection
-import scala.concurrent._
 import scalikejdbc.async.ShortenedNames._
+
+import scala.concurrent._
 
 /**
  * Non-shared Asynchronous Connection
@@ -12,7 +13,7 @@ import scalikejdbc.async.ShortenedNames._
  * @param pool jasync connection pool
  */
 abstract class NonSharedAsyncConnectionImpl(
-  val underlying: ConcreteConnection,
+  val underlying: Connection,
   val pool: Option[ConnectionPool[ConcreteConnection]] = None)
   extends AsyncConnectionCommonImpl
   with NonSharedAsyncConnection {
@@ -20,6 +21,11 @@ abstract class NonSharedAsyncConnectionImpl(
   override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] =
     Future.successful(this)
 
-  override def release(): Unit = pool.map(_.giveBack(this.underlying))
+  override def release(): Unit = this.underlying match {
+    case con: ConcreteConnection =>
+      pool.map(_.giveBack(con))
+    case _ =>
+    // nothing to do for pool
+  }
 
 }

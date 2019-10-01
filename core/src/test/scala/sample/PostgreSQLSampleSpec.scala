@@ -30,6 +30,15 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
     result.isDefined should be(true)
   }
 
+  it should "repeat selecting a single value" in {
+    def resultFuture: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
+      withSQL { select.from(AsyncLover as al).where.eq(al.id, 1) }.map(AsyncLover(al)).single.future()
+    }
+    val futures = Future.sequence((1 to 9).map(_ => resultFuture))
+    val results = Await.result(futures, 5.seconds)
+    results.foreach(result => result.isDefined should be(true))
+  }
+
   it should "select values as a Iterable" in {
     val resultsFuture: Future[Iterable[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).limit(2) }.map(AsyncLover(al)).iterable.future()
