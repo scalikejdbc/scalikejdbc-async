@@ -34,7 +34,7 @@ class PostgreSQLSampleSpec extends FlatSpec with Matchers with DBSettings with L
     def resultFuture: Future[Option[AsyncLover]] = AsyncDB.withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, 1) }.map(AsyncLover(al)).single.future()
     }
-    val futures = Future.sequence((1 to 9).map(_ => resultFuture))
+    val futures = Future.sequence((1 to (asyncConnectionPoolSettings.maxPoolSize + 1)).map(_ => resultFuture))
     val results = Await.result(futures, 5.seconds)
     results.foreach(result => result.isDefined should be(true))
   }
