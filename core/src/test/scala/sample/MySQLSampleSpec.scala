@@ -66,7 +66,7 @@ class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Loggin
     def resultFuture: Future[Option[AsyncLover]] = NamedAsyncDB("mysql").withPool { implicit s =>
       withSQL { select.from(AsyncLover as al).where.eq(al.id, id) }.map(AsyncLover(al)).single.future()
     }
-    val futures = Future.sequence((1 to 9).map(_ => resultFuture))
+    val futures = Future.sequence((1 to (asyncConnectionPoolSettings.maxPoolSize + 1)).map(_ => resultFuture))
     val results = Await.result(futures, 5.seconds)
     results.foreach(result => result.isDefined should be(true))
   }
