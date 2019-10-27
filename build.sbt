@@ -24,7 +24,6 @@ lazy val core = (project in file("core")).settings(
   // https://github.com/testcontainers/testcontainers-java/blob/22030eace3f4bafc735ccb0e402c1202329a95d1/core/src/main/java/org/testcontainers/utility/MountableFile.java#L284
   // https://github.com/sbt/sbt/issues/4794
   fork in Test := true,
-  resolvers ++= _resolvers,
   mappings in (Compile, packageSrc) ++= (managedSources in Compile).value.map{ f =>
     // to merge generated sources into sources.jar as well
     (f, f.relativeTo((sourceManaged in Compile).value).get.getPath)
@@ -81,9 +80,6 @@ def _publishTo(v: String) = {
   if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
-val _resolvers = Seq(
-  "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-)
 val _pomExtra = <url>http://scalikejdbc.org/</url>
       <licenses>
         <license>
