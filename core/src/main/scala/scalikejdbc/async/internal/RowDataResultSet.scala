@@ -491,7 +491,8 @@ private[scalikejdbc] class RowDataResultSet(var currentRow: Option[RowData], var
   private def anyToDate(any: Any): java.sql.Date = any match {
     case null => null
     case d: java.sql.Date => d
-    case TimeInMillis(ms) => new UnixTimeInMillisConverter(ms).toSqlDate
+    case d: java.util.Date => new JavaUtilDateConverter(d).toSqlDate
+    case TimeInMillis(ms) => new JavaUtilDateConverter(new java.util.Date(ms)).toSqlDate
     case other => throw new UnsupportedOperationException(
       s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #date!")
   }
