@@ -5,8 +5,10 @@ import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 
 import org.scalatest._
 import unit._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ExampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
+class ExampleSpec extends AnyFlatSpec with Matchers with DBSettings with Logging {
 
   val p = Programmer.syntax("p")
 

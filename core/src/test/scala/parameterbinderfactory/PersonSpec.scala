@@ -8,8 +8,10 @@ import ExecutionContext.Implicits.global
 import org.scalatest._
 import unit._
 import scalikejdbc.async.NamedAsyncDB
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class PersonSpec extends FlatSpec with Matchers with DBSettings with Logging {
+class PersonSpec extends AnyFlatSpec with Matchers with DBSettings with Logging {
 
   val p = Person.syntax("p")
   private val column = Person.column

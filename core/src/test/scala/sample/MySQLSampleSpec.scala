@@ -9,8 +9,10 @@ import scalikejdbc._, async._
 import scalikejdbc.jodatime.JodaParameterBinderFactory._
 import scalikejdbc.jodatime.JodaTypeBinder._
 import unit._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class MySQLSampleSpec extends FlatSpec with Matchers with DBSettings with Logging {
+class MySQLSampleSpec extends AnyFlatSpec with Matchers with DBSettings with Logging {
 
   val column = AsyncLover.column
   val createdTime = DateTime.now.withMillisOfSecond(123)
