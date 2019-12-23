@@ -45,7 +45,7 @@ lazy val core = (project in file("core")).settings(
       "org.scalikejdbc"        %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test",
       "com.github.jasync-sql"  %  "jasync-postgresql"                 % jasyncVersion      % "provided",
       "com.github.jasync-sql"  %  "jasync-mysql"                      % jasyncVersion      % "provided",
-      "com.dimafeng"           %% "testcontainers-scala"              % "0.34.1"           % "test",
+      "com.dimafeng"           %% "testcontainers-scala"              % "0.34.2"           % "test",
       "org.testcontainers"     %  "mysql"                             % testContainer      % "test",
       "org.testcontainers"     %  "postgresql"                        % testContainer      % "test",
       "org.postgresql"         %  "postgresql"                        % postgresqlVersion  % "test",
