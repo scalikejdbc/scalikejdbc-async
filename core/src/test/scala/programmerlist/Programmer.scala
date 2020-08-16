@@ -73,7 +73,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     }.one(Programmer(p, c))
       .toMany(Skill.opt(s))
       .map { (programmer, skills) => programmer.copy(skills = skills) }
-      .single.future
+      .single.future()
   }
 
   // programmer with company(optional) with skills(many)
@@ -89,7 +89,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     }.one(Programmer(p, c))
       .toMany(Skill.opt(s))
       .map { (programmer, skills) => programmer.copy(skills = skills) }
-      .list.future
+      .list.future()
   }
 
   def findNoSkillProgrammers()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[List[Programmer]] = {
@@ -100,12 +100,12 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
         .where.notIn(p.id, select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps))
         .and.append(isNotDeleted)
         .orderBy(p.id)
-    }.map(Programmer(p, c)).list.future
+    }.map(Programmer(p, c)).list.future()
   }
 
   def countAll()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Programmer as p).where.append(isNotDeleted)
-  }.map(rs => rs.long(1)).single.future.map(_.get)
+  }.map(rs => rs.long(1)).single.future().map(_.get)
 
   def findAllBy(where: SQLSyntax, withCompany: Boolean = true)(
     implicit
@@ -120,14 +120,14 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
     }.one { rs => if (withCompany) Programmer(p, c)(rs) else Programmer(p)(rs) }
       .toMany(Skill.opt(s))
       .map { (pg, skills) => pg.copy(skills = skills) }
-      .list.future
+      .list.future()
   }
 
   def countBy(where: SQLSyntax)(
     implicit
     session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Programmer as p).where.append(isNotDeleted).and.append(sqls"${where}")
-  }.map(_.long(1)).single.future.map(_.get)
+  }.map(_.long(1)).single.future().map(_.get)
 
   def create(name: String, companyId: Option[Long] = None, createdAt: DateTime = DateTime.now)(
     implicit
@@ -139,7 +139,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
           column.companyId -> companyId,
           column.createdAt -> createdAt)
           .returningId // if you run this example for MySQL, please remove this line
-      }.updateAndReturnGeneratedKey.future
+      }.updateAndReturnGeneratedKey.future()
     } yield Programmer(
       id = id,
       name = name,
@@ -152,7 +152,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
       update(Programmer).set(
         column.name -> m.name,
         column.companyId -> m.companyId).where.eq(column.id, m.id).and.isNull(column.deletedAt)
-    }.update.future.map(_ => m)
+    }.update.future().map(_ => m)
   }
 
   def destroy(id: Long)(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = withSQL {

@@ -208,7 +208,7 @@ class MySQLSampleSpec extends AnyFlatSpec with Matchers with DBSettings with Log
           column.rating -> 2,
           column.isReactive -> false,
           column.createdAt -> createdTime) //.returningId
-        ).updateAndReturnGeneratedKey.future
+        ).updateAndReturnGeneratedKey.future()
       }
       val generatedId = Await.result(generatedIdFuture, 5.seconds)
       val created = NamedDB("mysql").readOnly { implicit s =>

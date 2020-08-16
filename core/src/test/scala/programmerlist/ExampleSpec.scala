@@ -34,7 +34,7 @@ class ExampleSpec extends AnyFlatSpec with Matchers with DBSettings with Logging
     }
 
     Await.result(created, 5.seconds)
-    created.foreach { newCompany: Company =>
+    created.foreach { newCompany =>
 
       // delete a record and rollback
       val withinTx: Future[Unit] = AsyncDB.localTx { implicit tx =>
@@ -47,7 +47,7 @@ class ExampleSpec extends AnyFlatSpec with Matchers with DBSettings with Logging
             } yield ()
           }
           dissolution <- newCompany.destroy()
-          f <- sql"Just joking!".update.future
+          f <- sql"Just joking!".update.future()
         } yield ()
       }
       try Await.result(withinTx, 5.seconds)

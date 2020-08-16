@@ -44,7 +44,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
 
   def countAll()(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Company as c).where.append(isNotDeleted)
-  }.map(rs => rs.long(1)).single.future.map(_.get)
+  }.map(rs => rs.long(1)).single.future().map(_.get)
 
   def findAllBy(where: SQLSyntax)(
     implicit
@@ -58,7 +58,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
     implicit
     session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Long] = withSQL {
     select(sqls.count).from(Company as c).where.append(isNotDeleted).and.append(sqls"${where}")
-  }.map(_.long(1)).single.future.map(_.get)
+  }.map(_.long(1)).single.future().map(_.get)
 
   def create(name: String, url: Option[String] = None, createdAt: DateTime = DateTime.now)(
     implicit
@@ -79,7 +79,7 @@ object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
       update(Company).set(
         column.name -> m.name,
         column.url -> m.url).where.eq(column.id, m.id).and.isNull(column.deletedAt)
-    }.update.future.map(_ => m)
+    }.update.future().map(_ => m)
   }
 
   def destroy(id: Long)(implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Int] = {
