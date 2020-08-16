@@ -1,2 +1,2 @@
-[ScalikeJDBC-Async](http://github.com/seratch/scalikejdbc-async) provides Non-blocking APIs in the JDBC way
+[ScalikeJDBC-Async](https://github.com/scalikejdbc/scalikejdbc-async) provides Non-blocking APIs in the JDBC way
 
