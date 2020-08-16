@@ -105,6 +105,6 @@ val _pomExtra = <url>http://scalikejdbc.org/</url>
         <developer>
           <id>seratch</id>
           <name>Kazuhiro Sera</name>
-          <url>http://seratch.net/</url>
+          <url>https://github.com/seratch</url>
         </developer>
       </developers>
