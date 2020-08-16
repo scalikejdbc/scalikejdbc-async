@@ -8,8 +8,15 @@ val Scala213 = "2.13.3"
 
 crossScalaVersions := Seq(Scala213, Scala212)
 
-lazy val unusedWarnings = Seq(
-  "-Ywarn-unused:imports"
+lazy val unusedWarnings = Def.setting(
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, _)) =>
+      Seq(
+        "-Ywarn-unused:imports"
+      )
+    case _ =>
+      Nil
+  }
 )
 
 lazy val core = (project in file("core")).settings(
@@ -36,7 +43,7 @@ lazy val core = (project in file("core")).settings(
       f
     }
   },
-  libraryDependencies := {
+  libraryDependencies ++= {
     Seq (
       "org.scala-lang.modules" %% "scala-java8-compat"                % "0.9.1",
       "org.scalikejdbc"        %% "scalikejdbc"                       % scalikejdbcVersion % "compile",
@@ -50,15 +57,17 @@ lazy val core = (project in file("core")).settings(
       "org.testcontainers"     %  "postgresql"                        % testContainer      % "test",
       "org.postgresql"         %  "postgresql"                        % postgresqlVersion  % "test",
       "mysql"                  %  "mysql-connector-java"              % "5.1.+"            % "test",
-      "org.scalatest"          %% "scalatest"                         % "3.2.1"            % "test",
       "ch.qos.logback"         %  "logback-classic"                   % "1.2.+"            % "test"
-    )
+    ).map(_.withDottyCompat(scalaVersion.value))
   },
+  libraryDependencies ++= Seq(
+    "org.scalatest" %% "scalatest" % "3.2.1" % "test",
+  ),
   sbtPlugin := false,
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
-  scalacOptions ++= Seq("-deprecation", "-unchecked", "-language:implicitConversions", "-feature") ++ unusedWarnings,
+  scalacOptions ++= Seq("-deprecation", "-unchecked", "-language:implicitConversions", "-feature") ++ unusedWarnings.value,
   Seq(Compile, Test).flatMap(
-    c => scalacOptions in (c, console) --= unusedWarnings
+    c => scalacOptions in (c, console) --= unusedWarnings.value
   ),
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {

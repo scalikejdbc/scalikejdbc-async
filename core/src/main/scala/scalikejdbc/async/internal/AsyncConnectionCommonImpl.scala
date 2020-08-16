@@ -51,7 +51,7 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
 
     val queryResultFuture: Future[QueryResult] = {
       if (parameters.isEmpty) underlying.sendQuery(statement)
-      else underlying.sendPreparedStatement(statement, parameters.asJava)
+      else underlying.sendPreparedStatement(statement, parameters.map(_.asInstanceOf[AnyRef]).asJava)
     }.toScala
     queryResultFuture.map { queryResult =>
       new AsyncQueryResult(

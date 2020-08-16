@@ -10,6 +10,11 @@ sudo: false
 script:
 - sbt "++ ${TRAVIS_SCALA_VERSION}!" test
 - git diff --exit-code # check scalariform
+matrix:
+  include:
+  - name: dotty
+    script:
+    - sbt "++ 0.26.0-RC1!" compile
 before_script:
 - rm project/pgp.sbt && rm project/sbt-updates.sbt && rm project/sonatype.sbt
 - git add . --all

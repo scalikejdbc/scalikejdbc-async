@@ -25,7 +25,7 @@ abstract class AsyncQueryResult(
   val statusMessage: Option[String],
   val rows: Option[AsyncResultSet]) {
 
-  val generatedKey: Future[Option[Long]]
+  def generatedKey: Future[Option[Long]]
 
 }
 
