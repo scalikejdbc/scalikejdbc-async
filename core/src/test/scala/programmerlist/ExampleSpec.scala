@@ -14,7 +14,7 @@ class ExampleSpec extends AnyFlatSpec with Matchers with DBSettings with Logging
 
   it should "work with ConnectionPool" in {
     val findAllFuture: Future[List[Programmer]] = AsyncDB.withPool { implicit session =>
-      Programmer.findAll
+      Programmer.findAll()
     }
     val programmers: List[Programmer] = Await.result(findAllFuture, 5.seconds)
     log.debug(s"Programmers: ${programmers}")
