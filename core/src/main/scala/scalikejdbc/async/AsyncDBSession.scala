@@ -48,7 +48,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
         if (connection.isShared) {
           // create local transaction if current session is not transactional
           connection.toNonSharedConnection().flatMap { conn =>
-            AsyncTx.inTransaction(TxAsyncDBSession(conn), { tx: TxAsyncDBSession =>
+            AsyncTx.inTransaction(TxAsyncDBSession(conn), { (tx: TxAsyncDBSession) =>
               tx.connection.sendPreparedStatement(statement, _parameters: _*)
             })
           }
@@ -74,7 +74,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
       if (connection.isShared) {
         // create local transaction if current session is not transactional
         connection.toNonSharedConnection().flatMap { conn =>
-          AsyncTx.inTransaction(TxAsyncDBSession(conn), { tx: TxAsyncDBSession =>
+          AsyncTx.inTransaction(TxAsyncDBSession(conn), { (tx: TxAsyncDBSession) =>
             tx.connection.sendPreparedStatement(statement, _parameters: _*).flatMap(readGeneratedKey)
           })
         }

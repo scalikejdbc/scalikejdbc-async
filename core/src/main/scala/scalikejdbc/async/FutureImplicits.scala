@@ -24,19 +24,19 @@ object FutureImplicits {
 
   implicit def fromSQLToIterableFuture[A](sql: SQL[A, HasExtractor])(
     implicit
-    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Iterable[A]] = sql.iterable.future
+    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Iterable[A]] = sql.iterable.future()
 
   implicit def fromSQLToListFuture[A](sql: SQL[A, HasExtractor])(
     implicit
-    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[A]] = sql.list.future
+    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[A]] = sql.list.future()
 
   implicit def fromSQLToSingleFuture[A](sql: SQL[A, HasExtractor])(
     implicit
-    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Option[A]] = sql.single.future
+    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[Option[A]] = sql.single.future()
 
   implicit def fromSQLToListToListFuture[A](sql: SQLToList[A, HasExtractor])(
     implicit
-    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[A]] = sql.future
+    session: AsyncDBSession, cxt: EC = EC.Implicits.global): Future[List[A]] = sql.future()
 
   implicit def fromConditionSQLBuilderToIntFuture(b: ConditionSQLBuilder[UpdateOperation])(
     implicit

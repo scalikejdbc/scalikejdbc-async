@@ -33,7 +33,7 @@ class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
         } yield results :+ current
       }
     }
-    session.connection.toNonSharedConnection
+    session.connection.toNonSharedConnection()
       .flatMap(conn => AsyncTx.inTransaction(TxAsyncDBSession(conn), op))
   }
 
