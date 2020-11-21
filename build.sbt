@@ -2,7 +2,6 @@ lazy val _version = "0.14.1-SNAPSHOT"
 lazy val scalikejdbcVersion = "3.5.0"
 lazy val jasyncVersion = "1.1.4" // provided
 lazy val postgresqlVersion = "42.2.18"
-lazy val testContainer = "1.11.4"
 val Scala212 = "2.12.12"
 val Scala213 = "2.13.3"
 
@@ -53,8 +52,8 @@ lazy val core = (project in file("core")).settings(
       "com.github.jasync-sql"  %  "jasync-postgresql"                 % jasyncVersion      % "provided",
       "com.github.jasync-sql"  %  "jasync-mysql"                      % jasyncVersion      % "provided",
       "com.dimafeng"           %% "testcontainers-scala"              % "0.38.4"           % "test",
-      "org.testcontainers"     %  "mysql"                             % testContainer      % "test",
-      "org.testcontainers"     %  "postgresql"                        % testContainer      % "test",
+      "org.testcontainers"     %  "mysql"                             % "1.11.4"           % "test",
+      "org.testcontainers"     %  "postgresql"                        % "1.11.4"           % "test",
       "org.postgresql"         %  "postgresql"                        % postgresqlVersion  % "test",
       "mysql"                  %  "mysql-connector-java"              % "5.1.+"            % "test",
       "ch.qos.logback"         %  "logback-classic"                   % "1.2.+"            % "test"
