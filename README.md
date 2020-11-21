@@ -62,7 +62,7 @@ val created: Future[Company] = AsyncDB.localTx { implicit tx =>
 
 Await.result(created, 5.seconds)
 
-created.foreach { newCompany: Company =>
+created.foreach { (newCompany: Company) =>
 
   // delete a record and rollback
   val withinTx: Future[Unit] = AsyncDB.localTx { implicit tx =>
