@@ -67,7 +67,7 @@ class ExampleSpec extends AnyFlatSpec with Matchers with DBSettings with Logging
 
     val MaxPoolSize = 2
     val name = Symbol("test")
-    AsyncConnectionPool.add(name, postgres.jdbcUrl, postgres.username, postgres.password,
+    AsyncConnectionPool.add(name, postgresJdbcUrl, postgres.username, postgres.password,
       AsyncConnectionPoolSettings(maxPoolSize = MaxPoolSize))
 
     implicit val session = NamedAsyncDB(name).sharedSession
