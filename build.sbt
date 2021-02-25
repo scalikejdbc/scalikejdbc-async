@@ -29,13 +29,13 @@ lazy val core = (project in file("core")).settings(
   // avoid NoClassDefFoundError
   // https://github.com/testcontainers/testcontainers-java/blob/22030eace3f4bafc735ccb0e402c1202329a95d1/core/src/main/java/org/testcontainers/utility/MountableFile.java#L284
   // https://github.com/sbt/sbt/issues/4794
-  fork in Test := true,
-  mappings in (Compile, packageSrc) ++= (managedSources in Compile).value.map{ f =>
+  Test / fork := true,
+  (Compile / packageSrc / mappings) ++= (Compile / managedSources).value.map{ f =>
     // to merge generated sources into sources.jar as well
-    (f, f.relativeTo((sourceManaged in Compile).value).get.getPath)
+    (f, f.relativeTo((Compile / sourceManaged).value).get.getPath)
   },
-  sourceGenerators in Compile += task{
-    val dir = (sourceManaged in Compile).value / "scalikejdbc" / "async"
+  (Compile / sourceGenerators) += task{
+    val dir = (Compile / sourceManaged).value / "scalikejdbc" / "async"
     CodeGenerator.generate.map { s =>
       val f = dir / s.name
       IO.write(f, s.code)
@@ -63,10 +63,10 @@ lazy val core = (project in file("core")).settings(
     "org.scalatest" %% "scalatest" % "3.2.5" % "test",
   ),
   sbtPlugin := false,
-  transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
+  Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-language:implicitConversions", "-feature") ++ unusedWarnings.value,
   Seq(Compile, Test).flatMap(
-    c => scalacOptions in (c, console) --= unusedWarnings.value
+    c => (c / console / scalacOptions) --= unusedWarnings.value
   ),
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -77,8 +77,8 @@ lazy val core = (project in file("core")).settings(
     }
   },
   publishMavenStyle := true,
-  publishArtifact in Test := false,
-  parallelExecution in Test := false,
+  Test / publishArtifact := false,
+  Test / parallelExecution := false,
   pomIncludeRepository := { x => false },
   pomExtra := _pomExtra
 )
