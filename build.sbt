@@ -60,7 +60,7 @@ lazy val core = (project in file("core")).settings(
     ).map(_.withDottyCompat(scalaVersion.value))
   },
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.6" % "test",
+    "org.scalatest" %% "scalatest" % "3.2.7" % "test",
   ),
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
