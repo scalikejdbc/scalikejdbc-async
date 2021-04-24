@@ -44,20 +44,20 @@ lazy val core = (project in file("core")).settings(
   },
   libraryDependencies ++= {
     Seq (
-      "org.scala-lang.modules" %% "scala-java8-compat"                % "0.9.1",
-      "org.scalikejdbc"        %% "scalikejdbc"                       % scalikejdbcVersion % "compile",
-      "org.scalikejdbc"        %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile",
-      "org.scalikejdbc"        %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "test",
-      "org.scalikejdbc"        %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test",
+      "org.scala-lang.modules" %% "scala-java8-compat"                % "0.9.1" cross CrossVersion.for3Use2_13,
+      "org.scalikejdbc"        %% "scalikejdbc"                       % scalikejdbcVersion % "compile" cross CrossVersion.for3Use2_13,
+      "org.scalikejdbc"        %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile" cross CrossVersion.for3Use2_13,
+      "org.scalikejdbc"        %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "test" cross CrossVersion.for3Use2_13,
+      "org.scalikejdbc"        %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test" cross CrossVersion.for3Use2_13,
       "com.github.jasync-sql"  %  "jasync-postgresql"                 % jasyncVersion      % "provided",
       "com.github.jasync-sql"  %  "jasync-mysql"                      % jasyncVersion      % "provided",
-      "com.dimafeng"           %% "testcontainers-scala"              % "0.39.3"           % "test",
+      "com.dimafeng"           %% "testcontainers-scala"              % "0.39.3"           % "test" cross CrossVersion.for3Use2_13,
       "org.testcontainers"     %  "mysql"                             % "1.15.3"           % "test",
       "org.testcontainers"     %  "postgresql"                        % "1.15.3"           % "test",
       "org.postgresql"         %  "postgresql"                        % postgresqlVersion  % "test",
       "mysql"                  %  "mysql-connector-java"              % "5.1.+"            % "test",
       "ch.qos.logback"         %  "logback-classic"                   % "1.2.+"            % "test"
-    ).map(_.withDottyCompat(scalaVersion.value))
+    )
   },
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.8" % "test",
