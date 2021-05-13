@@ -1,0 +1,22 @@
+name: rebase
+on: 
+  issue_comment:
+    types: [created]
+jobs:
+  rebase:
+    timeout-minutes: 5
+    if: github.event.issue.pull_request != '' && github.event.comment.body == '/rebase'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - id: generate_token
+      if: ${{ !github.event.repository.fork }}
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: 89631
+        private_key: ${{ secrets.SCALIKEJDBC_BOT_KEY }}
+    - uses: cirrus-actions/rebase@1.4
+      env:
+        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
