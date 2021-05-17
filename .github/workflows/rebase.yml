@@ -18,6 +18,6 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ steps.generate_token.outputs.token }}
-    - uses: cirrus-actions/rebase@1.4
+    - uses: cirrus-actions/rebase@1.5
       env:
         GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
