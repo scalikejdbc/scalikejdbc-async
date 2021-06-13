@@ -1,7 +1,6 @@
 package sample
 
 import org.joda.time._
-import org.scalatest._
 import scala.concurrent._, duration.DurationInt, ExecutionContext.Implicits.global
 import scalikejdbc._, async._
 import scalikejdbc.jodatime.JodaParameterBinderFactory._
