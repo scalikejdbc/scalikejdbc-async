@@ -1,11 +1,12 @@
 lazy val _version = "0.14.1-SNAPSHOT"
-lazy val scalikejdbcVersion = "3.5.0"
+lazy val scalikejdbcVersion = "4.0.0-RC1"
 lazy val jasyncVersion = "1.2.2" // provided
 lazy val postgresqlVersion = "42.2.21"
 val Scala212 = "2.12.14"
 val Scala213 = "2.13.6"
+val Scala3 = "3.0.1-RC1"
 
-crossScalaVersions := Seq(Scala213, Scala212)
+crossScalaVersions := Seq(Scala213, Scala212, Scala3)
 
 lazy val unusedWarnings = Def.setting(
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -23,7 +24,7 @@ lazy val core = (project in file("core")).settings(
   name := "scalikejdbc-async",
   version := _version,
   scalaVersion := Scala212,
-  crossScalaVersions := Seq(Scala213, Scala212),
+  crossScalaVersions := Seq(Scala213, Scala212, Scala3),
   publishTo := _publishTo(version.value),
   publishMavenStyle := true,
   // avoid NoClassDefFoundError
@@ -45,10 +46,10 @@ lazy val core = (project in file("core")).settings(
   libraryDependencies ++= {
     Seq (
       "org.scala-lang.modules" %% "scala-java8-compat"                % "1.0.0",
-      "org.scalikejdbc"        %% "scalikejdbc"                       % scalikejdbcVersion % "compile" cross CrossVersion.for3Use2_13,
-      "org.scalikejdbc"        %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile" cross CrossVersion.for3Use2_13,
-      "org.scalikejdbc"        %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "test" cross CrossVersion.for3Use2_13,
-      "org.scalikejdbc"        %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test" cross CrossVersion.for3Use2_13,
+      "org.scalikejdbc"        %% "scalikejdbc"                       % scalikejdbcVersion % "compile",
+      "org.scalikejdbc"        %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile",
+      "org.scalikejdbc"        %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "test",
+      "org.scalikejdbc"        %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test",
       "com.github.jasync-sql"  %  "jasync-postgresql"                 % jasyncVersion      % "provided",
       "com.github.jasync-sql"  %  "jasync-mysql"                      % jasyncVersion      % "provided",
       "com.dimafeng"           %% "testcontainers-scala"              % "0.39.5"           % "test",
