@@ -5,7 +5,6 @@ import scalikejdbc.async._
 import scala.concurrent._
 import duration._
 import ExecutionContext.Implicits.global
-import org.scalatest._
 import unit._
 import scalikejdbc.async.NamedAsyncDB
 import org.scalatest.flatspec.AnyFlatSpec

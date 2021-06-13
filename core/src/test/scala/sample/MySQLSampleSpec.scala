@@ -3,7 +3,6 @@ package sample
 import java.sql.Timestamp
 
 import org.joda.time._
-import org.scalatest._
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 import scalikejdbc._, async._
 import scalikejdbc.jodatime.JodaParameterBinderFactory._

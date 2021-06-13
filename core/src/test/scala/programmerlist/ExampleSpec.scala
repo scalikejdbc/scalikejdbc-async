@@ -3,7 +3,6 @@ package programmerlist
 import scalikejdbc._, async._
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 
-import org.scalatest._
 import unit._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

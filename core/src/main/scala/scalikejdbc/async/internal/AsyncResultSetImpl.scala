@@ -15,7 +15,6 @@
  */
 package scalikejdbc.async.internal
 
-import scalikejdbc._
 import com.github.jasync.sql.db.RowData
 import scalikejdbc.WrappedResultSet
 import scalikejdbc.async.AsyncResultSet
