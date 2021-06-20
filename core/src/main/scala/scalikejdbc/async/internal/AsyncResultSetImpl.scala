@@ -23,7 +23,11 @@ import scalikejdbc.async.AsyncResultSet
  * ResultSet Implementation
  */
 private[scalikejdbc] class AsyncResultSetImpl(rows: IndexedSeq[RowData])
-  extends WrappedResultSet(new RowDataResultSet(rows.headOption, rows.drop(1)), null, 0)
+  extends WrappedResultSet(
+    new RowDataResultSet(rows.headOption, rows.drop(1)),
+    null,
+    0
+  )
   with AsyncResultSet {
 
   // AsyncResultSet API

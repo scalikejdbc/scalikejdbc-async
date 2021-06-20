@@ -37,7 +37,10 @@ object AsyncTx {
    * @param cxt execution context
    * @return async tx query
    */
-  def withSQLBuilders(builders: SQLBuilder[_]*)(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): AsyncTxQuery = {
+  def withSQLBuilders(builders: SQLBuilder[_]*)(implicit
+    session: SharedAsyncDBSession,
+    cxt: EC = ECGlobal
+  ): AsyncTxQuery = {
     withSQLs(builders.map(_.toSQL): _*)
   }
 
@@ -49,13 +52,19 @@ object AsyncTx {
    * @param cxt execution context
    * @return async tx query
    */
-  def withSQLs(sqlObjects: SQL[_, _]*)(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): AsyncTxQuery = {
+  def withSQLs(sqlObjects: SQL[_, _]*)(implicit
+    session: SharedAsyncDBSession,
+    cxt: EC = ECGlobal
+  ): AsyncTxQuery = {
     new AsyncTxQuery(sqlObjects)
   }
 
-  def inTransaction[A](tx: TxAsyncDBSession, op: TxAsyncDBSession => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
+  def inTransaction[A](tx: TxAsyncDBSession, op: TxAsyncDBSession => Future[A])(
+    implicit cxt: EC = ECGlobal
+  ): Future[A] = {
     val p = Promise[A]()
-    val connection = tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
+    val connection =
+      tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
     connection
       .inTransaction((_: Connection) => op.apply(tx).toJava.toCompletableFuture)
       .toScala
@@ -71,4 +80,3 @@ object AsyncTx {
   }
 
 }
-

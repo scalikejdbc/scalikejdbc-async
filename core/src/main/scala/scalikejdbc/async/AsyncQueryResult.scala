@@ -23,9 +23,9 @@ import scala.concurrent.Future
 abstract class AsyncQueryResult(
   val rowsAffected: Option[Long],
   val statusMessage: Option[String],
-  val rows: Option[AsyncResultSet]) {
+  val rows: Option[AsyncResultSet]
+) {
 
   def generatedKey: Future[Option[Long]]
 
 }
-

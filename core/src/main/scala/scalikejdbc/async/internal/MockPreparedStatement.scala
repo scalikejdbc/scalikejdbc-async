@@ -31,40 +31,63 @@ class MockPreparedStatement extends PreparedStatement {
   def getMetaData(): java.sql.ResultSetMetaData = notSupported
   def getParameterMetaData(): java.sql.ParameterMetaData = notSupported
   def setArray(index: Int, pValue: java.sql.Array): Unit = value = pValue
-  def setAsciiStream(index: Int, pValue: java.io.InputStream): Unit = value = pValue
-  def setAsciiStream(index: Int, pValue: java.io.InputStream, x$3: Long): Unit = value = pValue
-  def setAsciiStream(index: Int, pValue: java.io.InputStream, x$3: Int): Unit = value = pValue
-  def setBigDecimal(index: Int, pValue: java.math.BigDecimal): Unit = value = pValue
-  def setBinaryStream(index: Int, pValue: java.io.InputStream): Unit = value = pValue
-  def setBinaryStream(index: Int, pValue: java.io.InputStream, x$3: Long): Unit = value = pValue
-  def setBinaryStream(index: Int, pValue: java.io.InputStream, x$3: Int): Unit = value = pValue
+  def setAsciiStream(index: Int, pValue: java.io.InputStream): Unit = value =
+    pValue
+  def setAsciiStream(index: Int, pValue: java.io.InputStream, x$3: Long): Unit =
+    value = pValue
+  def setAsciiStream(index: Int, pValue: java.io.InputStream, x$3: Int): Unit =
+    value = pValue
+  def setBigDecimal(index: Int, pValue: java.math.BigDecimal): Unit = value =
+    pValue
+  def setBinaryStream(index: Int, pValue: java.io.InputStream): Unit = value =
+    pValue
+  def setBinaryStream(
+    index: Int,
+    pValue: java.io.InputStream,
+    x$3: Long
+  ): Unit = value = pValue
+  def setBinaryStream(index: Int, pValue: java.io.InputStream, x$3: Int): Unit =
+    value = pValue
   def setBlob(index: Int, pValue: java.io.InputStream): Unit = value = pValue
-  def setBlob(index: Int, pValue: java.io.InputStream, x$3: Long): Unit = value = pValue
+  def setBlob(index: Int, pValue: java.io.InputStream, x$3: Long): Unit =
+    value = pValue
   def setBlob(index: Int, pValue: java.sql.Blob): Unit = value = pValue
   def setBoolean(index: Int, pValue: Boolean): Unit = value = pValue
   def setByte(index: Int, pValue: Byte): Unit = value = pValue
   def setBytes(index: Int, pValue: Array[Byte]): Unit = value = pValue
-  def setCharacterStream(index: Int, pValue: java.io.Reader): Unit = value = pValue
-  def setCharacterStream(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value = pValue
-  def setCharacterStream(index: Int, pValue: java.io.Reader, x$3: Int): Unit = value = pValue
+  def setCharacterStream(index: Int, pValue: java.io.Reader): Unit = value =
+    pValue
+  def setCharacterStream(index: Int, pValue: java.io.Reader, x$3: Long): Unit =
+    value = pValue
+  def setCharacterStream(index: Int, pValue: java.io.Reader, x$3: Int): Unit =
+    value = pValue
   def setClob(index: Int, pValue: java.io.Reader): Unit = value = pValue
-  def setClob(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value = pValue
+  def setClob(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value =
+    pValue
   def setClob(index: Int, pValue: java.sql.Clob): Unit = value = pValue
-  def setDate(index: Int, pValue: java.sql.Date, x$3: java.util.Calendar): Unit = value = pValue
+  def setDate(
+    index: Int,
+    pValue: java.sql.Date,
+    x$3: java.util.Calendar
+  ): Unit = value = pValue
   def setDate(index: Int, pValue: java.sql.Date): Unit = value = pValue
   def setDouble(index: Int, pValue: Double): Unit = value = pValue
   def setFloat(index: Int, pValue: Float): Unit = value = pValue
   def setInt(index: Int, pValue: Int): Unit = value = pValue
   def setLong(index: Int, pValue: Long) = { value = pValue }
-  def setNCharacterStream(index: Int, pValue: java.io.Reader): Unit = value = pValue
-  def setNCharacterStream(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value = pValue
+  def setNCharacterStream(index: Int, pValue: java.io.Reader): Unit = value =
+    pValue
+  def setNCharacterStream(index: Int, pValue: java.io.Reader, x$3: Long): Unit =
+    value = pValue
   def setNClob(index: Int, pValue: java.io.Reader): Unit = value = pValue
-  def setNClob(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value = pValue
+  def setNClob(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value =
+    pValue
   def setNClob(index: Int, pValue: java.sql.NClob): Unit = value = pValue
   def setNString(index: Int, pValue: String): Unit = value = pValue
   def setNull(index: Int, pValue: Int, x$3: String): Unit = value = pValue
   def setNull(index: Int, pValue: Int): Unit = value = pValue
-  def setObject(index: Int, pValue: Any, x$3: Int, x$4: Int): Unit = value = pValue
+  def setObject(index: Int, pValue: Any, x$3: Int, x$4: Int): Unit = value =
+    pValue
   def setObject(index: Int, pValue: Any): Unit = value = pValue
   def setObject(index: Int, pValue: Any, x$3: Int): Unit = value = pValue
   def setRef(index: Int, pValue: java.sql.Ref): Unit = value = pValue
@@ -72,12 +95,25 @@ class MockPreparedStatement extends PreparedStatement {
   def setSQLXML(index: Int, pValue: java.sql.SQLXML): Unit = value = pValue
   def setShort(index: Int, pValue: Short): Unit = value = pValue
   def setString(index: Int, pValue: String): Unit = value = pValue
-  def setTime(index: Int, pValue: java.sql.Time, x$3: java.util.Calendar): Unit = value = pValue
+  def setTime(
+    index: Int,
+    pValue: java.sql.Time,
+    x$3: java.util.Calendar
+  ): Unit = value = pValue
   def setTime(index: Int, pValue: java.sql.Time): Unit = value = pValue
-  def setTimestamp(index: Int, pValue: java.sql.Timestamp, x$3: java.util.Calendar): Unit = value = pValue
-  def setTimestamp(index: Int, pValue: java.sql.Timestamp): Unit = value = pValue
+  def setTimestamp(
+    index: Int,
+    pValue: java.sql.Timestamp,
+    x$3: java.util.Calendar
+  ): Unit = value = pValue
+  def setTimestamp(index: Int, pValue: java.sql.Timestamp): Unit = value =
+    pValue
   def setURL(index: Int, pValue: java.net.URL): Unit = value = pValue
-  def setUnicodeStream(index: Int, pValue: java.io.InputStream, x$3: Int): Unit = value = pValue
+  def setUnicodeStream(
+    index: Int,
+    pValue: java.io.InputStream,
+    x$3: Int
+  ): Unit = value = pValue
 
   // Members declared in java.sql.Statement
   def addBatch(index: String): Unit = notSupported

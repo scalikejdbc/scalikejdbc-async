@@ -24,16 +24,24 @@ import scalikejdbc.async.ShortenedNames._
  */
 class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
 
-  def future()(implicit session: SharedAsyncDBSession, cxt: EC = ECGlobal): Future[Seq[AsyncQueryResult]] = {
+  def future()(implicit
+    session: SharedAsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[Seq[AsyncQueryResult]] = {
     def op(tx: TxAsyncDBSession) = {
-      sqls.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) { (resultsFuture, sql) =>
-        for {
-          results <- resultsFuture
-          current <- tx.connection.sendPreparedStatement(sql.statement, sql.parameters.toSeq: _*)
-        } yield results :+ current
+      sqls.foldLeft(Future.successful(Vector.empty[AsyncQueryResult])) {
+        (resultsFuture, sql) =>
+          for {
+            results <- resultsFuture
+            current <- tx.connection.sendPreparedStatement(
+              sql.statement,
+              sql.parameters.toSeq: _*
+            )
+          } yield results :+ current
       }
     }
-    session.connection.toNonSharedConnection()
+    session.connection
+      .toNonSharedConnection()
       .flatMap(conn => AsyncTx.inTransaction(TxAsyncDBSession(conn), op))
   }
 

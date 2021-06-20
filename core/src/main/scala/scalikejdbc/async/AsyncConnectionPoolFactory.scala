@@ -24,8 +24,12 @@ import scalikejdbc.async.internal.postgresql.PostgreSQLConnectionPoolImpl
  */
 trait AsyncConnectionPoolFactory {
 
-  def apply(url: String, user: String, password: String,
-    settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()): AsyncConnectionPool
+  def apply(
+    url: String,
+    user: String,
+    password: String,
+    settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
+  ): AsyncConnectionPool
 
 }
 
@@ -34,8 +38,12 @@ trait AsyncConnectionPoolFactory {
  */
 object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
 
-  override def apply(url: String, user: String, password: String,
-    settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()): AsyncConnectionPool = {
+  override def apply(
+    url: String,
+    user: String,
+    password: String,
+    settings: AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
+  ): AsyncConnectionPool = {
 
     url match {
       case _ if url.startsWith("jdbc:postgresql://") =>
@@ -55,14 +63,21 @@ object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
         // issue #5 Error: database name is too long
         //val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
         val defaultProperties = ""
-        val addDefaultPropertiesIfNeeded = MysqlCustomProperties.findFirstMatchIn(url).map(_ => "").getOrElse(defaultProperties)
-        val _url = "jdbc:mysql://%s/%s".format(_host, _dbname + addDefaultPropertiesIfNeeded)
+        val addDefaultPropertiesIfNeeded = MysqlCustomProperties
+          .findFirstMatchIn(url)
+          .map(_ => "")
+          .getOrElse(defaultProperties)
+        val _url = "jdbc:mysql://%s/%s".format(
+          _host,
+          _dbname + addDefaultPropertiesIfNeeded
+        )
         new MySQLConnectionPoolImpl(_url, _user, _password, settings)
 
       case _ =>
-        throw new UnsupportedOperationException("This RDBMS is not supported yet.")
+        throw new UnsupportedOperationException(
+          "This RDBMS is not supported yet."
+        )
     }
   }
 
 }
-

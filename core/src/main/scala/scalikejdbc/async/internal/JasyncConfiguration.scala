@@ -30,7 +30,8 @@ private[scalikejdbc] trait JasyncConfiguration {
     url: String,
     user: String,
     password: String,
-    connectionSettings: AsyncConnectionSettings) = {
+    connectionSettings: AsyncConnectionSettings
+  ) = {
     val jdbcUrl = JDBCUrl(url)
     new Configuration(
       user,
@@ -40,14 +41,21 @@ private[scalikejdbc] trait JasyncConfiguration {
       jdbcUrl.database,
       connectionSettings.ssl.getOrElse(defaultConfiguration.getSsl),
       connectionSettings.charset.getOrElse(defaultConfiguration.getCharset),
-      connectionSettings.maximumMessageSize.getOrElse(defaultConfiguration.getMaximumMessageSize),
+      connectionSettings.maximumMessageSize.getOrElse(
+        defaultConfiguration.getMaximumMessageSize
+      ),
       connectionSettings.allocator.getOrElse(defaultConfiguration.getAllocator),
-      connectionSettings.connectTimeout.map(_.toMillis.toInt).getOrElse(defaultConfiguration.getConnectionTimeout),
-      connectionSettings.queryTimeout.map(x => java.time.Duration.ofMillis(x.toMillis)).getOrElse(defaultConfiguration.getQueryTimeout),
+      connectionSettings.connectTimeout
+        .map(_.toMillis.toInt)
+        .getOrElse(defaultConfiguration.getConnectionTimeout),
+      connectionSettings.queryTimeout
+        .map(x => java.time.Duration.ofMillis(x.toMillis))
+        .getOrElse(defaultConfiguration.getQueryTimeout),
       defaultConfiguration.getApplicationName,
       defaultConfiguration.getInterceptors,
       defaultConfiguration.getEventLoopGroup,
-      defaultConfiguration.getExecutionContext)
+      defaultConfiguration.getExecutionContext
+    )
   }
 
 }

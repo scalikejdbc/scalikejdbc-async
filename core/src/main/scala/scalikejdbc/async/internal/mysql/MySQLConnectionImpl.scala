@@ -26,20 +26,31 @@ import scala.collection.JavaConverters._
  */
 trait MySQLConnectionImpl extends AsyncConnectionCommonImpl {
 
-  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
+  override def toNonSharedConnection()(implicit
+    cxt: EC = ECGlobal
+  ): Future[NonSharedAsyncConnection] = {
     this match {
       case c: PoolableAsyncConnection[ConcreteConnection @unchecked] =>
         val pool = c.pool
-        pool.take.toScala.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with MySQLConnectionImpl)
+        pool.take.toScala.map(conn =>
+          new NonSharedAsyncConnectionImpl(conn, Some(pool))
+            with MySQLConnectionImpl
+        )
       case _ =>
-        Future.successful(new NonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl)
+        Future.successful(
+          new NonSharedAsyncConnectionImpl(underlying) with MySQLConnectionImpl
+        )
     }
   }
 
-  override protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
+  override protected def extractGeneratedKey(
+    queryResult: QueryResult
+  )(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
     ensureNonShared()
     underlying.sendQuery("SELECT LAST_INSERT_ID()").toScala.map { result =>
-      result.getRows.asScala.headOption.map { row => row.get(0).asInstanceOf[Long] }
+      result.getRows.asScala.headOption.map { row =>
+        row.get(0).asInstanceOf[Long]
+      }
     }
   }
 

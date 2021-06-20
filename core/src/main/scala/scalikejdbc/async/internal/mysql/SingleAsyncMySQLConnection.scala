@@ -20,14 +20,19 @@ import scalikejdbc.async._, internal._
 /**
  * MySQL Single Connection
  */
-private[scalikejdbc] case class SingleAsyncMySQLConnection(url: String, user: String, private val password: String, connectionSettings: AsyncConnectionSettings)
-  extends AsyncConnectionCommonImpl
+private[scalikejdbc] case class SingleAsyncMySQLConnection(
+  url: String,
+  user: String,
+  private val password: String,
+  connectionSettings: AsyncConnectionSettings
+) extends AsyncConnectionCommonImpl
   with MySQLConnectionImpl
   with JasyncConfiguration {
 
   private[scalikejdbc] val underlying = {
-    new com.github.jasync.sql.db.mysql.MySQLConnection(configuration(url, user, password, connectionSettings))
+    new com.github.jasync.sql.db.mysql.MySQLConnection(
+      configuration(url, user, password, connectionSettings)
+    )
   }
 
 }
-

@@ -15,7 +15,8 @@ create table account (
 
   val insertQueries = Seq(
     """insert into account (id, person_id, account_details, parent) 
-        values (13, 12, 'test account details', null)""")
+        values (13, 12, 'test account details', null)"""
+  )
 
   def initMySQL(): Unit = {
     NamedDB("mysql") autoCommit { implicit s =>
@@ -28,4 +29,3 @@ create table account (
   }
 
 }
-

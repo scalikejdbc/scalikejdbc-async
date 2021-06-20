@@ -17,5 +17,4 @@ jobs:
         # TODO https://github.com/scalikejdbc/scalikejdbc-async/issues/162
         java-version: "adopt@1.8.0-282"
     - uses: coursier/cache-action@v6
-    - run: sbt -v "+ test"
-    - run: git diff --exit-code # check scalariform
+    - run: sbt -v scalafmtSbtCheck "+ scalafmtAll" "+ test"

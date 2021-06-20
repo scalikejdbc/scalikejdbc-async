@@ -30,17 +30,22 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
 
   val connection: AsyncConnection
 
-  def execute(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Boolean] = {
+  def execute(statement: String, parameters: Any*)(implicit
+    cxt: EC = ECGlobal
+  ): Future[Boolean] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-        result.rowsAffected.exists(_ > 0)
+      connection.sendPreparedStatement(statement, _parameters: _*).map {
+        result =>
+          result.rowsAffected.exists(_ > 0)
       }
     }
   }
 
-  def update(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Int] = {
+  def update(statement: String, parameters: Any*)(implicit
+    cxt: EC = ECGlobal
+  ): Future[Int] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
@@ -48,9 +53,12 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
         if (connection.isShared) {
           // create local transaction if current session is not transactional
           connection.toNonSharedConnection().flatMap { conn =>
-            AsyncTx.inTransaction(TxAsyncDBSession(conn), { (tx: TxAsyncDBSession) =>
-              tx.connection.sendPreparedStatement(statement, _parameters: _*)
-            })
+            AsyncTx.inTransaction(
+              TxAsyncDBSession(conn),
+              { (tx: TxAsyncDBSession) =>
+                tx.connection.sendPreparedStatement(statement, _parameters: _*)
+              }
+            )
           }
         } else {
           connection.sendPreparedStatement(statement, _parameters: _*)
@@ -62,10 +70,14 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     }
   }
 
-  def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[Long] = {
+  def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(implicit
+    cxt: EC = ECGlobal
+  ): Future[Long] = {
     def readGeneratedKey(result: AsyncQueryResult): Future[Long] = {
       result.generatedKey.map(_.getOrElse {
-        throw new IllegalArgumentException(ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'")
+        throw new IllegalArgumentException(
+          ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'"
+        )
       })
     }
     val _parameters = ensureAndNormalizeParameters(parameters)
@@ -74,35 +86,49 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
       if (connection.isShared) {
         // create local transaction if current session is not transactional
         connection.toNonSharedConnection().flatMap { conn =>
-          AsyncTx.inTransaction(TxAsyncDBSession(conn), { (tx: TxAsyncDBSession) =>
-            tx.connection.sendPreparedStatement(statement, _parameters: _*).flatMap(readGeneratedKey)
-          })
+          AsyncTx.inTransaction(
+            TxAsyncDBSession(conn),
+            { (tx: TxAsyncDBSession) =>
+              tx.connection
+                .sendPreparedStatement(statement, _parameters: _*)
+                .flatMap(readGeneratedKey)
+            }
+          )
         }
       } else {
-        connection.sendPreparedStatement(statement, _parameters: _*).flatMap(readGeneratedKey)
+        connection
+          .sendPreparedStatement(statement, _parameters: _*)
+          .flatMap(readGeneratedKey)
       }
     }
   }
 
   @deprecated("will be removed. use iterable", "0.12.0")
-  def traversable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[Iterable[A]] =
+  def traversable[A](statement: String, parameters: Any*)(
+    extractor: WrappedResultSet => A
+  )(implicit cxt: EC = ECGlobal): Future[Iterable[A]] =
     iterable[A](statement, parameters: _*)(extractor)
 
-  def iterable[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[Iterable[A]] = {
+  def iterable[A](statement: String, parameters: Any*)(
+    extractor: WrappedResultSet => A
+  )(implicit cxt: EC = ECGlobal): Future[Iterable[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-        result.rows.map { ars =>
-          new AsyncResultSetIterator(ars).map(extractor).toList
-        }.getOrElse(Nil)
+      connection.sendPreparedStatement(statement, _parameters: _*).map {
+        result =>
+          result.rows
+            .map { ars =>
+              new AsyncResultSetIterator(ars).map(extractor).toList
+            }
+            .getOrElse(Nil)
       }
     }
   }
 
-  def single[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(
-    implicit
-    cxt: EC = ECGlobal): Future[Option[A]] = {
+  def single[A](statement: String, parameters: Any*)(
+    extractor: WrappedResultSet => A
+  )(implicit cxt: EC = ECGlobal): Future[Option[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     iterable(statement, _parameters: _*)(extractor).map {
       case Nil => None
@@ -111,82 +137,118 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     }
   }
 
-  def list[A](statement: String, parameters: Any*)(extractor: WrappedResultSet => A)(implicit cxt: EC = ECGlobal): Future[List[A]] = {
+  def list[A](statement: String, parameters: Any*)(
+    extractor: WrappedResultSet => A
+  )(implicit cxt: EC = ECGlobal): Future[List[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     iterable[A](statement, _parameters: _*)(extractor).map(_.toList)
   }
 
   @deprecated("will be removed. use oneToOneIterable", "0.12.0")
-  def oneToOneTraversable[A, B, Z](statement: String, parameters: Any*)(extractOne: WrappedResultSet => A)(extractTo: WrappedResultSet => Option[B])(transform: (A, B) => Z)(
-    implicit
-    cxt: EC = ECGlobal): Future[Iterable[Z]] =
-    oneToOneIterable[A, B, Z](statement, parameters: _*)(extractOne)(extractTo)(transform)
+  def oneToOneTraversable[A, B, Z](statement: String, parameters: Any*)(
+    extractOne: WrappedResultSet => A
+  )(
+    extractTo: WrappedResultSet => Option[B]
+  )(transform: (A, B) => Z)(implicit cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToOneIterable[A, B, Z](statement, parameters: _*)(extractOne)(extractTo)(
+      transform
+    )
 
-  def oneToOneIterable[A, B, Z](statement: String, parameters: Any*)(extractOne: WrappedResultSet => A)(extractTo: WrappedResultSet => Option[B])(transform: (A, B) => Z)(
-    implicit
-    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
+  def oneToOneIterable[A, B, Z](statement: String, parameters: Any*)(
+    extractOne: WrappedResultSet => A
+  )(extractTo: WrappedResultSet => Option[B])(
+    transform: (A, B) => Z
+  )(implicit cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
-      def processResultSet(oneToOne: LinkedHashMap[A, Option[B]], rs: WrappedResultSet): LinkedHashMap[A, Option[B]] = {
+      def processResultSet(
+        oneToOne: LinkedHashMap[A, Option[B]],
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, Option[B]] = {
         val o = extractOne(rs)
         oneToOne.keys.find(_ == o) match {
-          case Some(_) => throw IllegalRelationshipException(ErrorMessage.INVALID_ONE_TO_ONE_RELATION)
+          case Some(_) =>
+            throw IllegalRelationshipException(
+              ErrorMessage.INVALID_ONE_TO_ONE_RELATION
+            )
           case _ => oneToOne += (o -> extractTo(rs))
         }
       }
-      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-        result.rows.map { ars =>
-          new AsyncResultSetIterator(ars).foldLeft(LinkedHashMap[A, Option[B]]())(processResultSet).map {
-            case (one, Some(to)) => transform(one, to)
-            case (one, None) => one.asInstanceOf[Z]
-          }
-        }.getOrElse(Nil)
+      connection.sendPreparedStatement(statement, _parameters: _*).map {
+        result =>
+          result.rows
+            .map { ars =>
+              new AsyncResultSetIterator(ars)
+                .foldLeft(LinkedHashMap[A, Option[B]]())(processResultSet)
+                .map {
+                  case (one, Some(to)) => transform(one, to)
+                  case (one, None) => one.asInstanceOf[Z]
+                }
+            }
+            .getOrElse(Nil)
       }
     }
   }
 
   @deprecated("will be removed. use oneToManyIterable", "0.12.0")
   def oneToManyTraversable[A, B, Z](statement: String, parameters: Any*)(
-    extractOne: WrappedResultSet => A)(
-    extractTo: WrappedResultSet => Option[B])(
-    transform: (A, Seq[B]) => Z)(
-    implicit
-    cxt: EC = ECGlobal): Future[Iterable[Z]] =
-    oneToManyIterable[A, B, Z](statement, parameters: _*)(extractOne)(extractTo)(transform)
+    extractOne: WrappedResultSet => A
+  )(extractTo: WrappedResultSet => Option[B])(
+    transform: (A, Seq[B]) => Z
+  )(implicit cxt: EC = ECGlobal): Future[Iterable[Z]] =
+    oneToManyIterable[A, B, Z](statement, parameters: _*)(extractOne)(
+      extractTo
+    )(transform)
 
   def oneToManyIterable[A, B, Z](statement: String, parameters: Any*)(
-    extractOne: WrappedResultSet => A)(
-    extractTo: WrappedResultSet => Option[B])(
-    transform: (A, Seq[B]) => Z)(
-    implicit
-    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
+    extractOne: WrappedResultSet => A
+  )(extractTo: WrappedResultSet => Option[B])(
+    transform: (A, Seq[B]) => Z
+  )(implicit cxt: EC = ECGlobal): Future[Iterable[Z]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
 
-      def processResultSet(oneToMany: LinkedHashMap[A, Seq[B]], rs: WrappedResultSet): LinkedHashMap[A, Seq[B]] = {
+      def processResultSet(
+        oneToMany: LinkedHashMap[A, Seq[B]],
+        rs: WrappedResultSet
+      ): LinkedHashMap[A, Seq[B]] = {
         val o = extractOne(rs)
-        oneToMany.keys.find(_ == o).map { _ =>
-          extractTo(rs).map(many => oneToMany += (o -> (oneToMany.apply(o) :+ many))).getOrElse(oneToMany)
-        }.getOrElse {
-          oneToMany += (o -> extractTo(rs).map(many => Vector(many)).getOrElse(Nil))
-        }
-      }
-      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
-        result.rows.map { ars =>
-          new AsyncResultSetIterator(ars).foldLeft(LinkedHashMap[A, Seq[B]]())(processResultSet).map {
-            case (one, to) => transform(one, to)
+        oneToMany.keys
+          .find(_ == o)
+          .map { _ =>
+            extractTo(rs)
+              .map(many => oneToMany += (o -> (oneToMany.apply(o) :+ many)))
+              .getOrElse(oneToMany)
           }
-        }.getOrElse(Nil)
+          .getOrElse {
+            oneToMany += (o -> extractTo(rs)
+              .map(many => Vector(many))
+              .getOrElse(Nil))
+          }
+      }
+      connection.sendPreparedStatement(statement, _parameters: _*).map {
+        result =>
+          result.rows
+            .map { ars =>
+              new AsyncResultSetIterator(ars)
+                .foldLeft(LinkedHashMap[A, Seq[B]]())(processResultSet)
+                .map { case (one, to) =>
+                  transform(one, to)
+                }
+            }
+            .getOrElse(Nil)
       }
     }
   }
 
   protected def queryLogging(statement: String, parameters: Seq[Any]): Unit = {
     if (loggingSQLAndTime.enabled) {
-      log.withLevel(loggingSQLAndTime.logLevel)(s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})")
+      log.withLevel(loggingSQLAndTime.logLevel)(
+        s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})"
+      )
     }
   }
 
@@ -202,12 +264,19 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     }
   }
 
-  protected def withListeners[A](statement: String, parameters: Seq[Any], startMillis: Long = System.currentTimeMillis)(
-    f: Future[A])(implicit cxt: EC = EC.global): Future[A] = {
+  protected def withListeners[A](
+    statement: String,
+    parameters: Seq[Any],
+    startMillis: Long = System.currentTimeMillis
+  )(f: Future[A])(implicit cxt: EC = EC.global): Future[A] = {
     f.onComplete {
       case Success(_) =>
         val millis = System.currentTimeMillis - startMillis
-        GlobalSettings.queryCompletionListener.apply(statement, parameters, millis)
+        GlobalSettings.queryCompletionListener.apply(
+          statement,
+          parameters,
+          millis
+        )
       case Failure(e) =>
         GlobalSettings.queryFailureListener.apply(statement, parameters, e)
     }
@@ -219,20 +288,25 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
 /**
  * Shared Asynchronous DB session
  */
-case class SharedAsyncDBSession(connection: AsyncConnection) extends AsyncDBSession
+case class SharedAsyncDBSession(connection: AsyncConnection)
+  extends AsyncDBSession
 
 /**
  * Asynchronous Transactional DB Session
  */
-case class TxAsyncDBSession(connection: NonSharedAsyncConnection) extends AsyncDBSession {
+case class TxAsyncDBSession(connection: NonSharedAsyncConnection)
+  extends AsyncDBSession {
 
   def isActive: Boolean = connection.isActive
 
-  def begin()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] = connection.sendQuery("BEGIN")
+  def begin()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] =
+    connection.sendQuery("BEGIN")
 
-  def rollback()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] = connection.sendQuery("ROLLBACK")
+  def rollback()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] =
+    connection.sendQuery("ROLLBACK")
 
-  def commit()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] = connection.sendQuery("COMMIT")
+  def commit()(implicit ctx: EC = ECGlobal): Future[AsyncQueryResult] =
+    connection.sendQuery("COMMIT")
 
   def release(): Unit = connection.release()
 

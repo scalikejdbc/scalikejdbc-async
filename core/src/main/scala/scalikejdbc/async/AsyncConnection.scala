@@ -29,7 +29,9 @@ trait AsyncConnection {
    * @param cxt execution context
    * @return connection
    */
-  def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection]
+  def toNonSharedConnection()(implicit
+    cxt: EC = ECGlobal
+  ): Future[NonSharedAsyncConnection]
 
   /**
    * Send a query.
@@ -38,7 +40,9 @@ trait AsyncConnection {
    * @param cxt execution context
    * @return future
    */
-  def sendQuery(statement: String)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult]
+  def sendQuery(statement: String)(implicit
+    cxt: EC = ECGlobal
+  ): Future[AsyncQueryResult]
 
   /**
    * Send a prepared statement.
@@ -48,7 +52,9 @@ trait AsyncConnection {
    * @param cxt execution context
    * @return future
    */
-  def sendPreparedStatement(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult]
+  def sendPreparedStatement(statement: String, parameters: Any*)(implicit
+    cxt: EC = ECGlobal
+  ): Future[AsyncQueryResult]
 
   /**
    * Returns this connection is active.
@@ -70,4 +76,3 @@ trait AsyncConnection {
   def close(): Unit
 
 }
-

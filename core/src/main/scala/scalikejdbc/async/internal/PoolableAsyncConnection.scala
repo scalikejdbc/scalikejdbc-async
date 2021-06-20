@@ -28,10 +28,14 @@ import scala.concurrent._
  * @param pool connection pool
  * @tparam T Connection sub type
  */
-private[scalikejdbc] abstract class PoolableAsyncConnection[T <: ConcreteConnection](val pool: ConnectionPool[T])
+private[scalikejdbc] abstract class PoolableAsyncConnection[
+  T <: ConcreteConnection
+](val pool: ConnectionPool[T])
   extends AsyncConnectionCommonImpl {
 
-  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] =
+  override def toNonSharedConnection()(implicit
+    cxt: EC = ECGlobal
+  ): Future[NonSharedAsyncConnection] =
     Future.failed(new UnsupportedOperationException)
 
   private[scalikejdbc] lazy val underlying = pool
