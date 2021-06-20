@@ -31,11 +31,12 @@ lazy val core = (project in file("core")).settings(
   // https://github.com/testcontainers/testcontainers-java/blob/22030eace3f4bafc735ccb0e402c1202329a95d1/core/src/main/java/org/testcontainers/utility/MountableFile.java#L284
   // https://github.com/sbt/sbt/issues/4794
   Test / fork := true,
-  (Compile / packageSrc / mappings) ++= (Compile / managedSources).value.map{ f =>
-    // to merge generated sources into sources.jar as well
-    (f, f.relativeTo((Compile / sourceManaged).value).get.getPath)
+  (Compile / packageSrc / mappings) ++= (Compile / managedSources).value.map {
+    f =>
+      // to merge generated sources into sources.jar as well
+      (f, f.relativeTo((Compile / sourceManaged).value).get.getPath)
   },
-  (Compile / sourceGenerators) += task{
+  (Compile / sourceGenerators) += task {
     val dir = (Compile / sourceManaged).value / "scalikejdbc" / "async"
     CodeGenerator.generate.map { s =>
       val f = dir / s.name
@@ -44,20 +45,20 @@ lazy val core = (project in file("core")).settings(
     }
   },
   libraryDependencies ++= {
-    Seq (
-      "org.scala-lang.modules" %% "scala-java8-compat"                % "1.0.0",
-      "org.scalikejdbc"        %% "scalikejdbc"                       % scalikejdbcVersion % "compile",
-      "org.scalikejdbc"        %% "scalikejdbc-interpolation"         % scalikejdbcVersion % "compile",
-      "org.scalikejdbc"        %% "scalikejdbc-syntax-support-macro"  % scalikejdbcVersion % "test",
-      "org.scalikejdbc"        %% "scalikejdbc-joda-time"             % scalikejdbcVersion % "test",
-      "com.github.jasync-sql"  %  "jasync-postgresql"                 % jasyncVersion      % "provided",
-      "com.github.jasync-sql"  %  "jasync-mysql"                      % jasyncVersion      % "provided",
-      "com.dimafeng"           %% "testcontainers-scala"              % "0.39.5"           % "test",
-      "org.testcontainers"     %  "mysql"                             % "1.15.3"           % "test",
-      "org.testcontainers"     %  "postgresql"                        % "1.15.3"           % "test",
-      "org.postgresql"         %  "postgresql"                        % postgresqlVersion  % "test",
-      "mysql"                  %  "mysql-connector-java"              % "5.1.+"            % "test",
-      "ch.qos.logback"         %  "logback-classic"                   % "1.2.+"            % "test"
+    Seq(
+      "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.0",
+      "org.scalikejdbc" %% "scalikejdbc" % scalikejdbcVersion % "compile",
+      "org.scalikejdbc" %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
+      "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % scalikejdbcVersion % "test",
+      "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikejdbcVersion % "test",
+      "com.github.jasync-sql" % "jasync-postgresql" % jasyncVersion % "provided",
+      "com.github.jasync-sql" % "jasync-mysql" % jasyncVersion % "provided",
+      "com.dimafeng" %% "testcontainers-scala" % "0.39.5" % "test",
+      "org.testcontainers" % "mysql" % "1.15.3" % "test",
+      "org.testcontainers" % "postgresql" % "1.15.3" % "test",
+      "org.postgresql" % "postgresql" % postgresqlVersion % "test",
+      "mysql" % "mysql-connector-java" % "5.1.+" % "test",
+      "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
     )
   },
   libraryDependencies ++= Seq(
@@ -65,9 +66,14 @@ lazy val core = (project in file("core")).settings(
   ),
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
-  scalacOptions ++= Seq("-deprecation", "-unchecked", "-language:implicitConversions", "-feature") ++ unusedWarnings.value,
-  Seq(Compile, Test).flatMap(
-    c => (c / console / scalacOptions) --= unusedWarnings.value
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-unchecked",
+    "-language:implicitConversions",
+    "-feature"
+  ) ++ unusedWarnings.value,
+  Seq(Compile, Test).flatMap(c =>
+    (c / console / scalacOptions) --= unusedWarnings.value
   ),
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -86,7 +92,8 @@ lazy val core = (project in file("core")).settings(
 
 def _publishTo(v: String) = {
   val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
+  if (v.trim.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 val _pomExtra = <url>http://scalikejdbc.org/</url>

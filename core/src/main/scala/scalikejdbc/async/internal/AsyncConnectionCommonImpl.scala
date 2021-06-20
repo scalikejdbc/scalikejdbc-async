@@ -34,30 +34,48 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
 
   override def isActive: Boolean = underlying.isConnected
 
-  override def sendQuery(statement: String)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult] = {
+  override def sendQuery(
+    statement: String
+  )(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult] = {
 
     underlying.sendQuery(statement).toScala.map { queryResult =>
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.getRowsAffected),
         statusMessage = Option(queryResult.getStatusMessage),
-        rows = Some(new internal.AsyncResultSetImpl(queryResult.getRows.asScala.toIndexedSeq))) {
+        rows = Some(
+          new internal.AsyncResultSetImpl(
+            queryResult.getRows.asScala.toIndexedSeq
+          )
+        )
+      ) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
     }
   }
 
-  override def sendPreparedStatement(statement: String, parameters: Any*)(implicit cxt: EC = ECGlobal): Future[AsyncQueryResult] = {
+  override def sendPreparedStatement(statement: String, parameters: Any*)(
+    implicit cxt: EC = ECGlobal
+  ): Future[AsyncQueryResult] = {
 
     val queryResultFuture: Future[QueryResult] = {
       if (parameters.isEmpty) underlying.sendQuery(statement)
-      else underlying.sendPreparedStatement(statement, parameters.map(_.asInstanceOf[AnyRef]).asJava)
+      else
+        underlying.sendPreparedStatement(
+          statement,
+          parameters.map(_.asInstanceOf[AnyRef]).asJava
+        )
     }.toScala
     queryResultFuture.map { queryResult =>
       new AsyncQueryResult(
         rowsAffected = Option(queryResult.getRowsAffected),
         statusMessage = Option(queryResult.getStatusMessage),
-        rows = Some(new internal.AsyncResultSetImpl(queryResult.getRows.asScala.toIndexedSeq))) {
+        rows = Some(
+          new internal.AsyncResultSetImpl(
+            queryResult.getRows.asScala.toIndexedSeq
+          )
+        )
+      ) {
 
         lazy val generatedKey = extractGeneratedKey(queryResult)
       }
@@ -73,11 +91,15 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
    * @param cxt  execution context
    * @return optional generated key
    */
-  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]]
+  protected def extractGeneratedKey(queryResult: QueryResult)(implicit
+    cxt: EC = ECGlobal
+  ): Future[Option[Long]]
 
   protected def ensureNonShared(): Unit = {
     if (!this.isInstanceOf[NonSharedAsyncConnection]) {
-      throw new IllegalStateException("This asynchronous connection must be a non-shared connection.")
+      throw new IllegalStateException(
+        "This asynchronous connection must be a non-shared connection."
+      )
     }
   }
 

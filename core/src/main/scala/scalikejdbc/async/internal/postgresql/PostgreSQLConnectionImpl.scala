@@ -27,17 +27,27 @@ import scala.collection.JavaConverters._
  */
 trait PostgreSQLConnectionImpl extends AsyncConnectionCommonImpl {
 
-  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] = {
+  override def toNonSharedConnection()(implicit
+    cxt: EC = ECGlobal
+  ): Future[NonSharedAsyncConnection] = {
     this match {
       case c: PoolableAsyncConnection[ConcreteConnection @unchecked] =>
         val pool = c.pool
-        pool.take.toScala.map(conn => new NonSharedAsyncConnectionImpl(conn, Some(pool)) with PostgreSQLConnectionImpl)
+        pool.take.toScala.map(conn =>
+          new NonSharedAsyncConnectionImpl(conn, Some(pool))
+            with PostgreSQLConnectionImpl
+        )
       case _ =>
-        Future.successful(new NonSharedAsyncConnectionImpl(underlying) with PostgreSQLConnectionImpl)
+        Future.successful(
+          new NonSharedAsyncConnectionImpl(underlying)
+            with PostgreSQLConnectionImpl
+        )
     }
   }
 
-  protected def extractGeneratedKey(queryResult: QueryResult)(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
+  protected def extractGeneratedKey(
+    queryResult: QueryResult
+  )(implicit cxt: EC = ECGlobal): Future[Option[Long]] = {
     ensureNonShared()
     val rows = queryResult.getRows.asScala
     Future.successful(for {

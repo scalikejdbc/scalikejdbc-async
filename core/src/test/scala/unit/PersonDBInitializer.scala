@@ -11,8 +11,7 @@ create table person (
 );
 """
 
-  val insertQueries = Seq(
-    """insert into person (id, name) 
+  val insertQueries = Seq("""insert into person (id, name) 
         values (12, 'testperson')""")
 
   def initMySQL(): Unit = {
@@ -26,4 +25,3 @@ create table person (
   }
 
 }
-

@@ -20,7 +20,8 @@ import scalikejdbc._
 /**
  * AsyncResultSet Iterator
  */
-class AsyncResultSetIterator(var rs: AsyncResultSet) extends Iterator[WrappedResultSet] {
+class AsyncResultSetIterator(var rs: AsyncResultSet)
+  extends Iterator[WrappedResultSet] {
 
   override def hasNext: Boolean = rs.next()
 

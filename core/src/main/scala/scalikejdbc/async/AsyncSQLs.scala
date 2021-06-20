@@ -21,51 +21,88 @@ import ShortenedNames._
 
 trait AsyncSQLExecution extends Any {
   def underlying: SQLExecution
-  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Boolean] = {
+  def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[Boolean] = {
     session.execute(underlying.statement, underlying.parameters.toSeq: _*)
   }
 }
-class AsyncSQLExecutionImpl(val underlying: SQLExecution) extends AnyVal with AsyncSQLExecution
+class AsyncSQLExecutionImpl(val underlying: SQLExecution)
+  extends AnyVal
+  with AsyncSQLExecution
 
 trait AsyncSQLUpdate extends Any {
   def underlying: SQLUpdate
-  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Int] = {
+  def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[Int] = {
     session.update(underlying.statement, underlying.parameters.toSeq: _*)
   }
 }
-class AsyncSQLUpdateImpl(val underlying: SQLUpdate) extends AnyVal with AsyncSQLUpdate
+class AsyncSQLUpdateImpl(val underlying: SQLUpdate)
+  extends AnyVal
+  with AsyncSQLUpdate
 
 trait AsyncSQLUpdateAndReturnGeneratedKey extends Any {
   def underlying: SQLUpdateWithGeneratedKey
   def future()(implicit
     session: AsyncDBSession,
-    cxt: EC = ECGlobal): Future[Long] = {
-    session.updateAndReturnGeneratedKey(underlying.statement, underlying.parameters.toSeq: _*)
+    cxt: EC = ECGlobal
+  ): Future[Long] = {
+    session.updateAndReturnGeneratedKey(
+      underlying.statement,
+      underlying.parameters.toSeq: _*
+    )
   }
 }
-class AsyncSQLUpdateAndReturnGeneratedKeyImpl(val underlying: SQLUpdateWithGeneratedKey) extends AnyVal with AsyncSQLUpdateAndReturnGeneratedKey
+class AsyncSQLUpdateAndReturnGeneratedKeyImpl(
+  val underlying: SQLUpdateWithGeneratedKey
+) extends AnyVal
+  with AsyncSQLUpdateAndReturnGeneratedKey
 
 trait AsyncSQLToOption[A] extends Any {
   def underlying: SQLToOption[A, HasExtractor]
-  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[A]] = {
-    session.single(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractor)
+  def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[Option[A]] = {
+    session.single(underlying.statement, underlying.rawParameters.toSeq: _*)(
+      underlying.extractor
+    )
   }
 }
-class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor]) extends AnyVal with AsyncSQLToOption[A]
+class AsyncSQLToOptionImpl[A](val underlying: SQLToOption[A, HasExtractor])
+  extends AnyVal
+  with AsyncSQLToOption[A]
 
 trait AsyncSQLToIterable[A] extends Any {
   def underlying: SQLToIterable[A, HasExtractor]
-  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Iterable[A]] = {
-    session.iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractor)
+  def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[Iterable[A]] = {
+    session.iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(
+      underlying.extractor
+    )
   }
 }
-class AsyncSQLToIterableImpl[A](val underlying: SQLToIterable[A, HasExtractor]) extends AnyVal with AsyncSQLToIterable[A]
+class AsyncSQLToIterableImpl[A](val underlying: SQLToIterable[A, HasExtractor])
+  extends AnyVal
+  with AsyncSQLToIterable[A]
 
 trait AsyncSQLToList[A] extends Any {
   def underlying: SQLToList[A, HasExtractor]
-  def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[A]] = {
-    session.list(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractor)
+  def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[List[A]] = {
+    session.list(underlying.statement, underlying.rawParameters.toSeq: _*)(
+      underlying.extractor
+    )
   }
 }
-class AsyncSQLToListImpl[A](val underlying: SQLToList[A, HasExtractor]) extends AnyVal with AsyncSQLToList[A]
-
+class AsyncSQLToListImpl[A](val underlying: SQLToList[A, HasExtractor])
+  extends AnyVal
+  with AsyncSQLToList[A]

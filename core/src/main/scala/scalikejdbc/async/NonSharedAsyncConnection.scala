@@ -28,4 +28,3 @@ trait NonSharedAsyncConnection extends AsyncConnection {
   def release(): Unit
 
 }
-

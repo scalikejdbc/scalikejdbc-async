@@ -39,7 +39,9 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
    *
    * @return shared session
    */
-  def sharedSession: SharedAsyncDBSession = SharedAsyncDBSession(AsyncConnectionPool(name).borrow())
+  def sharedSession: SharedAsyncDBSession = SharedAsyncDBSession(
+    AsyncConnectionPool(name).borrow()
+  )
 
   /**
    * Provides a future world within a transaction.
@@ -49,8 +51,12 @@ case class NamedAsyncDB(name: Any = AsyncConnectionPool.DEFAULT_NAME) {
    * @tparam A return type
    * @return a future value
    */
-  def localTx[A](op: TxAsyncDBSession => Future[A])(implicit cxt: EC = ECGlobal): Future[A] = {
-    AsyncConnectionPool(name).borrow().toNonSharedConnection()
+  def localTx[A](
+    op: TxAsyncDBSession => Future[A]
+  )(implicit cxt: EC = ECGlobal): Future[A] = {
+    AsyncConnectionPool(name)
+      .borrow()
+      .toNonSharedConnection()
       .flatMap(conn => AsyncTx.inTransaction[A](TxAsyncDBSession(conn), op))
   }
 

@@ -10,4 +10,3 @@ object ProgrammerSkill extends SQLSyntaxSupport[ProgrammerSkill] {
 
   lazy val ps = ProgrammerSkill.syntax("ps")
 }
-

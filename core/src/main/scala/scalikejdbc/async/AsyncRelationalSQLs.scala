@@ -23,34 +23,55 @@ import scalikejdbc.async.ShortenedNames._
 // one-to-one
 // -------------------
 
-class AsyncOneToOneSQLToOption[A, B, Z](val underlying: OneToOneSQLToOption[A, B, HasExtractor, Z])
-  extends AnyVal
+class AsyncOneToOneSQLToOption[A, B, Z](
+  val underlying: OneToOneSQLToOption[A, B, HasExtractor, Z]
+) extends AnyVal
   with AsyncSQLToOption[Z] {
-  override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToOneIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
-      case Nil => None
-      case results if results.size == 1 => results.headOption
-      case results => throw new TooManyRowsException(1, results.size)
-    }
+  override def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[Option[Z]] = {
+    session
+      .oneToOneIterable(
+        underlying.statement,
+        underlying.rawParameters.toSeq: _*
+      )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+      .map {
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
+      }
   }
 }
 
-class AsyncOneToOneSQLToIterable[A, B, Z](val underlying: OneToOneSQLToIterable[A, B, HasExtractor, Z])
-  extends AnyVal
+class AsyncOneToOneSQLToIterable[A, B, Z](
+  val underlying: OneToOneSQLToIterable[A, B, HasExtractor, Z]
+) extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit
     session: AsyncDBSession,
-    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    val iterable = session.oneToOneIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+    cxt: EC = ECGlobal
+  ): Future[Iterable[Z]] = {
+    val iterable = session.oneToOneIterable(
+      underlying.statement,
+      underlying.rawParameters.toSeq: _*
+    )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.asInstanceOf[Future[Iterable[Z]]]
   }
 }
 
-class AsyncOneToOneSQLToList[A, B, Z](val underlying: OneToOneSQLToList[A, B, HasExtractor, Z])
-  extends AnyVal
+class AsyncOneToOneSQLToList[A, B, Z](
+  val underlying: OneToOneSQLToList[A, B, HasExtractor, Z]
+) extends AnyVal
   with AsyncSQLToList[Z] {
-  override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToOneIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+  override def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[List[Z]] = {
+    val iterable = session.oneToOneIterable(
+      underlying.statement,
+      underlying.rawParameters.toSeq: _*
+    )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.map(_.toList)
   }
 }
@@ -58,33 +79,54 @@ class AsyncOneToOneSQLToList[A, B, Z](val underlying: OneToOneSQLToList[A, B, Ha
 // one-to-many
 // -------------------
 
-class AsyncOneToManySQLToOption[A, B, Z](val underlying: OneToManySQLToOption[A, B, HasExtractor, Z])
-  extends AnyVal
+class AsyncOneToManySQLToOption[A, B, Z](
+  val underlying: OneToManySQLToOption[A, B, HasExtractor, Z]
+) extends AnyVal
   with AsyncSQLToOption[Z] {
-  override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Option[Z]] = {
-    session.oneToManyIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform).map {
-      case Nil => None
-      case results if results.size == 1 => results.headOption
-      case results => throw new TooManyRowsException(1, results.size)
-    }
+  override def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[Option[Z]] = {
+    session
+      .oneToManyIterable(
+        underlying.statement,
+        underlying.rawParameters.toSeq: _*
+      )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+      .map {
+        case Nil => None
+        case results if results.size == 1 => results.headOption
+        case results => throw new TooManyRowsException(1, results.size)
+      }
   }
 }
 
-class AsyncOneToManySQLToIterable[A, B, Z](val underlying: OneToManySQLToIterable[A, B, HasExtractor, Z])
-  extends AnyVal
+class AsyncOneToManySQLToIterable[A, B, Z](
+  val underlying: OneToManySQLToIterable[A, B, HasExtractor, Z]
+) extends AnyVal
   with AsyncSQLToIterable[Z] {
   override def future()(implicit
     session: AsyncDBSession,
-    cxt: EC = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManyIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+    cxt: EC = ECGlobal
+  ): Future[Iterable[Z]] = {
+    session.oneToManyIterable(
+      underlying.statement,
+      underlying.rawParameters.toSeq: _*
+    )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
   }
 }
 
-class AsyncOneToManySQLToList[A, B, Z](val underlying: OneToManySQLToList[A, B, HasExtractor, Z])
-  extends AnyVal
+class AsyncOneToManySQLToList[A, B, Z](
+  val underlying: OneToManySQLToList[A, B, HasExtractor, Z]
+) extends AnyVal
   with AsyncSQLToList[Z] {
-  override def future()(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManyIterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(underlying.extractTo)(underlying.transform)
+  override def future()(implicit
+    session: AsyncDBSession,
+    cxt: EC = ECGlobal
+  ): Future[List[Z]] = {
+    val iterable = session.oneToManyIterable(
+      underlying.statement,
+      underlying.rawParameters.toSeq: _*
+    )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.map(_.toList)
   }
 }

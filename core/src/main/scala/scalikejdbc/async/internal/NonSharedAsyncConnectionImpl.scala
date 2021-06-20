@@ -14,11 +14,13 @@ import scala.concurrent._
  */
 abstract class NonSharedAsyncConnectionImpl(
   val underlying: Connection,
-  val pool: Option[ConnectionPool[ConcreteConnection]] = None)
-  extends AsyncConnectionCommonImpl
+  val pool: Option[ConnectionPool[ConcreteConnection]] = None
+) extends AsyncConnectionCommonImpl
   with NonSharedAsyncConnection {
 
-  override def toNonSharedConnection()(implicit cxt: EC = ECGlobal): Future[NonSharedAsyncConnection] =
+  override def toNonSharedConnection()(implicit
+    cxt: EC = ECGlobal
+  ): Future[NonSharedAsyncConnection] =
     Future.successful(this)
 
   override def release(): Unit = this.underlying match {

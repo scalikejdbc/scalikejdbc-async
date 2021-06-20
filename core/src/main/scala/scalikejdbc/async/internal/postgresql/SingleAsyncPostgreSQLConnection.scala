@@ -20,14 +20,19 @@ import scalikejdbc.async._, internal._
 /**
  * PostgreSQL Single Connection
  */
-private[scalikejdbc] case class SingleAsyncPostgreSQLConnection(url: String, user: String, private val password: String, connectionSettings: AsyncConnectionSettings)
-  extends AsyncConnectionCommonImpl
+private[scalikejdbc] case class SingleAsyncPostgreSQLConnection(
+  url: String,
+  user: String,
+  private val password: String,
+  connectionSettings: AsyncConnectionSettings
+) extends AsyncConnectionCommonImpl
   with PostgreSQLConnectionImpl
   with JasyncConfiguration {
 
   private[scalikejdbc] val underlying = {
-    new com.github.jasync.sql.db.postgresql.PostgreSQLConnection(configuration(url, user, password, connectionSettings))
+    new com.github.jasync.sql.db.postgresql.PostgreSQLConnection(
+      configuration(url, user, password, connectionSettings)
+    )
   }
 
 }
-

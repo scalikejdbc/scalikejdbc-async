@@ -29,7 +29,8 @@ case class AsyncConnectionPoolSettings(
   maxPoolSize: Int = 8,
   maxQueueSize: Int = 8,
   maxIdleMillis: Long = 1000L,
-  connectionSettings: AsyncConnectionSettings = AsyncConnectionSettings())
+  connectionSettings: AsyncConnectionSettings = AsyncConnectionSettings()
+)
 
 case class AsyncConnectionSettings(
   ssl: Option[SSLConfiguration] = None,
@@ -38,5 +39,5 @@ case class AsyncConnectionSettings(
   allocator: Option[ByteBufAllocator] = None,
   connectTimeout: Option[Duration] = None,
   testTimeout: Option[Duration] = None,
-  queryTimeout: Option[Duration] = None)
-
+  queryTimeout: Option[Duration] = None
+)
