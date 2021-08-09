@@ -52,11 +52,10 @@ class AsyncOneToOneSQLToIterable[A, B, Z](
     session: AsyncDBSession,
     cxt: EC = ECGlobal
   ): Future[Iterable[Z]] = {
-    val iterable = session.oneToOneIterable(
+    session.oneToOneIterable(
       underlying.statement,
       underlying.rawParameters.toSeq: _*
     )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
-    iterable.asInstanceOf[Future[Iterable[Z]]]
   }
 }
 
