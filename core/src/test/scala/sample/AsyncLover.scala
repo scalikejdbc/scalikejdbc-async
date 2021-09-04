@@ -1,10 +1,8 @@
 package sample
 
 import java.sql.Timestamp
-
+import java.time.Instant
 import scalikejdbc._
-import scalikejdbc.jodatime.JodaTypeBinder._
-import org.joda.time.DateTime
 
 case class AsyncLover(
   id: Long,
@@ -12,10 +10,10 @@ case class AsyncLover(
   rating: Int,
   isReactive: Boolean,
   lunchtime: Option[java.sql.Time] = None,
-  birthday: Option[DateTime] = None,
+  birthday: Option[Instant] = None,
   nanotime: Option[Timestamp] = None,
-  createdAt: DateTime = DateTime.now,
-  deletedAt: Option[DateTime] = None
+  createdAt: Instant = Instant.now,
+  deletedAt: Option[Instant] = None
 )
 
 object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
@@ -41,9 +39,9 @@ object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
       rating = rs.get[Int](c.rating),
       isReactive = rs.get[Boolean](c.isReactive),
       lunchtime = rs.get[Option[java.sql.Time]](c.lunchtime),
-      birthday = rs.get[Option[DateTime]](c.lunchtime),
+      birthday = rs.get[Option[Instant]](c.lunchtime),
       nanotime = rs.get[Option[Timestamp]](c.nanotime),
-      createdAt = rs.get[DateTime](c.createdAt)
+      createdAt = rs.get[Instant](c.createdAt)
     )
 
 }

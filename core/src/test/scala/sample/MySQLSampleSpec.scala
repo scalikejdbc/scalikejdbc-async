@@ -1,12 +1,9 @@
 package sample
 
 import java.sql.Timestamp
-
-import org.joda.time._
+import java.time.Instant
 import scala.concurrent._, duration._, ExecutionContext.Implicits.global
 import scalikejdbc._, async._
-import scalikejdbc.jodatime.JodaParameterBinderFactory._
-import scalikejdbc.jodatime.JodaTypeBinder._
 import unit._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -18,7 +15,7 @@ class MySQLSampleSpec
   with Logging {
 
   val column = AsyncLover.column
-  val createdTime = DateTime.now.withMillisOfSecond(123)
+  val createdTime = Instant.now.plusMillis(123)
   val al = AsyncLover.syntax("al")
 
   it should "get nano seconds" in {
@@ -158,8 +155,8 @@ class MySQLSampleSpec
             rating = rs.get[Int](al.resultName.rating),
             isReactive = rs.get[Boolean](al.resultName.isReactive),
             lunchtime = rs.get[Option[java.sql.Time]](al.resultName.lunchtime),
-            birthday = rs.get[Option[DateTime]](al.resultName.lunchtime),
-            createdAt = rs.get[DateTime](al.resultName.createdAt)
+            birthday = rs.get[Option[Instant]](al.resultName.lunchtime),
+            createdAt = rs.get[Instant](al.resultName.createdAt)
           )
         })
         .single
@@ -432,7 +429,7 @@ class MySQLSampleSpec
                   column.name -> "George",
                   column.rating -> 1,
                   column.isReactive -> false,
-                  column.createdAt -> DateTime.now
+                  column.createdAt -> Instant.now
                 )
                 .toSQL,
               sql"invalid_query" // failure

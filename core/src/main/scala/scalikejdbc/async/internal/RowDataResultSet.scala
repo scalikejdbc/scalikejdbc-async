@@ -653,8 +653,8 @@ private[scalikejdbc] class RowDataResultSet(
     case null => null
     case d: java.sql.Date => d
     case d: java.util.Date => new JavaUtilDateConverter(d).toSqlDate
-    case TimeInMillis(ms) =>
-      new JavaUtilDateConverter(new java.util.Date(ms)).toSqlDate
+    case DateConvert(d) =>
+      new JavaUtilDateConverter(d).toSqlDate
     case other =>
       throw new UnsupportedOperationException(
         s"Please send a feedback to the library maintainers about supporting ${other.getClass} for #date!"
@@ -680,7 +680,7 @@ private[scalikejdbc] class RowDataResultSet(
   private def anyToTime(any: Any): java.sql.Time = any match {
     case null => null
     case t: java.sql.Time => t
-    case TimeInMillis(ms) => new java.sql.Time(ms)
+    case DateConvert(d) => new JavaUtilDateConverter(d).toSqlTime
     case d: Duration => new java.sql.Time(d.toMillis)
     case other =>
       throw new UnsupportedOperationException(
@@ -697,7 +697,7 @@ private[scalikejdbc] class RowDataResultSet(
   private def anyToTimestamp(any: Any): java.sql.Timestamp = any match {
     case null => null
     case t: java.sql.Timestamp => t
-    case TimeInMillis(ms) => new java.sql.Timestamp(ms)
+    case DateConvert(d) => new JavaUtilDateConverter(d).toSqlTimestamp
     case d: Duration =>
       val t = new java.sql.Timestamp(d.toMillis)
       t.setNanos(d.getNano)
