@@ -46,7 +46,7 @@ lazy val core = (project in file("core")).settings(
   },
   libraryDependencies ++= {
     Seq(
-      "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.0",
+      "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.1",
       "org.scalikejdbc" %% "scalikejdbc" % scalikejdbcVersion % "compile",
       "org.scalikejdbc" %% "scalikejdbc-interpolation" % scalikejdbcVersion % "compile",
       "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % scalikejdbcVersion % "test",
