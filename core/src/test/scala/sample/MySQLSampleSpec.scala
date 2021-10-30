@@ -181,7 +181,7 @@ class MySQLSampleSpec
               column.isReactive -> false,
               column.createdAt -> createdTime
             )
-          //.returningId
+          // .returningId
         }.updateAndReturnGeneratedKey.future()
     }
     // the generated key should be found
@@ -276,7 +276,7 @@ class MySQLSampleSpec
                 column.rating -> 2,
                 column.isReactive -> false,
                 column.createdAt -> createdTime
-              ) //.returningId
+              ) // .returningId
           ).updateAndReturnGeneratedKey.future()
       }
       val generatedId = Await.result(generatedIdFuture, 5.seconds)
