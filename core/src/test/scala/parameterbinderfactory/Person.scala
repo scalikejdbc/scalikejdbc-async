@@ -13,7 +13,7 @@ object PersonId {
 }
 
 object Person extends SQLSyntaxSupport[Person] {
-  //override def columnNames
+  // override def columnNames
   def apply(p: SyntaxProvider[Person])(rs: WrappedResultSet): Person =
     apply(p.resultName)(rs)
 

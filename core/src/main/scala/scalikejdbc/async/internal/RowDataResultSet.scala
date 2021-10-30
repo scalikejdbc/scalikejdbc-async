@@ -62,7 +62,7 @@ private[scalikejdbc] class RowDataResultSet(
     notvalid
 
   override def clearWarnings(): Unit = {
-    //noop
+    // noop
   }
 
   override def updateTimestamp(columnIndex: Int, x: Timestamp): Unit = notvalid

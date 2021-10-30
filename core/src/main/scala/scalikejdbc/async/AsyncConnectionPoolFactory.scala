@@ -61,7 +61,7 @@ object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
         // Heroku MySQL
 
         // issue #5 Error: database name is too long
-        //val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
+        // val defaultProperties = """?useUnicode=yes&characterEncoding=UTF-8&connectionCollation=utf8_general_ci"""
         val defaultProperties = ""
         val addDefaultPropertiesIfNeeded = MysqlCustomProperties
           .findFirstMatchIn(url)
