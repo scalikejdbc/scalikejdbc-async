@@ -14,7 +14,7 @@ jobs:
       with:
         app_id: 89631
         private_key: ${{ secrets.SCALIKEJDBC_BOT_KEY }}
-    - uses: actions/checkout@v2.3.5
+    - uses: actions/checkout@v2.4.0
       with:
         fetch-depth: 0
         token: ${{ steps.generate_token.outputs.token }}

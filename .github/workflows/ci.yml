@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2.3.5
+    - uses: actions/checkout@v2.4.0
     - uses: olafurpg/setup-scala@v13
       with:
         # TODO https://github.com/scalikejdbc/scalikejdbc-async/issues/162
