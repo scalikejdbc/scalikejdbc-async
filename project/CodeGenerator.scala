@@ -83,7 +83,9 @@ import scalikejdbc.{OneToManies${n}SQLToOption, HasExtractor, TooManyRowsExcepti
 
 class AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(
       n
-    )}, Z](val underlying: OneToManies${n}SQLToOption[A, ${B1_to_BN(n)}, HasExtractor, Z])
+    )}, Z](val underlying: OneToManies${n}SQLToOption[A, ${B1_to_BN(
+      n
+    )}, HasExtractor, Z])
   extends AnyVal
     with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[Option[Z]] = {
@@ -109,7 +111,9 @@ import scalikejdbc.{OneToManies${n}SQLToIterable, HasExtractor}
 
 class AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(
       n
-    )}, Z](val underlying: OneToManies${n}SQLToIterable[A, ${B1_to_BN(n)}, HasExtractor, Z])
+    )}, Z](val underlying: OneToManies${n}SQLToIterable[A, ${B1_to_BN(
+      n
+    )}, HasExtractor, Z])
   extends AnyVal
     with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[Iterable[Z]] = {
@@ -131,7 +135,9 @@ import scalikejdbc.{OneToManies${n}SQLToList, HasExtractor}
 
 class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
       n
-    )}, Z](val underlying: OneToManies${n}SQLToList[A, ${B1_to_BN(n)}, HasExtractor, Z])
+    )}, Z](val underlying: OneToManies${n}SQLToList[A, ${B1_to_BN(
+      n
+    )}, HasExtractor, Z])
   extends AnyVal
     with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[List[Z]] = {
@@ -160,7 +166,9 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
     implicit
     cxt: ExecutionContext = ECGlobal
   ): Future[Iterable[Z]] = {
-    oneToManies${n}Iterable[A, ${B1_to_BN(n)}, Z](statement, parameters: _*)(extractOne)(
+    oneToManies${n}Iterable[A, ${B1_to_BN(
+      n
+    )}, Z](statement, parameters: _*)(extractOne)(
       ${(1 to n).map("extractTo" + _).mkString(", ")}
     )(transform)
   }"""
@@ -234,7 +242,9 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
       n
     )}, Z](sql: OneToManies${n}SQLToOption[A, ${B1_to_BN(
       n
-    )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(n)}, Z] =
+    )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(
+      n
+    )}, Z] =
     new AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(n)}, Z](sql)"""
   }
 
@@ -244,7 +254,9 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
       n
     )}, Z](sql: OneToManies${n}SQLToIterable[A, ${B1_to_BN(
       n
-    )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(n)}, Z] =
+    )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(
+      n
+    )}, Z] =
     new AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(n)}, Z](sql)"""
   }
 
