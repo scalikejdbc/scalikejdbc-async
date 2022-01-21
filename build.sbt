@@ -4,7 +4,7 @@ lazy val jasyncVersion = "2.0.6" // provided
 lazy val postgresqlVersion = "42.3.1"
 val Scala212 = "2.12.15"
 val Scala213 = "2.13.8"
-val Scala3 = "3.1.0"
+val Scala3 = "3.1.1"
 
 crossScalaVersions := Seq(Scala213, Scala212, Scala3)
 
