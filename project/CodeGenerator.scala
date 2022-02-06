@@ -82,10 +82,10 @@ import scalikejdbc.async.ShortenedNames.ECGlobal
 import scalikejdbc.{OneToManies${n}SQLToOption, HasExtractor, TooManyRowsException}
 
 class AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(
-      n
-    )}, Z](val underlying: OneToManies${n}SQLToOption[A, ${B1_to_BN(
-      n
-    )}, HasExtractor, Z])
+        n
+      )}, Z](val underlying: OneToManies${n}SQLToOption[A, ${B1_to_BN(
+        n
+      )}, HasExtractor, Z])
   extends AnyVal
     with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[Option[Z]] = {
@@ -110,10 +110,10 @@ import scalikejdbc.async.ShortenedNames.ECGlobal
 import scalikejdbc.{OneToManies${n}SQLToIterable, HasExtractor}
 
 class AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(
-      n
-    )}, Z](val underlying: OneToManies${n}SQLToIterable[A, ${B1_to_BN(
-      n
-    )}, HasExtractor, Z])
+        n
+      )}, Z](val underlying: OneToManies${n}SQLToIterable[A, ${B1_to_BN(
+        n
+      )}, HasExtractor, Z])
   extends AnyVal
     with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[Iterable[Z]] = {
@@ -134,10 +134,10 @@ import scalikejdbc.async.ShortenedNames.ECGlobal
 import scalikejdbc.{OneToManies${n}SQLToList, HasExtractor}
 
 class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
-      n
-    )}, Z](val underlying: OneToManies${n}SQLToList[A, ${B1_to_BN(
-      n
-    )}, HasExtractor, Z])
+        n
+      )}, Z](val underlying: OneToManies${n}SQLToList[A, ${B1_to_BN(
+        n
+      )}, HasExtractor, Z])
   extends AnyVal
     with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[List[Z]] = {
@@ -158,8 +158,8 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
     parameters: Any*)(
     extractOne: WrappedResultSet => A)(
     ${(1 to n)
-      .map(i => s"extractTo${i}: WrappedResultSet => Option[B${i}]")
-      .mkString(", ")}
+        .map(i => s"extractTo${i}: WrappedResultSet => Option[B${i}]")
+        .mkString(", ")}
   )(
     transform: (A, ${seqB(n)}) => Z
   )(
@@ -167,8 +167,8 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
     cxt: ExecutionContext = ECGlobal
   ): Future[Iterable[Z]] = {
     oneToManies${n}Iterable[A, ${B1_to_BN(
-      n
-    )}, Z](statement, parameters: _*)(extractOne)(
+        n
+      )}, Z](statement, parameters: _*)(extractOne)(
       ${(1 to n).map("extractTo" + _).mkString(", ")}
     )(transform)
   }"""
@@ -181,8 +181,8 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
     parameters: Any*)(
     extractOne: WrappedResultSet => A)(
     ${(1 to n)
-      .map(i => s"extractTo${i}: WrappedResultSet => Option[B${i}]")
-      .mkString(", ")}
+        .map(i => s"extractTo${i}: WrappedResultSet => Option[B${i}]")
+        .mkString(", ")}
   )(
     transform: (A, ${seqB(n)}) => Z
   )(
@@ -194,8 +194,8 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
       queryLogging(statement, _parameters)
 
       def processResultSet(result: LinkedHashMap[A, (${seqB(
-      n
-    )})], rs: WrappedResultSet): LinkedHashMap[A, (${seqB(n)})] = {
+        n
+      )})], rs: WrappedResultSet): LinkedHashMap[A, (${seqB(n)})] = {
         val o = extractOne(rs)
         ${(1 to n).map(i => s"val to${i} = extractTo${i}(rs)").mkString("; ")}
         result.keys.find(_ == o).map { _ =>
@@ -203,18 +203,18 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
             val (${(1 to n).map("ts" + _).mkString(", ")}) = result.apply(o)
             result += (o -> (
               ${(1 to n)
-      .map(i =>
-        s"to${i}.map(t => if (ts${i}.contains(t)) ts${i} else ts${i} :+ t).getOrElse(ts${i})"
-      )
-      .mkString(", ")}
+        .map(i =>
+          s"to${i}.map(t => if (ts${i}.contains(t)) ts${i} else ts${i} :+ t).getOrElse(ts${i})"
+        )
+        .mkString(", ")}
             ))
           }.getOrElse(result)
         }.getOrElse {
           result += (
             o -> (
               ${(1 to n)
-      .map(i => s"to${i}.map(Vector(_)).getOrElse(Vector.empty)")
-      .mkString(", ")}
+        .map(i => s"to${i}.map(Vector(_)).getOrElse(Vector.empty)")
+        .mkString(", ")}
             )
           )
         }
@@ -225,10 +225,10 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
           new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (${seqB(n)})]())(processResultSet).map {
             case (one, (${(1 to n)
-      .map("t" + _)
-      .mkString(", ")})) => transform(one, ${(1 to n)
-      .map("t" + _)
-      .mkString(", ")})
+        .map("t" + _)
+        .mkString(", ")})) => transform(one, ${(1 to n)
+        .map("t" + _)
+        .mkString(", ")})
           }
         }.getOrElse(Nil)
       }
@@ -239,34 +239,36 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
   def makeOneToManiesSQLToOptionAsync(n: Int): String = {
     s"""
   final implicit def makeOneToManies${n}SQLToOptionAsync[A, ${B1_to_BN(
-      n
-    )}, Z](sql: OneToManies${n}SQLToOption[A, ${B1_to_BN(
-      n
-    )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(
-      n
-    )}, Z] =
+        n
+      )}, Z](sql: OneToManies${n}SQLToOption[A, ${B1_to_BN(
+        n
+      )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(
+        n
+      )}, Z] =
     new AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(n)}, Z](sql)"""
   }
 
   def makeOneToManiesSQLToIterableAsync(n: Int): String = {
     s"""
   final implicit def makeOneToManies${n}SQLToIterableAsync[A, ${B1_to_BN(
-      n
-    )}, Z](sql: OneToManies${n}SQLToIterable[A, ${B1_to_BN(
-      n
-    )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(
-      n
-    )}, Z] =
+        n
+      )}, Z](sql: OneToManies${n}SQLToIterable[A, ${B1_to_BN(
+        n
+      )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(
+        n
+      )}, Z] =
     new AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(n)}, Z](sql)"""
   }
 
   def makeOneToManiesSQLToListAsync(n: Int): String = {
     s"""
   final implicit def makeOneToManies${n}SQLToListAsync[A, ${B1_to_BN(
-      n
-    )}, Z](sql: OneToManies${n}SQLToList[A, ${B1_to_BN(
-      n
-    )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(n)}, Z] =
+        n
+      )}, Z](sql: OneToManies${n}SQLToList[A, ${B1_to_BN(
+        n
+      )}, HasExtractor, Z]): AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
+        n
+      )}, Z] =
     new AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(n)}, Z](sql)"""
   }
 }
