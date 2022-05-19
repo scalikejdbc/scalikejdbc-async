@@ -12,9 +12,10 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@v3
-    - uses: olafurpg/setup-scala@v13
+    - uses: actions/setup-java@v3
       with:
         # TODO https://github.com/scalikejdbc/scalikejdbc-async/issues/162
-        java-version: "adopt@1.8.0-282"
+        java-version: "8.0.282+8"
+        distribution: adopt
     - uses: coursier/cache-action@v6
     - run: sbt -v scalafmtSbtCheck "+ scalafmtAll" "+ test"
