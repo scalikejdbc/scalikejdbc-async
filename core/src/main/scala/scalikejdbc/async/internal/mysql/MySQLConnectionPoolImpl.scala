@@ -20,7 +20,8 @@ import com.github.jasync.sql.db.Configuration
 import com.github.jasync.sql.db.mysql.MySQLConnection
 import com.github.jasync.sql.db.mysql.pool.MySQLConnectionFactory
 import com.github.jasync.sql.db.mysql.util.URLParser
-import io.netty.util.CharsetUtil
+
+import java.nio.charset.StandardCharsets
 
 /**
  * MySQL Connection Pool
@@ -45,7 +46,7 @@ private[scalikejdbc] class MySQLConnectionPoolImpl(
   ) {
 
   override protected def parseUrl(url: String): Configuration =
-    URLParser.INSTANCE.parse(url, CharsetUtil.UTF_8)
+    URLParser.INSTANCE.parse(url, StandardCharsets.UTF_8)
 
 
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool)
