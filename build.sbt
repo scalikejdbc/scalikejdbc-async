@@ -1,10 +1,10 @@
 lazy val _version = "0.15.1-SNAPSHOT"
 lazy val scalikejdbcVersion = "4.0.0"
-lazy val jasyncVersion = "2.0.6" // provided
-lazy val postgresqlVersion = "42.3.3"
-val Scala212 = "2.12.15"
-val Scala213 = "2.13.8"
-val Scala3 = "3.1.2"
+lazy val jasyncVersion = "2.1.8" // provided
+lazy val postgresqlVersion = "42.5.1"
+val Scala212 = "2.12.17"
+val Scala213 = "2.13.10"
+val Scala3 = "3.2.1"
 
 crossScalaVersions := Seq(Scala213, Scala212, Scala3)
 
@@ -53,16 +53,16 @@ lazy val core = (project in file("core")).settings(
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikejdbcVersion % "test",
       "com.github.jasync-sql" % "jasync-postgresql" % jasyncVersion % "provided",
       "com.github.jasync-sql" % "jasync-mysql" % jasyncVersion % "provided",
-      "com.dimafeng" %% "testcontainers-scala" % "0.40.5" % "test",
-      "org.testcontainers" % "mysql" % "1.16.3" % "test",
-      "org.testcontainers" % "postgresql" % "1.16.3" % "test",
+      "com.dimafeng" %% "testcontainers-scala" % "0.40.12" % "test",
+      "org.testcontainers" % "mysql" % "1.17.6" % "test",
+      "org.testcontainers" % "postgresql" % "1.17.6" % "test",
       "org.postgresql" % "postgresql" % postgresqlVersion % "test",
       "mysql" % "mysql-connector-java" % "5.1.+" % "test",
       "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
     )
   },
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.11" % "test",
+    "org.scalatest" %% "scalatest" % "3.2.14" % "test",
   ),
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
