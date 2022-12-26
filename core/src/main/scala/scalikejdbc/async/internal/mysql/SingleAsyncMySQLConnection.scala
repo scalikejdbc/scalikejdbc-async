@@ -15,7 +15,10 @@
  */
 package scalikejdbc.async.internal.mysql
 
+import com.github.jasync.sql.db.Configuration
+import com.github.jasync.sql.db.mysql.util.URLParser
 import scalikejdbc.async._, internal._
+import io.netty.util.CharsetUtil
 
 /**
  * MySQL Single Connection
@@ -28,6 +31,9 @@ private[scalikejdbc] case class SingleAsyncMySQLConnection(
 ) extends AsyncConnectionCommonImpl
   with MySQLConnectionImpl
   with JasyncConfiguration {
+
+  override protected def parseUrl(url: String): Configuration =
+    URLParser.INSTANCE.parse(url, CharsetUtil.UTF_8)
 
   private[scalikejdbc] val underlying = {
     new com.github.jasync.sql.db.mysql.MySQLConnection(

@@ -19,6 +19,8 @@ import scalikejdbc._, async._, internal._
 import com.github.jasync.sql.db.Configuration
 import com.github.jasync.sql.db.postgresql.PostgreSQLConnection
 import com.github.jasync.sql.db.postgresql.pool.PostgreSQLConnectionFactory
+import com.github.jasync.sql.db.postgresql.util.URLParser
+import io.netty.util.CharsetUtil
 
 /**
  * PostgreSQL Connection Pool
@@ -41,6 +43,9 @@ private[scalikejdbc] class PostgreSQLConnectionPoolImpl(
     (c: Configuration) => new PostgreSQLConnectionFactory(c),
     settings
   ) {
+
+  override protected def parseUrl(url: String): Configuration =
+    URLParser.INSTANCE.parse(url, CharsetUtil.UTF_8)
 
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool)
     with PostgreSQLConnectionImpl

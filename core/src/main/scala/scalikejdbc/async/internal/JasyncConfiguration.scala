@@ -16,7 +16,6 @@
 package scalikejdbc.async.internal
 
 import com.github.jasync.sql.db.Configuration
-import scalikejdbc.JDBCUrl
 import scalikejdbc.async.AsyncConnectionSettings
 
 /**
@@ -26,35 +25,39 @@ private[scalikejdbc] trait JasyncConfiguration {
 
   val defaultConfiguration = new Configuration("")
 
+  protected def parseUrl(url: String): Configuration
+
   private[scalikejdbc] def configuration(
     url: String,
     user: String,
     password: String,
     connectionSettings: AsyncConnectionSettings
   ) = {
-    val jdbcUrl = JDBCUrl(url)
-    new Configuration(
+    val baseConf = parseUrl(url)
+    baseConf.copy(
       user,
-      jdbcUrl.host,
-      jdbcUrl.port,
+      baseConf.getHost,
+      baseConf.getPort,
       password,
-      jdbcUrl.database,
-      connectionSettings.ssl.getOrElse(defaultConfiguration.getSsl),
-      connectionSettings.charset.getOrElse(defaultConfiguration.getCharset),
+      baseConf.getDatabase,
+      connectionSettings.ssl.getOrElse(baseConf.getSsl),
+      connectionSettings.charset.getOrElse(baseConf.getCharset),
       connectionSettings.maximumMessageSize.getOrElse(
-        defaultConfiguration.getMaximumMessageSize
+        baseConf.getMaximumMessageSize
       ),
-      connectionSettings.allocator.getOrElse(defaultConfiguration.getAllocator),
+      connectionSettings.allocator.getOrElse(baseConf.getAllocator),
       connectionSettings.connectTimeout
         .map(_.toMillis.toInt)
-        .getOrElse(defaultConfiguration.getConnectionTimeout),
+        .getOrElse(baseConf.getConnectionTimeout),
       connectionSettings.queryTimeout
         .map(x => java.time.Duration.ofMillis(x.toMillis))
-        .getOrElse(defaultConfiguration.getQueryTimeout),
-      defaultConfiguration.getApplicationName,
-      defaultConfiguration.getInterceptors,
-      defaultConfiguration.getEventLoopGroup,
-      defaultConfiguration.getExecutionContext
+        .getOrElse(baseConf.getQueryTimeout),
+      baseConf.getApplicationName,
+      baseConf.getInterceptors,
+      baseConf.getEventLoopGroup,
+      baseConf.getExecutionContext,
+      baseConf.getCurrentSchema,
+      baseConf.getSocketPath,
     )
   }
 
