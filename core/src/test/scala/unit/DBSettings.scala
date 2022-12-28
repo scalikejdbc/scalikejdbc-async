@@ -19,7 +19,9 @@ trait DBSettings extends ForAllTestContainer { self: Suite =>
   )
   override val container = MultipleContainers(mysql, postgres)
 
-  protected[this] final def mysqlJdbcUrl = mysql.jdbcUrl
+  protected[this] final def mysqlJdbcUrl = {
+    mysql.jdbcUrl + "?enabledTLSProtocols=TLSv1.2&useSSL=false"
+  }
   protected[this] final def postgresJdbcUrl = postgres.jdbcUrl
 
   protected[this] final val asyncConnectionPoolSettings
@@ -35,7 +37,7 @@ trait DBSettings extends ForAllTestContainer { self: Suite =>
       password = postgres.password
     )
     AsyncConnectionPool.singleton(
-      url = postgresJdbcUrl,
+      url = postgresJdbcUrl.replace("jdbc", "r2dbc"),
       user = postgres.username,
       password = postgres.password,
       settings = asyncConnectionPoolSettings
@@ -53,7 +55,7 @@ trait DBSettings extends ForAllTestContainer { self: Suite =>
     )
     AsyncConnectionPool.add(
       name = "mysql",
-      url = mysqlJdbcUrl,
+      url = mysqlJdbcUrl.replace("jdbc", "r2dbc").replace("mysql", "mariadb"),
       user = mysql.username,
       password = mysql.password,
       settings = asyncConnectionPoolSettings

@@ -16,11 +16,13 @@
 package scalikejdbc.async
 
 import com.github.jasync.sql.db.Connection
+import reactor.core.publisher.Mono
 import scalikejdbc._
 import scalikejdbc.async.ShortenedNames._
 import scalikejdbc.async.internal.AsyncConnectionCommonImpl
+import scalikejdbc.async.internal.r2dbc.R2DBCNonSharedAsyncConnectionImpl
 
-import scala.concurrent.{ Promise, Future }
+import scala.concurrent.{ Future, Promise }
 import scala.util.{ Failure, Success }
 import scala.compat.java8.FutureConverters._
 
@@ -63,19 +65,51 @@ object AsyncTx {
     implicit cxt: EC = ECGlobal
   ): Future[A] = {
     val p = Promise[A]()
-    val connection =
-      tx.connection.asInstanceOf[AsyncConnectionCommonImpl].underlying
-    connection
-      .inTransaction((_: Connection) => op.apply(tx).toJava.toCompletableFuture)
-      .toScala
-      .onComplete {
-        case Success(result) =>
-          tx.release()
-          p.success(result)
-        case Failure(e) =>
-          tx.release()
-          p.failure(e)
-      }
+    tx.connection match {
+      case c: AsyncConnectionCommonImpl =>
+        val connection =
+          c.underlying
+        connection
+          .inTransaction((_: Connection) =>
+            op.apply(tx).toJava.toCompletableFuture
+          )
+          .toScala
+          .onComplete {
+            case Success(result) =>
+              tx.release()
+              p.success(result)
+            case Failure(e) =>
+              tx.release()
+              p.failure(e)
+          }
+      case c: R2DBCNonSharedAsyncConnectionImpl =>
+        c.connection.map { c =>
+          Mono
+            .from(c.beginTransaction())
+            .flatMap { _ =>
+              Mono.usingWhen(
+                c.beginTransaction(),
+                (_: Void) =>
+                  Mono.fromFuture(op.apply(tx).toJava.toCompletableFuture),
+                (_: Void) => c.commitTransaction(),
+                (_: Void, _: Throwable) => Mono.empty(),
+                (_: Void) => c.rollbackTransaction()
+              )
+            }
+            .`then`(Mono.fromFuture(op.apply(tx).toJava.toCompletableFuture))
+            // .`then`(Mono.from(c.commitTransaction()))
+            // .doOnError(_ => c.rollbackTransaction())
+            .doOnSuccess(x => {
+              tx.release()
+              p.success(x)
+            })
+            .doOnError(e => {
+              tx.release()
+              p.failure(e)
+            })
+        }
+    }
+
     p.future
   }
 

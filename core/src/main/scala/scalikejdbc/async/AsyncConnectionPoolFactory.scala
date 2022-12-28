@@ -18,6 +18,7 @@ package scalikejdbc.async
 import scalikejdbc.JDBCUrl._
 import scalikejdbc.async.internal.mysql.MySQLConnectionPoolImpl
 import scalikejdbc.async.internal.postgresql.PostgreSQLConnectionPoolImpl
+import scalikejdbc.async.internal.r2dbc.R2DBCConnectionPoolImpl
 
 /**
  * Asynchronous Connection Pool Factory
@@ -46,6 +47,8 @@ object AsyncConnectionPoolFactory extends AsyncConnectionPoolFactory {
   ): AsyncConnectionPool = {
 
     url match {
+      case _ if url.startsWith("r2dbc") =>
+        new R2DBCConnectionPoolImpl(url, user, password, settings)
       case _ if url.startsWith("jdbc:postgresql://") =>
         new PostgreSQLConnectionPoolImpl(url, user, password, settings)
 

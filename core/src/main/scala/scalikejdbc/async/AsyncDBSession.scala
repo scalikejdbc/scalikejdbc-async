@@ -73,7 +73,9 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
   def updateAndReturnGeneratedKey(statement: String, parameters: Any*)(implicit
     cxt: EC = ECGlobal
   ): Future[Long] = {
+    println("updateAndReturnGeneratedKey")
     def readGeneratedKey(result: AsyncQueryResult): Future[Long] = {
+      println("readGeneratedKey")
       result.generatedKey.map(_.getOrElse {
         throw new IllegalArgumentException(
           ErrorMessage.FAILED_TO_RETRIEVE_GENERATED_KEY + " SQL: '" + statement + "'"
@@ -83,6 +85,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
+      println("queryLogging")
       if (connection.isShared) {
         // create local transaction if current session is not transactional
         connection.toNonSharedConnection().flatMap { conn =>

@@ -1,7 +1,7 @@
 lazy val _version = "0.15.1-SNAPSHOT"
 lazy val scalikejdbcVersion = "4.0.0"
 lazy val jasyncVersion = "2.1.8" // provided
-lazy val postgresqlVersion = "42.5.1"
+lazy val r2dbcVersion = "1.0.0.RELEASE" // provided
 val Scala212 = "2.12.17"
 val Scala213 = "2.13.10"
 val Scala3 = "3.2.1"
@@ -23,7 +23,7 @@ lazy val core = (project in file("core")).settings(
   organization := "org.scalikejdbc",
   name := "scalikejdbc-async",
   version := _version,
-  scalaVersion := Scala212,
+  scalaVersion := Scala213,
   crossScalaVersions := Seq(Scala213, Scala212, Scala3),
   publishTo := _publishTo(version.value),
   publishMavenStyle := true,
@@ -53,11 +53,16 @@ lazy val core = (project in file("core")).settings(
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikejdbcVersion % "test",
       "com.github.jasync-sql" % "jasync-postgresql" % jasyncVersion % "provided",
       "com.github.jasync-sql" % "jasync-mysql" % jasyncVersion % "provided",
+      "io.r2dbc" % "r2dbc-pool" % r2dbcVersion % "provided",
       "com.dimafeng" %% "testcontainers-scala" % "0.40.12" % "test",
       "org.testcontainers" % "mysql" % "1.17.6" % "test",
       "org.testcontainers" % "postgresql" % "1.17.6" % "test",
-      "org.postgresql" % "postgresql" % postgresqlVersion % "test",
+      "org.postgresql" % "postgresql" % "42.5.1" % "test",
       "mysql" % "mysql-connector-java" % "5.1.+" % "test",
+      "org.postgresql" % "r2dbc-postgresql" % "1.0.0.RELEASE" % "test",
+      //https://github.com/mirromutth/r2dbc-mysql/issues/243
+      //"dev.miku" % "r2dbc-mysql" % "0.8.2.RELEASE" % "test",
+      "org.mariadb" % "r2dbc-mariadb" % "1.1.3" % "test",
       "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
     )
   },

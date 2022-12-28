@@ -20,7 +20,7 @@ import scala.concurrent._
 import scala.util.Try
 import scalikejdbc.async._, ShortenedNames._, internal._
 import scala.compat.java8.FutureConverters._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * PostgreSQL Connection Implementation
