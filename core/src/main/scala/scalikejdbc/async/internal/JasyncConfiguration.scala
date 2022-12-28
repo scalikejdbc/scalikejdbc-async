@@ -23,6 +23,7 @@ import scalikejdbc.async.AsyncConnectionSettings
  */
 private[scalikejdbc] trait JasyncConfiguration {
 
+  @deprecated("Will be removed in the future", "0.16.0")
   val defaultConfiguration = new Configuration("")
 
   protected def parseUrl(url: String): Configuration

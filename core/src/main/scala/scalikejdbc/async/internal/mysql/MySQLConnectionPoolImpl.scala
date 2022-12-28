@@ -48,7 +48,6 @@ private[scalikejdbc] class MySQLConnectionPoolImpl(
   override protected def parseUrl(url: String): Configuration =
     URLParser.INSTANCE.parse(url, StandardCharsets.UTF_8)
 
-
   override def borrow(): AsyncConnection = new PoolableAsyncConnection(pool)
     with MySQLConnectionImpl
 
