@@ -32,6 +32,21 @@ abstract class AsyncConnectionPoolCommonImpl[T <: ConcreteConnection](
       builder.setMaxActiveConnections(settings.maxPoolSize)
       builder.setMaxIdleTime(settings.maxIdleMillis)
       builder.setMaxPendingQueries(settings.maxQueueSize)
+      builder.setConnectionValidationInterval(settings.validationInterval)
+      builder.setConnectionCreateTimeout(settings.createTimeout)
+      builder.setConnectionTestTimeout(settings.testTimeout)
+      settings.queryTimeout match {
+        case Some(timeout) =>
+          builder.setQueryTimeout(timeout)
+        case None =>
+          builder.setQueryTimeout(null)
+      }
+      settings.maxObjectTtl match {
+        case Some(ttl) =>
+          builder.setMaxConnectionTtl(ttl)
+        case None =>
+          builder.setMaxConnectionTtl(null)
+      }
       builder.build()
     }
   )

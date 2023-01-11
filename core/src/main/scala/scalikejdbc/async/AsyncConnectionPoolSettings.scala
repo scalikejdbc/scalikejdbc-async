@@ -29,6 +29,11 @@ case class AsyncConnectionPoolSettings(
   maxPoolSize: Int = 8,
   maxQueueSize: Int = 8,
   maxIdleMillis: Long = 1000L,
+  validationInterval: Long = 5000L,
+  createTimeout: Long = 5000L,
+  testTimeout: Long = 5000L,
+  queryTimeout: Option[Long] = None,
+  maxObjectTtl: Option[Long] = None,
   connectionSettings: AsyncConnectionSettings = AsyncConnectionSettings()
 )
 
@@ -38,6 +43,5 @@ case class AsyncConnectionSettings(
   maximumMessageSize: Option[Int] = None,
   allocator: Option[ByteBufAllocator] = None,
   connectTimeout: Option[Duration] = None,
-  testTimeout: Option[Duration] = None,
   queryTimeout: Option[Duration] = None
 )
