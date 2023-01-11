@@ -19,9 +19,8 @@ trait DBSettings extends ForAllTestContainer { self: Suite =>
   )
   override val container = MultipleContainers(mysql, postgres)
 
-  // https://github.com/testcontainers/testcontainers-java/issues/2544
-  protected[this] final def mysqlJdbcUrl = mysql.jdbcUrl.split('?').head
-  protected[this] final def postgresJdbcUrl = postgres.jdbcUrl.split('?').head
+  protected[this] final def mysqlJdbcUrl = mysql.jdbcUrl
+  protected[this] final def postgresJdbcUrl = postgres.jdbcUrl
 
   protected[this] final val asyncConnectionPoolSettings
     : AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()

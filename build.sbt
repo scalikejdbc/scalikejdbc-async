@@ -1,4 +1,4 @@
-lazy val _version = "0.15.1-SNAPSHOT"
+lazy val _version = "0.16.1-SNAPSHOT"
 lazy val scalikejdbcVersion = "4.0.0"
 lazy val jasyncVersion = "2.1.8" // provided
 lazy val postgresqlVersion = "42.5.1"
@@ -62,7 +62,8 @@ lazy val core = (project in file("core")).settings(
     )
   },
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.14" % "test",
+    "org.scalatest" %% "scalatest-flatspec" % "3.2.15" % "test",
+    "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.15" % "test",
   ),
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),

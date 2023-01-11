@@ -15,7 +15,11 @@
  */
 package scalikejdbc.async.internal.postgresql
 
+import com.github.jasync.sql.db.Configuration
+import com.github.jasync.sql.db.postgresql.util.URLParser
 import scalikejdbc.async._, internal._
+
+import java.nio.charset.StandardCharsets
 
 /**
  * PostgreSQL Single Connection
@@ -28,6 +32,9 @@ private[scalikejdbc] case class SingleAsyncPostgreSQLConnection(
 ) extends AsyncConnectionCommonImpl
   with PostgreSQLConnectionImpl
   with JasyncConfiguration {
+
+  override protected def parseUrl(url: String): Configuration =
+    URLParser.INSTANCE.parse(url, StandardCharsets.UTF_8)
 
   private[scalikejdbc] val underlying = {
     new com.github.jasync.sql.db.postgresql.PostgreSQLConnection(
