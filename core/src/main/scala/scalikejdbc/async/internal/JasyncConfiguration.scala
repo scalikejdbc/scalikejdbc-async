@@ -59,6 +59,7 @@ private[scalikejdbc] trait JasyncConfiguration {
       baseConf.getExecutionContext,
       baseConf.getCurrentSchema,
       baseConf.getSocketPath,
+      null,
     )
   }
 
