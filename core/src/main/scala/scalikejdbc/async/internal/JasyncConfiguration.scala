@@ -42,14 +42,19 @@ private[scalikejdbc] trait JasyncConfiguration {
       password,
       baseConf.getDatabase,
       connectionSettings.ssl.getOrElse(baseConf.getSsl),
-      connectionSettings.charset.getOrElse(baseConf.getCharset),
-      connectionSettings.maximumMessageSize.getOrElse(
-        baseConf.getMaximumMessageSize
-      ),
-      connectionSettings.allocator.getOrElse(baseConf.getAllocator),
-      connectionSettings.connectTimeout
-        .map(_.toMillis.toInt)
-        .getOrElse(baseConf.getConnectionTimeout),
+      connectionSettings.charset.getOrElse(baseConf.getCharset), {
+        val x = connectionSettings.maximumMessageSize
+          .getOrElse(
+            baseConf.getMaximumMessageSize
+          )
+        x
+      },
+      connectionSettings.allocator.getOrElse(baseConf.getAllocator), {
+        val x = connectionSettings.connectTimeout
+          .map(_.toMillis.toInt)
+          .getOrElse(baseConf.getConnectionTimeout)
+        x
+      },
       connectionSettings.queryTimeout
         .map(x => java.time.Duration.ofMillis(x.toMillis))
         .getOrElse(baseConf.getQueryTimeout),
