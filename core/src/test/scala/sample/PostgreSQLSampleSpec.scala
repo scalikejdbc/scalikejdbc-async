@@ -2,7 +2,7 @@ package sample
 
 import java.time.Instant
 import scala.concurrent._, duration.DurationInt,
-ExecutionContext.Implicits.global
+  ExecutionContext.Implicits.global
 import scalikejdbc._, async._
 import unit._
 import org.scalatest.flatspec.AnyFlatSpec
