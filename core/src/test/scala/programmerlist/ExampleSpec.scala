@@ -1,7 +1,9 @@
 package programmerlist
 
 import scalikejdbc._, async._
-import scala.concurrent._, duration._, ExecutionContext.Implicits.global
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import unit._
 import org.scalatest.flatspec.AnyFlatSpec

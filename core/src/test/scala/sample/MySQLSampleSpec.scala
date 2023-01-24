@@ -2,7 +2,9 @@ package sample
 
 import java.sql.Timestamp
 import java.time.Instant
-import scala.concurrent._, duration._, ExecutionContext.Implicits.global
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scalikejdbc._, async._
 import unit._
 import org.scalatest.flatspec.AnyFlatSpec
