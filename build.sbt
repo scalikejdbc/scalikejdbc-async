@@ -57,7 +57,7 @@ lazy val core = (project in file("core")).settings(
       "org.testcontainers" % "mysql" % "1.18.3" % "test",
       "org.testcontainers" % "postgresql" % "1.18.3" % "test",
       "org.postgresql" % "postgresql" % postgresqlVersion % "test",
-      "mysql" % "mysql-connector-java" % "5.1.+" % "test",
+      "com.mysql" % "mysql-connector-j" % "8.0.33" % "test",
       "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
     )
   },
