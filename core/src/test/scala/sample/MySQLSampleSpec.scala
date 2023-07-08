@@ -2,6 +2,7 @@ package sample
 
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,7 +18,7 @@ class MySQLSampleSpec
   with Logging {
 
   val column = AsyncLover.column
-  val createdTime = Instant.now.plusMillis(123)
+  val createdTime = Instant.now.plusMillis(123).truncatedTo(ChronoUnit.MILLIS)
   val al = AsyncLover.syntax("al")
 
   it should "get nano seconds" in {

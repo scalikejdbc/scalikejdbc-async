@@ -1,6 +1,7 @@
 package sample
 
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -16,7 +17,7 @@ class PostgreSQLSampleSpec
   with Logging {
 
   val column = AsyncLover.column
-  val createdTime = Instant.now.plusMillis(123)
+  val createdTime = Instant.now.plusMillis(123).truncatedTo(ChronoUnit.MILLIS)
   val al = AsyncLover.syntax("al")
 
   it should "count" in {
