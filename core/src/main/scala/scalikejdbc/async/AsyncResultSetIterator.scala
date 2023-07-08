@@ -25,7 +25,7 @@ class AsyncResultSetIterator(var rs: AsyncResultSet)
 
   override def hasNext: Boolean = rs.next()
 
-  override def next: WrappedResultSet = {
+  override def next(): WrappedResultSet = {
     val value = rs
     rs = rs.tail()
     value
