@@ -17,7 +17,7 @@ class PostgreSQLSampleSpec
   with Logging {
 
   val column = AsyncLover.column
-  val createdTime = Instant.now.plusMillis(123).truncatedTo(ChronoUnit.MILLIS)
+  val createdTime = Instant.now.plusMillis(123).truncatedTo(ChronoUnit.MICROS)
   val al = AsyncLover.syntax("al")
 
   it should "count" in {
