@@ -30,9 +30,9 @@ Add `scalikejdbc-async` to your dependencies.
 
 ```scala
 libraryDependencies ++= Seq(
-  "org.scalikejdbc"       %% "scalikejdbc-async" % "0.15.+",
-  "com.github.jasync-sql" %  "jasync-postgresql" % "2.0.+",
-  "com.github.jasync-sql" %  "jasync-mysql"      % "2.0.+",
+  "org.scalikejdbc"       %% "scalikejdbc-async" % "0.18.+",
+  "com.github.jasync-sql" %  "jasync-postgresql" % "2.2.+",
+  "com.github.jasync-sql" %  "jasync-mysql"      % "2.2.+",
   "org.slf4j"             %  "slf4j-simple"      % "1.7.+" // slf4j implementation
 )
 ```
