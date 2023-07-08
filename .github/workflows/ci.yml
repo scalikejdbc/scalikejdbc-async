@@ -17,4 +17,4 @@ jobs:
         # TODO https://github.com/scalikejdbc/scalikejdbc-async/issues/162
         java-version: "8.0.282+8"
         distribution: adopt
-    - run: sbt -v scalafmtSbtCheck "+ scalafmtAll" "+ test"
+    - run: sbt -v scalafmtSbtCheck "+ scalafmtCheckAll" "+ test"

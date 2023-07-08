@@ -14,7 +14,9 @@ import org.scalatest.Suite
 trait DBSettings extends ForAllTestContainer { self: Suite =>
   protected[this] def mysqlVersion: String = sys.props("mysql_version")
   protected[this] final val mysql =
-    MySQLContainer(mysqlImageVersion = DockerImageName.parse(s"mysql:${mysqlVersion}"))
+    MySQLContainer(mysqlImageVersion =
+      DockerImageName.parse(s"mysql:${mysqlVersion}")
+    )
   protected[this] final val postgres = PostgreSQLContainer(
     DockerImageName.parse("postgres:11.4")
   )
