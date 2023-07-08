@@ -716,8 +716,8 @@ private[scalikejdbc] class RowDataResultSet(
   private def anyToUrl(any: Any): java.net.URL = any match {
     case null => null
     case url: java.net.URL => url
-    case str: String => new java.net.URL(str)
-    case _ => new java.net.URL(any.toString)
+    case str: String => new java.net.URI(str).toURL
+    case _ => new java.net.URI(any.toString).toURL
   }
   private def url(columnIndex: Int): java.net.URL = anyToUrl(any(columnIndex))
   private def url(columnLabel: String): java.net.URL = anyToUrl(
