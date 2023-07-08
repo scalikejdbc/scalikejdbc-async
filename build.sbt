@@ -19,6 +19,8 @@ lazy val unusedWarnings = Def.setting(
   }
 )
 
+val mysqlConnectorJ = "com.mysql" % "mysql-connector-j" % "8.0.33" % "test"
+
 lazy val core = (project in file("core")).settings(
   organization := "org.scalikejdbc",
   name := "scalikejdbc-async",
@@ -31,6 +33,8 @@ lazy val core = (project in file("core")).settings(
   // https://github.com/testcontainers/testcontainers-java/blob/22030eace3f4bafc735ccb0e402c1202329a95d1/core/src/main/java/org/testcontainers/utility/MountableFile.java#L284
   // https://github.com/sbt/sbt/issues/4794
   Test / fork := true,
+  Test / javaOptions += "-Duser.timezone=GMT",
+  Test / javaOptions += s"-Dmysql_version=${mysqlConnectorJ.revision}",
   (Compile / packageSrc / mappings) ++= (Compile / managedSources).value.map {
     f =>
       // to merge generated sources into sources.jar as well
@@ -57,7 +61,7 @@ lazy val core = (project in file("core")).settings(
       "org.testcontainers" % "mysql" % "1.18.3" % "test",
       "org.testcontainers" % "postgresql" % "1.18.3" % "test",
       "org.postgresql" % "postgresql" % postgresqlVersion % "test",
-      "mysql" % "mysql-connector-java" % "5.1.+" % "test",
+      mysqlConnectorJ,
       "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
     )
   },
