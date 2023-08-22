@@ -58,8 +58,8 @@ lazy val core = (project in file("core")).settings(
       "com.github.jasync-sql" % "jasync-postgresql" % jasyncVersion % "provided",
       "com.github.jasync-sql" % "jasync-mysql" % jasyncVersion % "provided",
       "com.dimafeng" %% "testcontainers-scala" % "0.40.17" % "test",
-      "org.testcontainers" % "mysql" % "1.18.3" % "test",
-      "org.testcontainers" % "postgresql" % "1.18.3" % "test",
+      "org.testcontainers" % "mysql" % "1.19.0" % "test",
+      "org.testcontainers" % "postgresql" % "1.19.0" % "test",
       "org.postgresql" % "postgresql" % postgresqlVersion % "test",
       mysqlConnectorJ,
       "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
