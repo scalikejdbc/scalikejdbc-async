@@ -71,6 +71,17 @@ lazy val core = (project in file("core")).settings(
   ),
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, _)) =>
+        Seq(
+          "-Wconf:msg=package object inheritance:warning", // TODO
+          "-Xsource:3",
+        )
+      case _ =>
+        Nil
+    }
+  },
   scalacOptions ++= Seq(
     "-deprecation",
     "-unchecked",
