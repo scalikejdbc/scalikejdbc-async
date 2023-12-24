@@ -18,7 +18,7 @@ case class AsyncLover(
 
 object AsyncLover extends SQLSyntaxSupport[AsyncLover] {
 
-  override val columns = Seq(
+  override val columns: Seq[String] = Seq(
     "id",
     "name",
     "rating",

@@ -52,7 +52,7 @@ case class Programmer(
 
 object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
 
-  override val columnNames =
+  override val columnNames: Seq[String] =
     Seq("id", "name", "company_id", "created_timestamp", "deleted_timestamp")
   override val nameConverters = Map("At$" -> "_timestamp")
 

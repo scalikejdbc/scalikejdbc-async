@@ -25,7 +25,8 @@ case class Skill(
 
 object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {
 
-  override val columnNames = Seq("id", "name", "created_at", "deleted_at")
+  override val columnNames: Seq[String] =
+    Seq("id", "name", "created_at", "deleted_at")
 
   def apply(s: SyntaxProvider[Skill])(rs: WrappedResultSet): Skill =
     apply(s.resultName)(rs)
