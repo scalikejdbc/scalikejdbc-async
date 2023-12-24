@@ -16,6 +16,7 @@
 package scalikejdbc.async.internal.postgresql
 
 import com.github.jasync.sql.db.Configuration
+import com.github.jasync.sql.db.Connection
 import com.github.jasync.sql.db.postgresql.util.URLParser
 import scalikejdbc.async._, internal._
 
@@ -36,7 +37,7 @@ private[scalikejdbc] case class SingleAsyncPostgreSQLConnection(
   override protected def parseUrl(url: String): Configuration =
     URLParser.INSTANCE.parse(url, StandardCharsets.UTF_8)
 
-  private[scalikejdbc] val underlying = {
+  private[scalikejdbc] val underlying: Connection = {
     new com.github.jasync.sql.db.postgresql.PostgreSQLConnection(
       configuration(url, user, password, connectionSettings)
     )

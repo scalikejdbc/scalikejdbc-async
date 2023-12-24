@@ -26,7 +26,7 @@ case class Company(
 
 object Company extends SQLSyntaxSupport[Company] with ShortenedNames {
 
-  override val columnNames =
+  override val columnNames: Seq[String] =
     Seq("id", "name", "url", "created_at", "deleted_at")
 
   def apply(c: SyntaxProvider[Company])(rs: WrappedResultSet): Company =

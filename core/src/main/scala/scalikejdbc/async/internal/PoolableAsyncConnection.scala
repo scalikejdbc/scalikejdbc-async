@@ -16,6 +16,7 @@
 package scalikejdbc.async.internal
 
 import com.github.jasync.sql.db.ConcreteConnection
+import com.github.jasync.sql.db.Connection
 import com.github.jasync.sql.db.pool.ConnectionPool
 import scalikejdbc.async.NonSharedAsyncConnection
 import scalikejdbc.async.ShortenedNames._
@@ -38,7 +39,7 @@ private[scalikejdbc] abstract class PoolableAsyncConnection[
   ): Future[NonSharedAsyncConnection] =
     Future.failed(new UnsupportedOperationException)
 
-  private[scalikejdbc] lazy val underlying = pool
+  private[scalikejdbc] lazy val underlying: Connection = pool
 
   /**
    * Close or release this connection.

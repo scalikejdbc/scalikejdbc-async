@@ -3,6 +3,7 @@ package unit
 import scalikejdbc._
 import async.{ AsyncConnectionPoolSettings, _ }
 import com.dimafeng.testcontainers.{
+  Container,
   ForAllTestContainer,
   MultipleContainers,
   MySQLContainer,
@@ -20,7 +21,7 @@ trait DBSettings extends ForAllTestContainer { self: Suite =>
   protected[this] final val postgres = PostgreSQLContainer(
     DockerImageName.parse("postgres:11.4")
   )
-  override val container = MultipleContainers(mysql, postgres)
+  override val container: Container = MultipleContainers(mysql, postgres)
 
   protected[this] final def mysqlJdbcUrl = mysql.jdbcUrl
   protected[this] final def postgresJdbcUrl = postgres.jdbcUrl
