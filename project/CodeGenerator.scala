@@ -89,7 +89,7 @@ class AsyncOneToManies${n}SQLToOption[A, ${B1_to_BN(
   extends AnyVal
     with AsyncSQLToOption[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[Option[Z]] = {
-    session.oneToManies${n}Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
+    session.oneToManies${n}Iterable(underlying.statement, underlying.rawParameters.toSeq*)(underlying.extractOne)(
       ${extractTo(n)}
     )(underlying.transform).map {
       case Nil => None
@@ -117,7 +117,7 @@ class AsyncOneToManies${n}SQLToIterable[A, ${B1_to_BN(
   extends AnyVal
     with AsyncSQLToIterable[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[Iterable[Z]] = {
-    session.oneToManies${n}Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
+    session.oneToManies${n}Iterable(underlying.statement, underlying.rawParameters.toSeq*)(underlying.extractOne)(
       ${extractTo(n)}
     )(underlying.transform)
   }
@@ -141,7 +141,7 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
   extends AnyVal
     with AsyncSQLToList[Z] {
   override def future()(implicit session: AsyncDBSession, cxt: ExecutionContext = ECGlobal): Future[List[Z]] = {
-    val iterable = session.oneToManies${n}Iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(underlying.extractOne)(
+    val iterable = session.oneToManies${n}Iterable(underlying.statement, underlying.rawParameters.toSeq*)(underlying.extractOne)(
       ${extractTo(n)}
     )(underlying.transform)
     iterable.map(_.toList)
@@ -168,7 +168,7 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
   ): Future[Iterable[Z]] = {
     oneToManies${n}Iterable[A, ${B1_to_BN(
         n
-      )}, Z](statement, parameters: _*)(extractOne)(
+      )}, Z](statement, parameters*)(extractOne)(
       ${(1 to n).map("extractTo" + _).mkString(", ")}
     )(transform)
   }"""
@@ -220,7 +220,7 @@ class AsyncOneToManies${n}SQLToList[A, ${B1_to_BN(
         }
       }
 
-      connection.sendPreparedStatement(statement, _parameters: _*).map { result =>
+      connection.sendPreparedStatement(statement, _parameters*).map { result =>
         result.rows.map { ars =>
           new AsyncResultSetIterator(ars).foldLeft(
             LinkedHashMap[A, (${seqB(n)})]())(processResultSet).map {
