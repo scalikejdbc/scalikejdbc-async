@@ -616,7 +616,7 @@ private[scalikejdbc] class RowDataResultSet(
 
   override def unwrap[T](iface: Class[T]): T = notvalid
 
-  override def isWrapperFor(iface: Class[_]): Boolean = notvalid
+  override def isWrapperFor(iface: Class[?]): Boolean = notvalid
 
   private def any(columnIndex: Int): Any = {
     // To be compatible with JDBC, index should be 1-origin

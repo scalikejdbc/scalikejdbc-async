@@ -37,11 +37,11 @@ object AsyncTx {
    * @param cxt execution context
    * @return async tx query
    */
-  def withSQLBuilders(builders: SQLBuilder[_]*)(implicit
+  def withSQLBuilders(builders: SQLBuilder[?]*)(implicit
     session: SharedAsyncDBSession,
     cxt: EC = ECGlobal
   ): AsyncTxQuery = {
-    withSQLs(builders.map(_.toSQL): _*)
+    withSQLs(builders.map(_.toSQL)*)
   }
 
   /**
@@ -52,7 +52,7 @@ object AsyncTx {
    * @param cxt execution context
    * @return async tx query
    */
-  def withSQLs(sqlObjects: SQL[_, _]*)(implicit
+  def withSQLs(sqlObjects: SQL[?, ?]*)(implicit
     session: SharedAsyncDBSession,
     cxt: EC = ECGlobal
   ): AsyncTxQuery = {

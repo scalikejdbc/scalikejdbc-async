@@ -36,9 +36,8 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      connection.sendPreparedStatement(statement, _parameters: _*).map {
-        result =>
-          result.rowsAffected.exists(_ > 0)
+      connection.sendPreparedStatement(statement, _parameters*).map { result =>
+        result.rowsAffected.exists(_ > 0)
       }
     }
   }
@@ -56,12 +55,12 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
             AsyncTx.inTransaction(
               TxAsyncDBSession(conn),
               { (tx: TxAsyncDBSession) =>
-                tx.connection.sendPreparedStatement(statement, _parameters: _*)
+                tx.connection.sendPreparedStatement(statement, _parameters*)
               }
             )
           }
         } else {
-          connection.sendPreparedStatement(statement, _parameters: _*)
+          connection.sendPreparedStatement(statement, _parameters*)
         }
       // Process statement result
       statementResultF.map { result =>
@@ -90,14 +89,14 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
             TxAsyncDBSession(conn),
             { (tx: TxAsyncDBSession) =>
               tx.connection
-                .sendPreparedStatement(statement, _parameters: _*)
+                .sendPreparedStatement(statement, _parameters*)
                 .flatMap(readGeneratedKey)
             }
           )
         }
       } else {
         connection
-          .sendPreparedStatement(statement, _parameters: _*)
+          .sendPreparedStatement(statement, _parameters*)
           .flatMap(readGeneratedKey)
       }
     }
@@ -107,7 +106,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
   def traversable[A](statement: String, parameters: Any*)(
     extractor: WrappedResultSet => A
   )(implicit cxt: EC = ECGlobal): Future[Iterable[A]] =
-    iterable[A](statement, parameters: _*)(extractor)
+    iterable[A](statement, parameters*)(extractor)
 
   def iterable[A](statement: String, parameters: Any*)(
     extractor: WrappedResultSet => A
@@ -115,13 +114,12 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      connection.sendPreparedStatement(statement, _parameters: _*).map {
-        result =>
-          result.rows
-            .map { ars =>
-              new AsyncResultSetIterator(ars).map(extractor).toList
-            }
-            .getOrElse(Nil)
+      connection.sendPreparedStatement(statement, _parameters*).map { result =>
+        result.rows
+          .map { ars =>
+            new AsyncResultSetIterator(ars).map(extractor).toList
+          }
+          .getOrElse(Nil)
       }
     }
   }
@@ -130,7 +128,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     extractor: WrappedResultSet => A
   )(implicit cxt: EC = ECGlobal): Future[Option[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
-    iterable(statement, _parameters: _*)(extractor).map {
+    iterable(statement, _parameters*)(extractor).map {
       case Nil => None
       case one :: Nil => Option(one)
       case results => throw TooManyRowsException(1, results.size)
@@ -141,7 +139,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     extractor: WrappedResultSet => A
   )(implicit cxt: EC = ECGlobal): Future[List[A]] = {
     val _parameters = ensureAndNormalizeParameters(parameters)
-    iterable[A](statement, _parameters: _*)(extractor).map(_.toList)
+    iterable[A](statement, _parameters*)(extractor).map(_.toList)
   }
 
   @deprecated("will be removed. use oneToOneIterable", "0.12.0")
@@ -150,7 +148,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
   )(
     extractTo: WrappedResultSet => Option[B]
   )(transform: (A, B) => Z)(implicit cxt: EC = ECGlobal): Future[Iterable[Z]] =
-    oneToOneIterable[A, B, Z](statement, parameters: _*)(extractOne)(extractTo)(
+    oneToOneIterable[A, B, Z](statement, parameters*)(extractOne)(extractTo)(
       transform
     )
 
@@ -176,18 +174,17 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
           case _ => oneToOne += (o -> extractTo(rs))
         }
       }
-      connection.sendPreparedStatement(statement, _parameters: _*).map {
-        result =>
-          result.rows
-            .map { ars =>
-              new AsyncResultSetIterator(ars)
-                .foldLeft(LinkedHashMap[A, Option[B]]())(processResultSet)
-                .map {
-                  case (one, Some(to)) => transform(one, to)
-                  case (one, None) => one.asInstanceOf[Z]
-                }
-            }
-            .getOrElse(Nil)
+      connection.sendPreparedStatement(statement, _parameters*).map { result =>
+        result.rows
+          .map { ars =>
+            new AsyncResultSetIterator(ars)
+              .foldLeft(LinkedHashMap[A, Option[B]]())(processResultSet)
+              .map {
+                case (one, Some(to)) => transform(one, to)
+                case (one, None) => one.asInstanceOf[Z]
+              }
+          }
+          .getOrElse(Nil)
       }
     }
   }
@@ -198,7 +195,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
   )(extractTo: WrappedResultSet => Option[B])(
     transform: (A, Seq[B]) => Z
   )(implicit cxt: EC = ECGlobal): Future[Iterable[Z]] =
-    oneToManyIterable[A, B, Z](statement, parameters: _*)(extractOne)(
+    oneToManyIterable[A, B, Z](statement, parameters*)(extractOne)(
       extractTo
     )(transform)
 
@@ -229,17 +226,16 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
               .getOrElse(Nil))
           }
       }
-      connection.sendPreparedStatement(statement, _parameters: _*).map {
-        result =>
-          result.rows
-            .map { ars =>
-              new AsyncResultSetIterator(ars)
-                .foldLeft(LinkedHashMap[A, Seq[B]]())(processResultSet)
-                .map { case (one, to) =>
-                  transform(one, to)
-                }
-            }
-            .getOrElse(Nil)
+      connection.sendPreparedStatement(statement, _parameters*).map { result =>
+        result.rows
+          .map { ars =>
+            new AsyncResultSetIterator(ars)
+              .foldLeft(LinkedHashMap[A, Seq[B]]())(processResultSet)
+              .map { case (one, to) =>
+                transform(one, to)
+              }
+          }
+          .getOrElse(Nil)
       }
     }
   }

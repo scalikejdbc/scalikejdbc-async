@@ -35,7 +35,7 @@ class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
             results <- resultsFuture
             current <- tx.connection.sendPreparedStatement(
               sql.statement,
-              sql.parameters.toSeq: _*
+              sql.parameters.toSeq*
             )
           } yield results :+ current
       }

@@ -268,7 +268,6 @@ class MySQLSampleSpec
 
   it should "update in a local transaction" in {
     (1 to 10).foreach { _ =>
-
       val generatedIdFuture: Future[Long] = NamedAsyncDB("mysql").localTx {
         implicit tx =>
           withSQL(
@@ -299,7 +298,6 @@ class MySQLSampleSpec
 
   it should "rollback in a local transaction" in {
     (1 to 10).foreach { _ =>
-
       NamedDB("mysql").autoCommit { implicit s =>
         withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update
           .apply()
@@ -342,7 +340,6 @@ class MySQLSampleSpec
 
   it should "provide transaction by AsyncTx.withSQLBuilders" in {
     (1 to 10).foreach { _ =>
-
       val deletionAndCreation: Future[Seq[AsyncQueryResult]] =
         NamedAsyncDB("mysql").withPool { implicit s =>
           AsyncTx
@@ -381,7 +378,6 @@ class MySQLSampleSpec
 
   it should "provide transactional deletion by AsyncTx.withSQLBuilders" in {
     (1 to 10).foreach { _ =>
-
       NamedDB("mysql").autoCommit { implicit s =>
         withSQL { delete.from(AsyncLover).where.eq(column.id, 998) }.update
           .apply()
@@ -420,7 +416,6 @@ class MySQLSampleSpec
 
   it should "rollback in a transaction when using AsyncTx.withSQLs" in {
     (1 to 10).foreach { _ =>
-
       val failure: Future[Seq[AsyncQueryResult]] =
         NamedAsyncDB("mysql").withPool { implicit s =>
           AsyncTx

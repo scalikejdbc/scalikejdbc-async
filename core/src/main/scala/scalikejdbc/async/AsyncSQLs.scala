@@ -25,7 +25,7 @@ trait AsyncSQLExecution extends Any {
     session: AsyncDBSession,
     cxt: EC = ECGlobal
   ): Future[Boolean] = {
-    session.execute(underlying.statement, underlying.parameters.toSeq: _*)
+    session.execute(underlying.statement, underlying.parameters.toSeq*)
   }
 }
 class AsyncSQLExecutionImpl(val underlying: SQLExecution)
@@ -38,7 +38,7 @@ trait AsyncSQLUpdate extends Any {
     session: AsyncDBSession,
     cxt: EC = ECGlobal
   ): Future[Int] = {
-    session.update(underlying.statement, underlying.parameters.toSeq: _*)
+    session.update(underlying.statement, underlying.parameters.toSeq*)
   }
 }
 class AsyncSQLUpdateImpl(val underlying: SQLUpdate)
@@ -53,7 +53,7 @@ trait AsyncSQLUpdateAndReturnGeneratedKey extends Any {
   ): Future[Long] = {
     session.updateAndReturnGeneratedKey(
       underlying.statement,
-      underlying.parameters.toSeq: _*
+      underlying.parameters.toSeq*
     )
   }
 }
@@ -68,7 +68,7 @@ trait AsyncSQLToOption[A] extends Any {
     session: AsyncDBSession,
     cxt: EC = ECGlobal
   ): Future[Option[A]] = {
-    session.single(underlying.statement, underlying.rawParameters.toSeq: _*)(
+    session.single(underlying.statement, underlying.rawParameters.toSeq*)(
       underlying.extractor
     )
   }
@@ -83,7 +83,7 @@ trait AsyncSQLToIterable[A] extends Any {
     session: AsyncDBSession,
     cxt: EC = ECGlobal
   ): Future[Iterable[A]] = {
-    session.iterable(underlying.statement, underlying.rawParameters.toSeq: _*)(
+    session.iterable(underlying.statement, underlying.rawParameters.toSeq*)(
       underlying.extractor
     )
   }
@@ -98,7 +98,7 @@ trait AsyncSQLToList[A] extends Any {
     session: AsyncDBSession,
     cxt: EC = ECGlobal
   ): Future[List[A]] = {
-    session.list(underlying.statement, underlying.rawParameters.toSeq: _*)(
+    session.list(underlying.statement, underlying.rawParameters.toSeq*)(
       underlying.extractor
     )
   }
