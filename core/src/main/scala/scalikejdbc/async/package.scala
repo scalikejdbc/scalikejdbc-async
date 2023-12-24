@@ -111,7 +111,7 @@ package object async extends PackageBoilerplate {
 
   object updateFuture {
     def apply(
-      sql: => SQLBuilder[_]
+      sql: => SQLBuilder[?]
     )(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Int] = {
       withSQL(sql).update.future()
     }
@@ -119,7 +119,7 @@ package object async extends PackageBoilerplate {
 
   object executeFuture {
     def apply(
-      sql: => SQLBuilder[_]
+      sql: => SQLBuilder[?]
     )(implicit session: AsyncDBSession, cxt: EC = ECGlobal): Future[Boolean] = {
       withSQL(sql).execute.future()
     }

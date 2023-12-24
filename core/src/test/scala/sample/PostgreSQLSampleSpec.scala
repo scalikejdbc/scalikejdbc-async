@@ -219,7 +219,6 @@ class PostgreSQLSampleSpec
 
   it should "update in a local transaction" in {
     (1 to 10).foreach { _ =>
-
       val generatedIdFuture: Future[Long] = AsyncDB.localTx { implicit tx =>
         withSQL(
           insert
@@ -250,7 +249,6 @@ class PostgreSQLSampleSpec
 
   it should "rollback in a local transaction" in {
     (1 to 10).foreach { _ =>
-
       DB.autoCommit { implicit s =>
         withSQL { delete.from(AsyncLover).where.eq(column.id, 1003) }.update
           .apply()
@@ -294,7 +292,6 @@ class PostgreSQLSampleSpec
     pending // TODO
 
     (1 to 10).foreach { _ =>
-
       val deletionAndCreation: Future[Seq[AsyncQueryResult]] =
         AsyncDB.withPool { implicit s =>
           AsyncTx
@@ -333,7 +330,6 @@ class PostgreSQLSampleSpec
 
   it should "provide transactional deletion by AsyncTx.withSQLBuilders" in {
     (1 to 10).foreach { _ =>
-
       DB.autoCommit { implicit s =>
         withSQL { delete.from(AsyncLover).where.eq(column.id, 998) }.update
           .apply()
@@ -372,7 +368,6 @@ class PostgreSQLSampleSpec
 
   it should "rollback in a transaction when using AsyncTx.withSQLs" in {
     (1 to 10).foreach { _ =>
-
       val failure: Future[Seq[AsyncQueryResult]] = AsyncDB.withPool {
         implicit s =>
           AsyncTx

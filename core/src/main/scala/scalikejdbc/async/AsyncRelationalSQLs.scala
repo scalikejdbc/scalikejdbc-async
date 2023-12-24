@@ -34,7 +34,7 @@ class AsyncOneToOneSQLToOption[A, B, Z](
     session
       .oneToOneIterable(
         underlying.statement,
-        underlying.rawParameters.toSeq: _*
+        underlying.rawParameters.toSeq*
       )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
       .map {
         case Nil => None
@@ -54,7 +54,7 @@ class AsyncOneToOneSQLToIterable[A, B, Z](
   ): Future[Iterable[Z]] = {
     session.oneToOneIterable(
       underlying.statement,
-      underlying.rawParameters.toSeq: _*
+      underlying.rawParameters.toSeq*
     )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
   }
 }
@@ -69,7 +69,7 @@ class AsyncOneToOneSQLToList[A, B, Z](
   ): Future[List[Z]] = {
     val iterable = session.oneToOneIterable(
       underlying.statement,
-      underlying.rawParameters.toSeq: _*
+      underlying.rawParameters.toSeq*
     )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.map(_.toList)
   }
@@ -89,7 +89,7 @@ class AsyncOneToManySQLToOption[A, B, Z](
     session
       .oneToManyIterable(
         underlying.statement,
-        underlying.rawParameters.toSeq: _*
+        underlying.rawParameters.toSeq*
       )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
       .map {
         case Nil => None
@@ -109,7 +109,7 @@ class AsyncOneToManySQLToIterable[A, B, Z](
   ): Future[Iterable[Z]] = {
     session.oneToManyIterable(
       underlying.statement,
-      underlying.rawParameters.toSeq: _*
+      underlying.rawParameters.toSeq*
     )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
   }
 }
@@ -124,7 +124,7 @@ class AsyncOneToManySQLToList[A, B, Z](
   ): Future[List[Z]] = {
     val iterable = session.oneToManyIterable(
       underlying.statement,
-      underlying.rawParameters.toSeq: _*
+      underlying.rawParameters.toSeq*
     )(underlying.extractOne)(underlying.extractTo)(underlying.transform)
     iterable.map(_.toList)
   }

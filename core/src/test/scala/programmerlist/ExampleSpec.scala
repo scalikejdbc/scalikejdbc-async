@@ -44,7 +44,6 @@ class ExampleSpec
 
     Await.result(created, 5.seconds)
     created.foreach { newCompany =>
-
       // delete a record and rollback
       val withinTx: Future[Unit] = AsyncDB.localTx { implicit tx =>
         for {

@@ -160,7 +160,7 @@ class MockPreparedStatement extends PreparedStatement {
   def setQueryTimeout(index: Int): Unit = notSupported
 
   // Members declared in java.sql.Wrapper
-  def isWrapperFor(index: Class[_]): Boolean = notSupported
+  def isWrapperFor(index: Class[?]): Boolean = notSupported
   def unwrap[T](index: Class[T]): T = notSupported
 
   private def notSupported = throw new RuntimeException("Not supported")
