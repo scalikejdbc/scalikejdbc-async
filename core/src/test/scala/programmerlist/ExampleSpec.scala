@@ -34,7 +34,7 @@ class ExampleSpec
       for {
         company <- Company.create(
           "ScalikeJDBC, Inc.",
-          Some("http://scalikejdbc.org/")
+          Some("https://scalikejdbc.org/")
         )
         seratch <- Programmer.create("seratch", Some(company.id))
         gakuzzzz <- Programmer.create("gakuzzzz", Some(company.id))

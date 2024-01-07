@@ -1,6 +1,6 @@
 ScalikeJDBC-Async 0.2.2 is out. Now we have the Play2 plugin to use ScalikeJDBC-Async seamlessly, thanks to @gakuzzzz!
 
-![ScalikeJDBC Logo](http://scalikejdbc.org/img/logo.png)
+![ScalikeJDBC Logo](https://scalikejdbc.org/img/logo.png)
 
 https://github.com/seratch/scalikejdbc
 

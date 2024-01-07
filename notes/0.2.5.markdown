@@ -1,6 +1,6 @@
 ScalikeJDBC-Async 0.2.5 is out. 
 
-![ScalikeJDBC Logo](http://scalikejdbc.org/img/logo.png)
+![ScalikeJDBC Logo](https://scalikejdbc.org/img/logo.png)
 
 https://github.com/seratch/scalikejdbc
 

@@ -112,7 +112,7 @@ def _publishTo(v: String) = {
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
-val _pomExtra = <url>http://scalikejdbc.org/</url>
+val _pomExtra = <url>https://scalikejdbc.org/</url>
       <licenses>
         <license>
           <name>Apache License, Version 2.0</name>

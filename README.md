@@ -6,7 +6,7 @@ ScalikeJDBC-Async provides non-blocking APIs to talk with PostgreSQL and MySQL i
 
 This library is built with [jasync-sql](https://github.com/jasync-sql/jasync-sql).
 
-![ScalikeJDBC Logo](http://scalikejdbc.org/img/logo.png)
+![ScalikeJDBC Logo](https://scalikejdbc.org/img/logo.png)
 
 ScalikeJDBC:
 
@@ -55,7 +55,7 @@ AsyncConnectionPool.singleton("jdbc:postgresql://localhost:5432/scalikejdbc", "s
 // create a new record within a transaction
 val created: Future[Company] = AsyncDB.localTx { implicit tx =>
   for {
-    company <- Company.create("ScalikeJDBC, Inc.", Some("http://scalikejdbc.org/"))
+    company <- Company.create("ScalikeJDBC, Inc.", Some("https://scalikejdbc.org/"))
     seratch <- Programmer.create("seratch", Some(company.id))
     gakuzzzz <- Programmer.create("gakuzzzz", Some(company.id))
     xuwei_k <- Programmer.create("xuwei-k", Some(company.id))

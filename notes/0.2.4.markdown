@@ -1,6 +1,6 @@
 ScalikeJDBC-Async 0.2.4 is out. AsyncConnectionPoolSettings is added.
 
-![ScalikeJDBC Logo](http://scalikejdbc.org/img/logo.png)
+![ScalikeJDBC Logo](https://scalikejdbc.org/img/logo.png)
 
 https://github.com/seratch/scalikejdbc
 
