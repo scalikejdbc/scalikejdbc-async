@@ -416,12 +416,12 @@ private[scalikejdbc] class RowDataResultSet(
 
   override def getObject(
     columnIndex: Int,
-    map: util.Map[String, Class[_]]
+    map: util.Map[String, Class[?]]
   ): AnyRef = notsupported
 
   override def getObject(
     columnLabel: String,
-    map: util.Map[String, Class[_]]
+    map: util.Map[String, Class[?]]
   ): AnyRef = notsupported
 
   override def getObject[T](columnIndex: Int, `type`: Class[T]): T = {

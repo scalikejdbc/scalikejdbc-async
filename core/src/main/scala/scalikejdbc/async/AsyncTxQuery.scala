@@ -22,7 +22,7 @@ import scalikejdbc.async.ShortenedNames._
 /**
  * Asynchronous Transactional Query
  */
-class AsyncTxQuery(sqls: Seq[SQL[_, _]]) {
+class AsyncTxQuery(sqls: Seq[SQL[?, ?]]) {
 
   def future()(implicit
     session: SharedAsyncDBSession,
