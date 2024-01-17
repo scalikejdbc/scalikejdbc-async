@@ -77,7 +77,7 @@ class ExampleSpec
   it should "work for more than pool size items" in {
 
     val MaxPoolSize = 2
-    val name = Symbol("test")
+    val name = "test"
     AsyncConnectionPool.add(
       name,
       postgresJdbcUrl,
