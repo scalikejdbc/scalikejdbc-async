@@ -66,8 +66,8 @@ lazy val core = (project in file("core")).settings(
     )
   },
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest-flatspec" % "3.2.17" % "test",
-    "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.17" % "test",
+    "org.scalatest" %% "scalatest-flatspec" % "3.2.18" % "test",
+    "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.18" % "test",
   ),
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
