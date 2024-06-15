@@ -49,7 +49,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
       val statementResultF =
-        if (connection.isShared) {
+        if connection.isShared then {
           // create local transaction if current session is not transactional
           connection.toNonSharedConnection().flatMap { conn =>
             AsyncTx.inTransaction(
@@ -82,7 +82,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
     val _parameters = ensureAndNormalizeParameters(parameters)
     withListeners(statement, _parameters) {
       queryLogging(statement, _parameters)
-      if (connection.isShared) {
+      if connection.isShared then {
         // create local transaction if current session is not transactional
         connection.toNonSharedConnection().flatMap { conn =>
           AsyncTx.inTransaction(
@@ -241,7 +241,7 @@ trait AsyncDBSession extends AsyncDBSessionBoilerplate with LogSupport {
   }
 
   protected def queryLogging(statement: String, parameters: Seq[Any]): Unit = {
-    if (loggingSQLAndTime.enabled) {
+    if loggingSQLAndTime.enabled then {
       log.withLevel(loggingSQLAndTime.logLevel)(
         s"[SQL Execution] '${statement}' with (${parameters.mkString(",")})"
       )

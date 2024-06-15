@@ -59,7 +59,7 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
   ): Future[AsyncQueryResult] = {
 
     val queryResultFuture: Future[QueryResult] = {
-      if (parameters.isEmpty) underlying.sendQuery(statement)
+      if parameters.isEmpty then underlying.sendQuery(statement)
       else
         underlying.sendPreparedStatement(
           statement,
@@ -96,7 +96,7 @@ private[scalikejdbc] trait AsyncConnectionCommonImpl extends AsyncConnection {
   ): Future[Option[Long]]
 
   protected def ensureNonShared(): Unit = {
-    if (!this.isInstanceOf[NonSharedAsyncConnection]) {
+    if !this.isInstanceOf[NonSharedAsyncConnection] then {
       throw new IllegalStateException(
         "This asynchronous connection must be a non-shared connection."
       )

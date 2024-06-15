@@ -74,8 +74,9 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
   ): Programmer = {
     apply(p.resultName)(rs).copy(company = rs.longOpt(c.resultName.id).flatMap {
       _ =>
-        if (rs.timestampOpt(c.resultName.deletedAt).isEmpty)
-          Some(Company(c)(rs))
+        if rs.timestampOpt(c.resultName.deletedAt).isEmpty then Some(
+          Company(c)(rs)
+        )
         else None
     })
   }
@@ -172,7 +173,7 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
       select
         .from[Programmer](Programmer as p)
         .map(sql =>
-          if (withCompany) sql.leftJoin(Company as c).on(p.companyId, c.id)
+          if withCompany then sql.leftJoin(Company as c).on(p.companyId, c.id)
           else sql
         ) // dynamic
         .leftJoin(ProgrammerSkill as ps)
@@ -183,8 +184,9 @@ object Programmer extends SQLSyntaxSupport[Programmer] with ShortenedNames {
         .append(isNotDeleted)
         .and
         .append(sqls"${where}")
-    }.one { rs => if (withCompany) Programmer(p, c)(rs) else Programmer(p)(rs) }
-      .toMany(Skill.opt(s))
+    }.one { rs =>
+      if withCompany then Programmer(p, c)(rs) else Programmer(p)(rs)
+    }.toMany(Skill.opt(s))
       .map { (pg, skills) => pg.copy(skills = skills) }
       .list
       .future()
