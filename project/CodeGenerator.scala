@@ -40,7 +40,7 @@ abstract class PackageBoilerplate {
         val methods = (2 to max)
           .flatMap { n =>
             oneToManiesIterable(n) +: {
-              if (n <= 9) {
+              if n <= 9 then {
                 Seq(oneToManiesTraversable(n))
               } else {
                 Nil

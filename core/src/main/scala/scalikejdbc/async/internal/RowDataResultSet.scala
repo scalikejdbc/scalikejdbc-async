@@ -366,7 +366,7 @@ private[scalikejdbc] class RowDataResultSet(
   override def getBoolean(columnLabel: String): Boolean = boolean(columnLabel)
 
   override def setFetchDirection(direction: Int): Unit = {
-    if (direction != ResultSet.FETCH_FORWARD) {
+    if direction != ResultSet.FETCH_FORWARD then {
       notvalid
     }
   }
@@ -390,7 +390,7 @@ private[scalikejdbc] class RowDataResultSet(
   override def getObject(columnIndex: Int): AnyRef = whatIsAny(any(columnIndex))
 
   private def whatIsAny(any: Any): AnyRef = {
-    if (any == null) {
+    if any == null then {
       null
     } else {
       any match {
@@ -427,7 +427,7 @@ private[scalikejdbc] class RowDataResultSet(
   override def getObject[T](columnIndex: Int, `type`: Class[T]): T = {
     val ref = getObject(columnIndex)
 
-    if (ref != null && `type`.isInstance(ref)) {
+    if ref != null && `type`.isInstance(ref) then {
       ref.asInstanceOf[T]
     } else {
       throw new SQLException(
@@ -439,7 +439,7 @@ private[scalikejdbc] class RowDataResultSet(
   override def getObject[T](columnLabel: String, `type`: Class[T]): T = {
     val ref = getObject(columnLabel)
 
-    if (ref != null && `type`.isInstance(ref)) {
+    if ref != null && `type`.isInstance(ref) then {
       ref.asInstanceOf[T]
     } else {
       throw new SQLException(
