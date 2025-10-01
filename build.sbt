@@ -62,7 +62,7 @@ lazy val core = (project in file("core")).settings(
       "org.testcontainers" % "postgresql" % "1.21.3" % "test",
       "org.postgresql" % "postgresql" % postgresqlVersion % "test",
       mysqlConnectorJ,
-      "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
+      "ch.qos.logback" % "logback-classic" % "1.5.19" % "test"
     )
   },
   libraryDependencies ++= Seq(
