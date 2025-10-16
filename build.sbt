@@ -27,7 +27,7 @@ lazy val core = (project in file("core")).settings(
   version := _version,
   scalaVersion := Scala212,
   crossScalaVersions := Seq(Scala213, Scala212, Scala3),
-  publishTo := _publishTo(version.value),
+  publishTo := (if (isSnapshot.value) None else localStaging.value),
   publishMavenStyle := true,
   // avoid NoClassDefFoundError
   // https://github.com/testcontainers/testcontainers-java/blob/22030eace3f4bafc735ccb0e402c1202329a95d1/core/src/main/java/org/testcontainers/utility/MountableFile.java#L284
@@ -101,12 +101,6 @@ lazy val core = (project in file("core")).settings(
   pomExtra := _pomExtra
 )
 
-def _publishTo(v: String) = {
-  val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
 val _pomExtra = <url>https://scalikejdbc.org/</url>
       <licenses>
         <license>

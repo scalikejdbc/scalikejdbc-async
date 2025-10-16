@@ -1,4 +1,4 @@
 #!/bin/sh
 
-sbt clean "project core" "+ publishSigned" sonatypeRelease
+sbt clean "project core" "+ publishSigned" sonaRelease
 
