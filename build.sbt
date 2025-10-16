@@ -35,11 +35,6 @@ lazy val core = (project in file("core")).settings(
   Test / fork := true,
   Test / javaOptions += "-Duser.timezone=GMT",
   Test / javaOptions += s"-Dmysql_version=${mysqlConnectorJ.revision}",
-  (Compile / packageSrc / mappings) ++= (Compile / managedSources).value.map {
-    f =>
-      // to merge generated sources into sources.jar as well
-      (f, f.relativeTo((Compile / sourceManaged).value).get.getPath)
-  },
   (Compile / sourceGenerators) += task {
     val dir = (Compile / sourceManaged).value / "scalikejdbc" / "async"
     CodeGenerator.generate.map { s =>
