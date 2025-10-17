@@ -1,47 +1,45 @@
 package unit
 
 import scalikejdbc._
-import async.{ AsyncConnectionPoolSettings, _ }
-import com.dimafeng.testcontainers.{
-  Container,
-  ForAllTestContainer,
-  MultipleContainers,
-  MySQLContainer,
-  PostgreSQLContainer
-}
+import scalikejdbc.async._
 import org.testcontainers.utility.DockerImageName
-import org.scalatest.Suite
+import org.scalatest.{ BeforeAndAfterAll, Suite }
+import org.testcontainers.mysql.MySQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 
-trait DBSettings extends ForAllTestContainer { self: Suite =>
+trait DBSettings extends BeforeAndAfterAll { self: Suite =>
   protected[this] def mysqlVersion: String = sys.props("mysql_version")
   protected[this] final val mysql =
-    MySQLContainer(mysqlImageVersion =
+    new MySQLContainer(
       DockerImageName.parse(s"mysql:${mysqlVersion}")
     )
-  protected[this] final val postgres = PostgreSQLContainer(
+  protected[this] final val postgres = new PostgreSQLContainer(
     DockerImageName.parse("postgres:11.4")
   )
-  override val container: Container = MultipleContainers(mysql, postgres)
 
-  protected[this] final def mysqlJdbcUrl = mysql.jdbcUrl
-  protected[this] final def postgresJdbcUrl = postgres.jdbcUrl
+  protected[this] final def mysqlJdbcUrl = mysql.getJdbcUrl
+  protected[this] final def postgresJdbcUrl = postgres.getJdbcUrl
 
   protected[this] final val asyncConnectionPoolSettings
     : AsyncConnectionPoolSettings = AsyncConnectionPoolSettings()
 
-  override def afterStart(): Unit = {
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    mysql.start()
+    postgres.start()
+
     GlobalSettings.loggingSQLErrors = false
 
     // default: PostgreSQL
     ConnectionPool.singleton(
       url = postgresJdbcUrl,
-      user = postgres.username,
-      password = postgres.password
+      user = postgres.getUsername,
+      password = postgres.getPassword
     )
     AsyncConnectionPool.singleton(
       url = postgresJdbcUrl,
-      user = postgres.username,
-      password = postgres.password,
+      user = postgres.getUsername,
+      password = postgres.getPassword,
       settings = asyncConnectionPoolSettings
     )
 
@@ -52,14 +50,14 @@ trait DBSettings extends ForAllTestContainer { self: Suite =>
     ConnectionPool.add(
       "mysql",
       url = mysqlJdbcUrl,
-      user = mysql.username,
-      password = mysql.password
+      user = mysql.getUsername,
+      password = mysql.getPassword
     )
     AsyncConnectionPool.add(
       name = "mysql",
       url = mysqlJdbcUrl,
-      user = mysql.username,
-      password = mysql.password,
+      user = mysql.getUsername,
+      password = mysql.getPassword,
       settings = asyncConnectionPoolSettings
     )
 

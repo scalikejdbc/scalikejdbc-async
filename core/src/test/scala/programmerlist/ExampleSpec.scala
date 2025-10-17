@@ -81,8 +81,8 @@ class ExampleSpec
     AsyncConnectionPool.add(
       name,
       postgresJdbcUrl,
-      postgres.username,
-      postgres.password,
+      postgres.getUsername,
+      postgres.getPassword,
       AsyncConnectionPoolSettings(maxPoolSize = MaxPoolSize)
     )
 
