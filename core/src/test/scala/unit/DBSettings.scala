@@ -14,7 +14,7 @@ trait DBSettings extends BeforeAndAfterAll { self: Suite =>
       DockerImageName.parse(s"mysql:${mysqlVersion}")
     )
   protected[this] final val postgres = new PostgreSQLContainer(
-    DockerImageName.parse("postgres:11.4")
+    DockerImageName.parse("postgres:18.0")
   )
 
   protected[this] final def mysqlJdbcUrl = mysql.getJdbcUrl
