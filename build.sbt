@@ -56,8 +56,14 @@ lazy val core = (project in file("core")).settings(
       "org.testcontainers" % "testcontainers-postgresql" % "2.0.1" % "test",
       "org.postgresql" % "postgresql" % postgresqlVersion % "test",
       mysqlConnectorJ,
-      "ch.qos.logback" % "logback-classic" % "1.2.+" % "test"
     )
+  },
+  libraryDependencies ++= {
+    if (scala.util.Properties.isJavaAtLeast("11")) {
+      Seq("ch.qos.logback" % "logback-classic" % "1.5.19" % "test")
+    } else {
+      Nil
+    }
   },
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest-flatspec" % "3.2.19" % "test",
