@@ -60,7 +60,7 @@ lazy val core = (project in file("core")).settings(
   },
   libraryDependencies ++= {
     if (scala.util.Properties.isJavaAtLeast("11")) {
-      Seq("ch.qos.logback" % "logback-classic" % "1.5.24" % "test")
+      Seq("ch.qos.logback" % "logback-classic" % "1.5.25" % "test")
     } else {
       Nil
     }
