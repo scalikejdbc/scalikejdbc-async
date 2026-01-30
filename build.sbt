@@ -19,7 +19,7 @@ lazy val unusedWarnings = Def.setting(
   }
 )
 
-val mysqlConnectorJ = "com.mysql" % "mysql-connector-j" % "9.5.0" % "test"
+val mysqlConnectorJ = "com.mysql" % "mysql-connector-j" % "9.6.0" % "test"
 
 lazy val core = (project in file("core")).settings(
   organization := "org.scalikejdbc",
