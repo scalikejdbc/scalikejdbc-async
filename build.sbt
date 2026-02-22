@@ -83,6 +83,7 @@ lazy val core = (project in file("core")).settings(
     }
   },
   scalacOptions ++= Seq(
+    "-release:8",
     "-deprecation",
     "-unchecked",
     "-language:implicitConversions",
