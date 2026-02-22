@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [8, 25]
+        java: [17, 25]
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-java@v5
@@ -19,4 +19,4 @@ jobs:
         java-version: "${{ matrix.java }}"
         distribution: adopt
     - uses: sbt/setup-sbt@v1
-    - run: sbt -v scalafmtSbtCheck "+ scalafmtCheckAll" "+ test"
+    - run: sbt -v --server scalafmtSbtCheck "+ scalafmtCheckAll" "+ test"
