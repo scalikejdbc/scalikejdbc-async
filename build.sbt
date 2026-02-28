@@ -72,11 +72,24 @@ lazy val core = (project in file("core")).settings(
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
   scalacOptions ++= {
+    scalaBinaryVersion.value match {
+      case "2.12" =>
+        Seq(
+          "-Xsource:3",
+        )
+      case "2.13" =>
+        Seq(
+          "-Xsource:3-cross",
+        )
+      case _ =>
+        Nil
+    }
+  },
+  scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
         Seq(
           "-Wconf:msg=package object inheritance:warning", // TODO
-          "-Xsource:3",
         )
       case _ =>
         Nil
