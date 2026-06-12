@@ -4,7 +4,7 @@ lazy val jasyncVersion = "2.2.4" // provided
 lazy val postgresqlVersion = "42.7.11"
 val Scala212 = "2.12.21"
 val Scala213 = "2.13.18"
-val Scala3 = "3.3.7"
+val Scala3 = "3.3.8"
 
 crossScalaVersions := Seq(Scala213, Scala212, Scala3)
 
@@ -72,6 +72,18 @@ lazy val core = (project in file("core")).settings(
   sbtPlugin := false,
   Global / transitiveClassifiers := Seq(Artifact.SourceClassifier),
   scalacOptions ++= {
+    if (scalaVersion.value.startsWith("3.3.")) {
+      Seq(
+        "-Yfuture-lazy-vals",
+        "-release:11",
+      )
+    } else {
+      Seq(
+        "-release:8",
+      )
+    }
+  },
+  scalacOptions ++= {
     scalaBinaryVersion.value match {
       case "2.12" =>
         Seq(
@@ -96,7 +108,6 @@ lazy val core = (project in file("core")).settings(
     }
   },
   scalacOptions ++= Seq(
-    "-release:8",
     "-deprecation",
     "-unchecked",
     "-language:implicitConversions",
