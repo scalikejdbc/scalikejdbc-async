@@ -100,6 +100,7 @@ lazy val core = (project in file("core")).settings(
     }
   },
   scalacOptions += "-Wconf:msg=Implicit parameters should be provided with:error",
+  scalacOptions += "-Wconf:msg=which is reserved for internal compiler use:error",
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
