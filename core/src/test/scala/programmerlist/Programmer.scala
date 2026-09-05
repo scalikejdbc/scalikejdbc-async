@@ -19,11 +19,11 @@ case class Programmer(
   def save()(implicit
     session: AsyncDBSession = AsyncDB.sharedSession,
     cxt: EC = ECGlobal
-  ): Future[Programmer] = Programmer.save(this)(session, cxt)
+  ): Future[Programmer] = Programmer.save(this)(using session, cxt)
   def destroy()(implicit
     session: AsyncDBSession = AsyncDB.sharedSession,
     cxt: EC = ECGlobal
-  ): Future[Int] = Programmer.destroy(id)(session, cxt)
+  ): Future[Int] = Programmer.destroy(id)(using session, cxt)
 
   private val column = ProgrammerSkill.column
 
