@@ -16,11 +16,11 @@ case class Skill(
   def save()(implicit
     session: AsyncDBSession = AsyncDB.sharedSession,
     cxt: EC = ECGlobal
-  ): Future[Skill] = Skill.save(this)(session, cxt)
+  ): Future[Skill] = Skill.save(this)(using session, cxt)
   def destroy()(implicit
     session: AsyncDBSession = AsyncDB.sharedSession,
     cxt: EC = ECGlobal
-  ): Future[Unit] = Skill.destroy(id)(session, cxt)
+  ): Future[Unit] = Skill.destroy(id)(using session, cxt)
 }
 
 object Skill extends SQLSyntaxSupport[Skill] with ShortenedNames {

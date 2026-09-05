@@ -17,11 +17,11 @@ case class Company(
   def save()(implicit
     session: AsyncDBSession = AsyncDB.sharedSession,
     cxt: EC = ECGlobal
-  ): Future[Company] = Company.save(this)(session, cxt)
+  ): Future[Company] = Company.save(this)(using session, cxt)
   def destroy()(implicit
     session: AsyncDBSession = AsyncDB.sharedSession,
     cxt: EC = ECGlobal
-  ): Future[Int] = Company.destroy(id)(session, cxt)
+  ): Future[Int] = Company.destroy(id)(using session, cxt)
 }
 
 object Company extends SQLSyntaxSupport[Company] with ShortenedNames {

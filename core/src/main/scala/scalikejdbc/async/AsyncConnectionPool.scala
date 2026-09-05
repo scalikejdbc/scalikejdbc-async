@@ -92,7 +92,7 @@ object AsyncConnectionPool extends LogSupport {
     password: String,
     settings: CPSettings = AsyncConnectionPoolSettings()
   )(implicit factory: CPFactory = AsyncConnectionPoolFactory): Unit = {
-    add(DEFAULT_NAME, url, user, password, settings)(factory)
+    add(DEFAULT_NAME, url, user, password, settings)(using factory)
   }
 
   def borrow(name: Any = DEFAULT_NAME): AsyncConnection = {
