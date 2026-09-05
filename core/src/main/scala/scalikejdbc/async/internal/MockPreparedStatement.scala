@@ -33,9 +33,17 @@ class MockPreparedStatement extends PreparedStatement {
   def setArray(index: Int, pValue: java.sql.Array): Unit = value = pValue
   def setAsciiStream(index: Int, pValue: java.io.InputStream): Unit = value =
     pValue
-  def setAsciiStream(index: Int, pValue: java.io.InputStream, x$3: Long): Unit =
+  def setAsciiStream(
+    index: Int,
+    pValue: java.io.InputStream,
+    length: Long
+  ): Unit =
     value = pValue
-  def setAsciiStream(index: Int, pValue: java.io.InputStream, x$3: Int): Unit =
+  def setAsciiStream(
+    index: Int,
+    pValue: java.io.InputStream,
+    length: Int
+  ): Unit =
     value = pValue
   def setBigDecimal(index: Int, pValue: java.math.BigDecimal): Unit = value =
     pValue
@@ -44,12 +52,16 @@ class MockPreparedStatement extends PreparedStatement {
   def setBinaryStream(
     index: Int,
     pValue: java.io.InputStream,
-    x$3: Long
+    length: Long
   ): Unit = value = pValue
-  def setBinaryStream(index: Int, pValue: java.io.InputStream, x$3: Int): Unit =
+  def setBinaryStream(
+    index: Int,
+    pValue: java.io.InputStream,
+    length: Int
+  ): Unit =
     value = pValue
   def setBlob(index: Int, pValue: java.io.InputStream): Unit = value = pValue
-  def setBlob(index: Int, pValue: java.io.InputStream, x$3: Long): Unit =
+  def setBlob(index: Int, pValue: java.io.InputStream, length: Long): Unit =
     value = pValue
   def setBlob(index: Int, pValue: java.sql.Blob): Unit = value = pValue
   def setBoolean(index: Int, pValue: Boolean): Unit = value = pValue
@@ -57,18 +69,26 @@ class MockPreparedStatement extends PreparedStatement {
   def setBytes(index: Int, pValue: Array[Byte]): Unit = value = pValue
   def setCharacterStream(index: Int, pValue: java.io.Reader): Unit = value =
     pValue
-  def setCharacterStream(index: Int, pValue: java.io.Reader, x$3: Long): Unit =
+  def setCharacterStream(
+    index: Int,
+    pValue: java.io.Reader,
+    length: Long
+  ): Unit =
     value = pValue
-  def setCharacterStream(index: Int, pValue: java.io.Reader, x$3: Int): Unit =
+  def setCharacterStream(
+    index: Int,
+    pValue: java.io.Reader,
+    length: Int
+  ): Unit =
     value = pValue
   def setClob(index: Int, pValue: java.io.Reader): Unit = value = pValue
-  def setClob(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value =
+  def setClob(index: Int, pValue: java.io.Reader, length: Long): Unit = value =
     pValue
   def setClob(index: Int, pValue: java.sql.Clob): Unit = value = pValue
   def setDate(
     index: Int,
     pValue: java.sql.Date,
-    x$3: java.util.Calendar
+    calendar: java.util.Calendar
   ): Unit = value = pValue
   def setDate(index: Int, pValue: java.sql.Date): Unit = value = pValue
   def setDouble(index: Int, pValue: Double): Unit = value = pValue
@@ -77,19 +97,28 @@ class MockPreparedStatement extends PreparedStatement {
   def setLong(index: Int, pValue: Long) = { value = pValue }
   def setNCharacterStream(index: Int, pValue: java.io.Reader): Unit = value =
     pValue
-  def setNCharacterStream(index: Int, pValue: java.io.Reader, x$3: Long): Unit =
+  def setNCharacterStream(
+    index: Int,
+    pValue: java.io.Reader,
+    length: Long
+  ): Unit =
     value = pValue
   def setNClob(index: Int, pValue: java.io.Reader): Unit = value = pValue
-  def setNClob(index: Int, pValue: java.io.Reader, x$3: Long): Unit = value =
+  def setNClob(index: Int, pValue: java.io.Reader, length: Long): Unit = value =
     pValue
   def setNClob(index: Int, pValue: java.sql.NClob): Unit = value = pValue
   def setNString(index: Int, pValue: String): Unit = value = pValue
-  def setNull(index: Int, pValue: Int, x$3: String): Unit = value = pValue
+  def setNull(index: Int, pValue: Int, typeName: String): Unit = value = pValue
   def setNull(index: Int, pValue: Int): Unit = value = pValue
-  def setObject(index: Int, pValue: Any, x$3: Int, x$4: Int): Unit = value =
-    pValue
+  def setObject(
+    index: Int,
+    pValue: Any,
+    targetSqlType: Int,
+    scaleOrLength: Int
+  ): Unit = value = pValue
   def setObject(index: Int, pValue: Any): Unit = value = pValue
-  def setObject(index: Int, pValue: Any, x$3: Int): Unit = value = pValue
+  def setObject(index: Int, pValue: Any, targetSqlType: Int): Unit = value =
+    pValue
   def setRef(index: Int, pValue: java.sql.Ref): Unit = value = pValue
   def setRowId(index: Int, pValue: java.sql.RowId): Unit = value = pValue
   def setSQLXML(index: Int, pValue: java.sql.SQLXML): Unit = value = pValue
@@ -98,13 +127,13 @@ class MockPreparedStatement extends PreparedStatement {
   def setTime(
     index: Int,
     pValue: java.sql.Time,
-    x$3: java.util.Calendar
+    calendar: java.util.Calendar
   ): Unit = value = pValue
   def setTime(index: Int, pValue: java.sql.Time): Unit = value = pValue
   def setTimestamp(
     index: Int,
     pValue: java.sql.Timestamp,
-    x$3: java.util.Calendar
+    calendar: java.util.Calendar
   ): Unit = value = pValue
   def setTimestamp(index: Int, pValue: java.sql.Timestamp): Unit = value =
     pValue
@@ -112,7 +141,7 @@ class MockPreparedStatement extends PreparedStatement {
   def setUnicodeStream(
     index: Int,
     pValue: java.io.InputStream,
-    x$3: Int
+    length: Int
   ): Unit = value = pValue
 
   // Members declared in java.sql.Statement
