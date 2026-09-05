@@ -20,3 +20,18 @@ jobs:
         distribution: temurin
     - uses: sbt/setup-sbt@v1
     - run: sbt -v --server scalafmtSbtCheck "+ scalafmtCheckAll" "+ test"
+  latest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          java-version: 25
+          distribution: temurin
+      - uses: sbt/setup-sbt@v1
+      - run: sbt
+             -v
+             --server
+             "++ 3.10.0-RC1!"
+             test

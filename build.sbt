@@ -77,6 +77,8 @@ lazy val core = (project in file("core")).settings(
         "-Yfuture-lazy-vals",
         "-release:11",
       )
+    } else if (scalaBinaryVersion.value == "3") {
+      Nil
     } else {
       Seq(
         "-release:8",
@@ -97,6 +99,7 @@ lazy val core = (project in file("core")).settings(
         Nil
     }
   },
+  scalacOptions += "-Wconf:msg=Implicit parameters should be provided with:error",
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
