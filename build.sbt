@@ -58,14 +58,8 @@ lazy val core = (project in file("core")).settings(
       mysqlConnectorJ,
     )
   },
-  libraryDependencies ++= {
-    if (scala.util.Properties.isJavaAtLeast("11")) {
-      Seq("ch.qos.logback" % "logback-classic" % "1.6.5" % "test")
-    } else {
-      Nil
-    }
-  },
   libraryDependencies ++= Seq(
+    "ch.qos.logback" % "logback-classic" % "1.6.5" % "test",
     "org.scalatest" %% "scalatest-flatspec" % "3.2.20" % "test",
     "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.20" % "test",
   ),
