@@ -19,7 +19,7 @@ jobs:
         java-version: "${{ matrix.java }}"
         distribution: temurin
     - uses: sbt/setup-sbt@v1
-    - run: sbt -v --server scalafmtSbtCheck "+ scalafmtCheckAll" "+ test"
+    - run: sbt -v --server scalafmtSbtCheck "+ scalafmtCheckAll" "+ testFull"
   latest:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -34,4 +34,4 @@ jobs:
              -v
              --server
              "++ 3.10.0-RC1!"
-             test
+             testFull
