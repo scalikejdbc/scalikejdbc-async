@@ -33,5 +33,5 @@ jobs:
       - run: sbt
              -v
              --server
-             "++ 3.10.0-RC1!"
+             "++ 3.10.1-RC1!"
              testFull
