@@ -59,7 +59,7 @@ lazy val core = (project in file("core")).settings(
     )
   },
   libraryDependencies ++= Seq(
-    "ch.qos.logback" % "logback-classic" % "1.6.5" % "test",
+    "ch.qos.logback" % "logback-classic" % "1.6.6" % "test",
     "org.scalatest" %% "scalatest-flatspec" % "3.2.20" % "test",
     "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.20" % "test",
   ),
